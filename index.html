@@ -2699,6 +2699,10 @@ body.dark .lg-kaki, body.cmd .lg-kaki { color: #64748b; }
 
 #ucTabelTenor tr.uc-grup td { background: #0f2540; color: #fff; font-size: 11.5px; letter-spacing: .5px; padding: 8px 12px; }
 body.cmd #ucTabelTenor tr.uc-grup td { background: #7a1f12; }
+
+/* Used Car: tampilan disamakan dengan Motor Bekas (unit -> DP -> tabel per tenor) */
+#tabSorumBekas .uc-sembunyi, #ucMetodeField, #ucKartuForm, #ucLekat, #ucKpi, #ucKartu3, #ucKartu4,
+#ucLanjutan, #tabSorumBekas .uc-adv { display: none !important; }
 </style>
 
 </head>
@@ -4757,7 +4761,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       </div>
 
       <div class="card" id="ucKartu2">
-        <h2>2 &middot; Parameter Simulasi</h2>
+        <h2>2 &middot; DP &amp; Data Konsumen</h2>
         <div class="uc-grid">
           <div class="field">
             <label>Nama Konsumen</label>
@@ -4835,17 +4839,17 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
             </div>
             <div class="uc-hint" id="ucHintDp"></div>
           </div>
-          <div class="field"><label>Tenor (tahun)</label><select id="ucTenor" onchange="ucHitung()"><option value="1">1 tahun (12x)</option><option value="2">2 tahun (24x)</option><option value="3">3 tahun (36x)</option><option value="4">4 tahun (48x)</option><option value="5" selected>5 tahun (60x)</option></select></div>
-          <div class="field">
+          <div class="field uc-sembunyi"><label>Tenor (tahun)</label><select id="ucTenor" onchange="ucHitung()"><option value="1">1 tahun (12x)</option><option value="2">2 tahun (24x)</option><option value="3">3 tahun (36x)</option><option value="4">4 tahun (48x)</option><option value="5" selected>5 tahun (60x)</option></select></div>
+          <div class="field uc-sembunyi">
             <label>Asuransi All Risk (tahun)</label>
             <select id="ucAr" onchange="ucHitung()"><option value="0">0 &mdash; TLO semua</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5 &mdash; All Risk penuh</option></select>
             <div class="uc-hint" id="ucKetAr">Sisa tahun otomatis jadi TLO (total selalu 5 tahun, sama seperti tabel RUMUS).</div>
           </div>
-          <div class="field"><label>Pemakaian</label><select id="ucPemakaian" onchange="ucHitung()"><option value="PRIBADI" selected>PRIBADI</option><option value="NIAGA">NIAGA</option></select></div>
-          <div class="field"><label>Jenis Kendaraan</label><select id="ucJenisUnit" onchange="ucJenisManual = true; ucHitung()"><option value="MB">MB &mdash; Minibus / mobil</option><option value="PU">PU &mdash; Pick Up</option></select><div class="uc-hint">Otomatis dari Object Type di MRP.</div></div>
-          <div class="field"><label>Wilayah</label><select id="ucWilayah" onchange="ucHitung()"><option value="DK" selected>DK &mdash; Dalam Kota</option><option value="LK">LK &mdash; Luar Kota (+0,25%)</option></select></div>
+          <div class="field uc-sembunyi"><label>Pemakaian</label><select id="ucPemakaian" onchange="ucHitung()"><option value="PRIBADI" selected>PRIBADI</option><option value="NIAGA">NIAGA</option></select></div>
+          <div class="field uc-sembunyi"><label>Jenis Kendaraan</label><select id="ucJenisUnit" onchange="ucJenisManual = true; ucHitung()"><option value="MB">MB &mdash; Minibus / mobil</option><option value="PU">PU &mdash; Pick Up</option></select><div class="uc-hint">Otomatis dari Object Type di MRP.</div></div>
+          <div class="field uc-sembunyi"><label>Wilayah</label><select id="ucWilayah" onchange="ucHitung()"><option value="DK" selected>DK &mdash; Dalam Kota</option><option value="LK">LK &mdash; Luar Kota (+0,25%)</option></select></div>
           <div class="field"><label>Plat</label><select id="ucPlat" onchange="ucHitung()"><option value="LOKAL" selected>Non plat B</option><option value="B">Plat B (DP +5%)</option></select></div>
-          <div class="field"><label>Biaya Admin + Polis (Rp)</label><input type="text" id="ucAdm" class="uc-terkunci" inputmode="numeric" readonly tabindex="-1"><div class="uc-hint" id="ucHintAdm">Baku Rp 3.050.000, sudah termasuk polis. Tidak bisa diubah manual.</div></div>
+          <div class="field uc-sembunyi"><label>Biaya Admin + Polis (Rp)</label><input type="text" id="ucAdm" class="uc-terkunci" inputmode="numeric" readonly tabindex="-1"><div class="uc-hint" id="ucHintAdm">Baku Rp 3.050.000, sudah termasuk polis. Tidak bisa diubah manual.</div></div>
           <div class="field uc-adv"><label>Subsidi Paket (Rp)</label><input type="text" id="ucSubsidi" inputmode="numeric" oninput="ucHitung()"><div class="uc-hint">Sorum bekas normalnya tanpa paket (0). Kalau diisi, ikut menambah angsuran seperti sel G6.</div></div>
           <div class="field uc-adv"><label>Asuransi Cash (% dari OTR)</label><input type="text" id="ucAssCash" inputmode="decimal" oninput="ucHitung()"><div class="uc-hint">Bagian asuransi yang dibayar tunai di muka, bukan dipinjam.</div></div>
           <div class="field uc-adv"><label>Asuransi Jiwa (% dari sisa)</label><input type="text" id="ucAssJiwa" inputmode="decimal" oninput="ucHitung()"><div class="uc-cepat"><button onclick="ucPakaiTarifJiwa()">Pakai tarif tabel (0,45% &times; tenor)</button><button onclick="ucSetNilai('ucAssJiwa', 0)">Nol</button></div></div>
@@ -4870,9 +4874,13 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       <div id="ucPeringatan"></div>
 
       <div class="card" id="ucKartuTenor" style="display:none;">
-        <h2>Tabel Angsuran per Tenor &mdash; ADDB &amp; ADDM</h2>
+        <h2>3 &middot; Tabel Angsuran &amp; Refund &mdash; ADDB &amp; ADDM</h2>
         <div class="dt-tenor-grid" id="ucTenorKartu"></div>
         <div class="table-container uc-tc"><table class="uc-table" id="ucTabelTenor"></table></div>
+        <div class="actions" style="margin-top:16px;">
+          <button class="btn-pdf" onclick="ucUnduhPdfTenor()">Unduh PDF</button>
+          <span class="hint" id="ucHintTenor"></span>
+        </div>
       </div>
 
       <div class="card uc-lembar" id="ucKartuForm">
@@ -14321,14 +14329,10 @@ function ucHitungUlang() {
     return;
   }
   k.className = 'uc-hitung-ket pasti';
-  k.innerText = (naik ? 'DP dinaikkan ke batas minimal 15%. ' : '') +
-    'Sudah dihitung ulang dengan DP ' + ucRp(ucInfoUnit.inp.dp) + ' (' + ucPct(ucHasil.pctDp) + ') — ' +
-    'angsuran ' + (ucMetode === 'addm' ? 'ADDM' : 'ADDB') + ' ' + ucRp(ucHasil[ucMetode].angsuran) + ' per bulan.';
+  k.innerText = (naik ? 'DP dinaikkan ke batas minimal 15%. ' : '') + 'Sudah dihitung dengan angka terbaru.';
 
   /* bawa mata pengguna ke hasilnya */
-  var sasaran = document.body.classList.contains('cmo')
-    ? document.getElementById('ucKartuForm')
-    : (document.getElementById('ucKpi') || document.getElementById('ucKartu3'));
+  var sasaran = document.getElementById('ucKartuTenor');
   if (sasaran && sasaran.scrollIntoView) {
     try { sasaran.scrollIntoView({ behavior: 'smooth', block: 'start' }); } catch (e2) { sasaran.scrollIntoView(); }
   }
@@ -14608,6 +14612,7 @@ var ucDpKurang = null;   /* terisi kalau DP belum memenuhi ketentuan -> hasil di
 
 /* ===== Tabel per tenor (seperti Motor Bekas): ADDB & ADDM untuk tenor 1–5 tahun ===== */
 function ucKosongkanTenor() {
+  ucTenorData = null;
   var k = document.getElementById('ucKartuTenor'); if (k) k.style.display = 'none';
 }
 function ucRenderTabelTenor(inp, umur) {
@@ -14624,7 +14629,8 @@ function ucRenderTabelTenor(inp, umur) {
     return { th: th, bulan: th * 12, addb: ambil('addb'), addm: ambil('addm') };
   });
   var ada = data.some(function (d) { return d.addb || d.addm; });
-  if (!ada) { kartu.style.display = 'none'; return; }
+  ucTenorData = ada ? { data: data, inp: inp, umur: umur } : null;
+  if (!ada) { kartu.style.display = 'none'; return false; }
   var nilai = function (a, f) { return a ? ucRp(f(a)) : '<span style="color:#94a3b8">tidak tersedia</span>'; };
 
   document.getElementById('ucTenorKartu').innerHTML = data.map(function (d) {
@@ -14648,6 +14654,75 @@ function ucRenderTabelTenor(inp, umur) {
   });
   document.getElementById('ucTabelTenor').innerHTML = h + '</tbody>';
   kartu.style.display = '';
+  return true;
+}
+var ucTenorData = null;
+function ucUnduhPdfTenor() {
+  var pesan = document.getElementById('ucHintTenor');
+  var r = ucBarisTerpilih(), T = ucTenorData;
+  if (!r || !T) { if (pesan) pesan.innerText = 'Belum ada hasil yang bisa diunduh.'; return; }
+  if (typeof window.jspdf === 'undefined') { if (pesan) pesan.innerText = 'Library PDF belum siap, coba muat ulang halaman.'; return; }
+  var jsPDF = window.jspdf.jsPDF;
+  var doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  var lebar = doc.internal.pageSize.getWidth();
+  var tahun = +document.getElementById('ucTahun').value, otr = T.inp.otr, dp = T.inp.dp;
+  var nama = ucTeksInput('ucNama'), nopol = ucTeksInput('ucNopol');
+  ucGambarLogo(doc, 14, 11, 13);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(12.5);
+  doc.text('SIMULASI ANGSURAN USED CAR CAPELLA MULTIDANA', lebar / 2 + 5, 17, { align: 'center' });
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
+  doc.text(r.brand + ' ' + r.tipe + ' \u00b7 ' + r.jenis + ' \u00b7 ' + tahun, lebar / 2 + 5, 22.5, { align: 'center' });
+  if (nama || nopol) {
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(10);
+    doc.text((nama || '-') + (nopol ? '   \u00b7   ' + nopol : ''), lebar / 2 + 5, 28, { align: 'center' });
+  }
+  doc.autoTable({
+    startY: 32,
+    head: [['DATA UNIT', '']],
+    body: [
+      ['Unit', r.brand + ' ' + r.tipe + ' \u2014 ' + r.jenis],
+      ['Nomor rangka', (typeof rkVin === 'function' && rkVin('uc')) || '-'],
+      ['Kategori', r.kategori || '-'],
+      ['Tahun mobil', String(tahun) + '  (usia ' + T.umur + ' tahun)'],
+      ['OTR / MRP', ucRp(otr)],
+      ['DP', ucRp(dp) + '  (' + ucPct(dp / otr, 1) + ')']
+    ],
+    theme: 'grid', styles: { fontSize: 8.5, cellPadding: 1.8 },
+    headStyles: { fillColor: [15, 37, 64], textColor: 255, fontSize: 8.5 },
+    columnStyles: { 0: { cellWidth: 55, fontStyle: 'bold' } }, margin: { left: 14, right: 14 }
+  });
+  var d = T.data, v = function (a, f) { return a ? ucRp(f(a)) : '-'; };
+  var body = [];
+  [['addb', 'ADDB \u2014 ANGSURAN DI BELAKANG'], ['addm', 'ADDM \u2014 ANGSURAN DI MUKA']].forEach(function (m) {
+    body.push([{ content: m[1], colSpan: d.length + 1, styles: { fillColor: [15, 37, 64], textColor: 255, fontStyle: 'bold', halign: 'left' } }]);
+    body.push(['ANGSURAN / BULAN'].concat(d.map(function (x) { return v(x[m[0]], function (a) { return a.angsuran; }); })));
+    body.push(['Nominal pencairan'].concat(d.map(function (x) { return v(x[m[0]], function (a) { return a.pencairan; }); })));
+    body.push(['Refund bersih'].concat(d.map(function (x) { return v(x[m[0]], function (a) { return a.refundBersih; }); })));
+    body.push(['ALL IN'].concat(d.map(function (x) { return v(x[m[0]], function (a) { return a.allIn; }); })));
+  });
+  doc.autoTable({
+    startY: doc.lastAutoTable.finalY + 6,
+    head: [['RINCIAN'].concat(d.map(function (x) { return x.bulan + ' BLN'; }))],
+    body: body, theme: 'grid',
+    styles: { fontSize: 8.5, cellPadding: 1.8, halign: 'right' },
+    headStyles: { fillColor: [30, 64, 175], textColor: 255, halign: 'center', fontSize: 8.5 },
+    columnStyles: { 0: { halign: 'left', fontStyle: 'bold', cellWidth: 40 } }, margin: { left: 14, right: 14 },
+    didParseCell: function (data) {
+      if (data.section !== 'body') return;
+      var lbl = data.row.raw && data.row.raw[0];
+      if (lbl === 'ANGSURAN / BULAN') { data.cell.styles.fillColor = [234, 247, 239]; data.cell.styles.fontStyle = 'bold'; data.cell.styles.textColor = [20, 83, 45]; }
+      else if (lbl === 'ALL IN' || lbl === 'Refund bersih') data.cell.styles.fontStyle = 'bold';
+    }
+  });
+  var y = doc.lastAutoTable.finalY + 6;
+  doc.setFontSize(7.5); doc.setTextColor(110);
+  doc.text('Simulasi ini perkiraan; nilai akhir mengikuti persetujuan kredit. Dicetak ' + new Date().toLocaleString('id-ID') +
+    (typeof namaPencetak === 'function' && namaPencetak() ? ' oleh ' + namaPencetak() : ''), 14, y);
+  doc.setTextColor(0);
+  var tandai = (nopol || nama || '').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_|_$/g, '');
+  var namaFile = 'Simulasi_Used_Car' + (tandai ? '_' + tandai : '') + '.pdf';
+  doc.save(namaFile);
+  if (pesan) pesan.innerText = 'PDF siap: ' + namaFile;
 }
 var ucTenorTolak = null;
 function ucHitung() {  if (!ucSiap) return;
@@ -14684,6 +14759,9 @@ function ucHitung() {  if (!ucSiap) return;
      supaya kolom DP benar-benar bisa dikosongkan lalu diketik manual */
   if (!ucDpManual && !ucAngka('ucDp')) document.getElementById('ucDp').value = ucFmt(Math.ceil(otr * ucMinimalDp(r.kategori, umur, document.getElementById('ucPlat').value) / 1e6) * 1e6);
 
+  /* tampilan sederhana: wilayah selalu Dalam Kota, pemakaian selalu Pribadi */
+  document.getElementById('ucWilayah').value = 'DK';
+  document.getElementById('ucPemakaian').value = 'PRIBADI';
   var arTh = +document.getElementById('ucAr').value;
   var tenor = +document.getElementById('ucTenor').value;
   /* biaya admin baku Rp 3.050.000 (termasuk polis) — selalu ditimpa, tidak bisa diketik manual */
@@ -14756,18 +14834,12 @@ function ucHitung() {  if (!ucSiap) return;
      Kalau tarif untuk tenor / metode ini tidak tersedia, hitungan TIDAK ditampilkan —
      cukup ingatkan untuk cek tenor (supaya CMO tidak memakai angka yang salah). */
   ucTenorTolak = null;
-  if (!h.error) {
-    var namaMetode = ucMetode === 'addm' ? 'ADDM' : 'ADDB', lainMetode = ucMetode === 'addm' ? 'ADDB' : 'ADDM';
-    if (umur >= 9 && tenor === 5 && inp.pemakaian === 'PRIBADI')
-      ucTenorTolak = 'Unit umur ' + umur + ' tahun tidak bisa tenor 5 tahun. Turunkan tenor ke 4 tahun atau kurang.';
-    else if (h.addm.rate === 0 && h.addb.rate === 0)
-      ucTenorTolak = 'Tenor ' + tenor + ' tahun belum tersedia untuk unit ini. Pilih tenor lain.';
-    else if (!(h[ucMetode] && h[ucMetode].rate))
-      ucTenorTolak = namaMetode + ' tidak tersedia untuk tenor ' + tenor + ' tahun. Pilih tenor lain atau ganti ke ' + lainMetode + '.';
-  }
+  if (!h.error && !ucRenderTabelTenor(inp, umur))
+    ucTenorTolak = 'Tidak ada tenor yang tersedia untuk unit umur ' + umur + ' tahun ini.';
   if (ucTenorTolak) {
     ucHasil = null;
     ucInfoUnit = null;
+    ucKosongkanTenor();
     peringatan.innerHTML = '<div class="uc-warn bahaya"><span>&#9888;&#65039; <b>Cek tenor.</b> ' + ucTenorTolak + '</span></div>';
     ucRenderKpiUtama();
     ucRenderRingkas();
@@ -14818,7 +14890,6 @@ function ucHitung() {  if (!ucSiap) return;
   ucRenderForm();
   ucRenderSkema('addm');
   ucRenderSkema('addb');
-  ucRenderTabelTenor(inp, umur);
 
   /* --- rincian hutang --- */
   var rin = [
@@ -16853,13 +16924,7 @@ function mbHitung() {
       return '<tr class="' + (kelas || '') + '"><td class="uc-lbl">' + label + '</td>' +
         baris.map(function (b) { return '<td class="uc-num">' + ambil(b) + '</td>'; }).join('') + '</tr>';
     }
-    var ringkas = modeRingkas();   /* CMO diringkas: angsuran, pencairan, refund bersih, all in */
-    if (!ringkas) {
-      h += row('Sisa yang dibiayai', '', function (b) { return ucRp(b.pencairan); });
-      h += row('Adm + fidusia + polis', '', function (b) { return ucRp(mbInfo.adm); });
-      h += row('Premi asuransi', '', function (b) { return ucRp(b.premi); });
-      h += row('Total hutang', 'uc-tebal', function (b) { return ucRp(b.hutang); });
-    }
+    var ringkas = modeRingkas();   /* CMO diringkas */
     if (!ringkas) {
       h += row('Bunga flat per tahun', '', function (b) { return ucPct(b.flat, 2); });
       h += row('Bunga efektif (setara)', '', function (b) { return ucPct(b.eff, 2); });
@@ -16868,10 +16933,7 @@ function mbHitung() {
     if (!ringkas) h += row('Total angsuran', '', function (b) { return ucRp(b.angsuran * b.tenor); });
     h += row('Nominal pencairan', 'mb-tebal', function (b) { return ucRp(b.pencairan); });
     if (!ringkas) h += row('% refund', '', function (b) { return ucPct(b.persenRefund, 0); });
-    if (!ringkas) {
-      h += row('Refund', '', function (b) { return ucRp(b.refund); });
-      h += row('PPh 21 (2,5%)', '', function (b) { return ucRp(b.pph); });
-    }
+
     h += row('Refund bersih', 'dt-komisi mb-tebal', function (b) { return ucRp(b.refundBersih); });
     h += row('ALL IN (pencairan + refund bersih)', 'uc-tebal', function (b) { return ucRp(b.allIn); });
     t.innerHTML = h + '</tbody>';
@@ -16909,8 +16971,6 @@ function mbUnduhPdf() {
       ['Tahun motor', String(u.tahun) + '  (usia ' + (new Date().getFullYear() - u.tahun) + ' tahun)'],
       ['OTR / MRP', ucRp(u.otr)],
       ['DP / panjar', ucRp(u.dp) + '  (' + ucPct(u.persenDp, 1) + ')'],
-      ['Sisa yang dibiayai', ucRp(u.sisa)],
-      ['Adm + fidusia + polis', ucRp(u.adm)]
     ],
     theme: 'grid',
     styles: { fontSize: 8.5, cellPadding: 1.8 },
@@ -16922,15 +16982,11 @@ function mbUnduhPdf() {
   doc.autoTable({
     startY: doc.lastAutoTable.finalY + 6,
     head: [['RINCIAN'].concat(b.map(function (x) { return x.tenor + ' BLN'; }))],
-    body: (modeRingkas() ? [] : [['Premi asuransi'].concat(b.map(function (x) { return ucRp(x.premi); }))]).concat([
-      ['Total hutang'].concat(b.map(function (x) { return ucRp(x.hutang); }))
-    ]).concat(modeRingkas() ? [] : [['Bunga flat / tahun'].concat(b.map(function (x) { return ucPct(x.flat, 2); }))]).concat([
+    body: (modeRingkas() ? [] : [['Bunga flat / tahun'].concat(b.map(function (x) { return ucPct(x.flat, 2); }))]).concat([
       ['ANGSURAN / BULAN'].concat(b.map(function (x) { return ucRp(x.angsuran); }))
     ]).concat(modeRingkas() ? [] : [['Total angsuran'].concat(b.map(function (x) { return ucRp(x.angsuran * x.tenor); }))]).concat([
       ['Nominal pencairan'].concat(b.map(function (x) { return ucRp(x.pencairan); }))
     ]).concat(modeRingkas() ? [] : [['% refund'].concat(b.map(function (x) { return ucPct(x.persenRefund, 0); }))]).concat([
-      ['Refund'].concat(b.map(function (x) { return ucRp(x.refund); })),
-      ['PPh 21 2,5%'].concat(b.map(function (x) { return ucRp(x.pph); })),
       ['Refund bersih'].concat(b.map(function (x) { return ucRp(x.refundBersih); })),
       ['ALL IN'].concat(b.map(function (x) { return ucRp(x.allIn); }))
     ]),
