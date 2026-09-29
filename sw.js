@@ -1,15 +1,13 @@
 // Service worker TOOLS CMD (versi GitHub Pages)
-// - Halaman dashboard: tampil langsung dari simpanan HP (cepat), lalu diperbarui diam-diam
-//   di belakang. Versi terbaru dari GitHub terpakai saat aplikasi dibuka berikutnya.
+// - Halaman dashboard: SELALU dicek ke GitHub dulu (update langsung terlihat).
+//   Kalau file tidak berubah, GitHub cukup menjawab "sama" jadi tetap cepat.
+//   Kalau sedang offline / sinyal hilang, pakai salinan terakhir di HP.
 // - Library (Excel, PDF, grafik) dari CDN: disimpan sekali, tidak diunduh ulang.
 // - Data (Apps Script) TIDAK disimpan: selalu diambil langsung dari server.
-const CACHE = "toolscmd-v4";
+const CACHE = "toolscmd-v5";
 const CDN = ["cdnjs.cloudflare.com", "cdn.jsdelivr.net", "fonts.googleapis.com", "fonts.gstatic.com"];
 
-self.addEventListener("install", (e) => {
-  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(["./", "./manifest.webmanifest"])).catch(() => {}));
-  self.skipWaiting();
-});
+self.addEventListener("install", () => self.skipWaiting());
 
 self.addEventListener("activate", (e) => {
   e.waitUntil(
@@ -37,19 +35,19 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  // file di GitHub Pages sendiri: tampil dari simpanan, perbarui di belakang
+  // file di GitHub Pages sendiri: jaringan dulu, simpanan hanya kalau offline
   if (url.origin === location.origin) {
     e.respondWith(
-      caches.open(CACHE).then((c) =>
-        c.match(req, { ignoreSearch: true }).then((hit) => {
-          const baru = fetch(req).then((res) => {
-            if (res.ok) c.put(req, res.clone());
-            return res;
-          }).catch(() => hit);
-          return hit || baru;
+      fetch(req, { cache: "no-cache" })
+        .then((res) => {
+          if (res.ok) {
+            const copy = res.clone();
+            caches.open(CACHE).then((c) => c.put(req, copy));
+          }
+          return res;
         })
-      )
+        .catch(() => caches.match(req, { ignoreSearch: true }))
     );
   }
-  // selain itu (Apps Script, Google Sheets, gambar Drive): biarkan langsung ke jaringan
+  // selain itu (Apps Script, Google Sheets, gambar Drive): langsung ke jaringan
 });
