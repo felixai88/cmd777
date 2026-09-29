@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CMD 777</title>
+<meta name="theme-color" content="#C8102E">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="CMD 777">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>
+  :root {
+    --red: #C8102E;
+    --red-dark: #8E0B20;
+    --yellow: #FFC72C;
+    --ink: #1d1d1f;
+    --muted: #6b6b70;
+    --bg: #ffffff;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%; background: var(--red);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #shell {
+    position: fixed; inset: 0;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--red);
+  }
+  #frame {
+    display: block; width: 100%; height: 100%; border: 0; background: var(--bg);
+  }
+
+  /* Layar pembuka & layar pesan */
+  .screen {
+    position: fixed; inset: 0; z-index: 10;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 24px 16px; text-align: center;
+    background: linear-gradient(160deg, var(--red) 0%, var(--red-dark) 100%);
+    color: #fff; transition: opacity .35s ease;
+  }
+  .screen.hide { opacity: 0; pointer-events: none; }
+  .logo {
+    width: 88px; height: 88px; border-radius: 22px; background: rgba(0,0,0,.12);
+    display: grid; place-items: center; margin-bottom: 20px;
+  }
+  .logo svg { width: 52px; height: 52px; }
+  h1 { margin: 0 0 6px; font-size: 24px; letter-spacing: .5px; }
+  p { margin: 0 0 20px; font-size: 14px; line-height: 1.5; opacity: .9; max-width: 340px; }
+  .bar { width: 160px; height: 4px; border-radius: 4px; background: rgba(255,255,255,.2); overflow: hidden; }
+  .bar i {
+    display: block; width: 40%; height: 100%; background: var(--yellow); border-radius: 4px;
+    animation: slide 1.1s ease-in-out infinite;
+  }
+  @keyframes slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(260%); } }
+
+  .card {
+    width: 100%; max-width: 380px; background: #fff; color: var(--ink);
+    border-radius: 16px; padding: 20px; text-align: left; box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  }
+  .card label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+  .card input {
+    width: 100%; font-size: 15px; padding: 12px; border: 1.5px solid #d6d6db; border-radius: 10px;
+    outline: none;
+  }
+  .card input:focus { border-color: var(--red); }
+  .card small { display: block; color: var(--muted); font-size: 12px; margin-top: 8px; line-height: 1.4; }
+  .btn {
+    display: inline-block; width: 100%; margin-top: 14px; padding: 13px 16px; border: 0; border-radius: 10px;
+    font-size: 15px; font-weight: 700; cursor: pointer;
+    background: var(--yellow); color: #2a2100;
+  }
+  .btn.ghost { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,.6); width: auto; }
+</style>
+</head>
+<body>
+
+<div id="shell"></div>
+
+<!-- Layar memuat -->
+<div id="loading" class="screen">
+  <div class="logo">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FFC72C" d="M3,13h8V3H3V13zM3,21h8v-6H3V21zM13,21h8V11h-8V21zM13,3v6h8V3H13z"/></svg>
+  </div>
+  <h1>CMD 777</h1>
+  <p>Memuat dashboard…</p>
+  <div class="bar"><i></i></div>
+</div>
+
+<!-- Layar offline -->
+<div id="offline" class="screen hide">
+  <div class="logo">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FFC72C" d="M3,13h8V3H3V13zM3,21h8v-6H3V21zM13,21h8V11h-8V21zM13,3v6h8V3H13z"/></svg>
+  </div>
+  <h1>Tidak ada koneksi</h1>
+  <p>Periksa data seluler atau WiFi, lalu coba lagi.</p>
+  <button class="btn ghost" onclick="location.reload()">Coba lagi</button>
+</div>
+
+<!-- Layar setelan alamat (muncul kalau WEB_URL kosong) -->
+<div id="setup" class="screen hide">
+  <div class="logo">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#FFC72C" d="M3,13h8V3H3V13zM3,21h8v-6H3V21zM13,21h8V11h-8V21zM13,3v6h8V3H13z"/></svg>
+  </div>
+  <h1>CMD 777</h1>
+  <p>Masukkan alamat web dashboard sekali saja.</p>
+  <form class="card" id="setupForm">
+    <label for="urlInput">Link Web App cmd777</label>
+    <input id="urlInput" type="url" inputmode="url" autocomplete="off"
+           placeholder="https://script.google.com/macros/s/.../exec" required>
+    <small>Link deploy Apps Script (ujungnya /exec) atau link Netlify.</small>
+    <button class="btn" type="submit">Simpan &amp; buka</button>
+  </form>
+</div>
+
+<script>
+  // ============================================================
+  //  GANTI ALAMAT WEB DI SINI
+  //  Tempel link Web App cmd777 di antara tanda kutip.
+  //  Kalau dibiarkan kosong, halaman akan menanyakan link-nya
+  //  (disimpan di HP masing-masing).
+  // ============================================================
+  const WEB_URL = "https://script.google.com/macros/s/AKfycbzItl0LhMf5oI1L3VQtcD3SDzxndug2urik7n56CJ6Snu9MiKwJgE88HkRT0RgSnk31Kw/exec";
+
+  const KEY = "cmd777_url";
+
+  function store(action, value) {
+    try {
+      if (action === "get") return localStorage.getItem(KEY) || "";
+      if (action === "set") localStorage.setItem(KEY, value);
+      if (action === "del") localStorage.removeItem(KEY);
+    } catch (e) { return ""; }
+  }
+
+  // Tambahkan ?reset di akhir link untuk mengganti alamat yang tersimpan
+  if (new URLSearchParams(location.search).has("reset")) {
+    store("del");
+    history.replaceState(null, "", location.pathname);
+  }
+
+  const $ = (id) => document.getElementById(id);
+
+  function show(id) { $(id).classList.remove("hide"); }
+  function hide(id) { $(id).classList.add("hide"); }
+
+  function openDashboard(url) {
+    if (!navigator.onLine) { hide("loading"); show("offline"); return; }
+
+    const frame = document.createElement("iframe");
+    frame.id = "frame";
+    frame.src = url;
+    frame.title = "Dashboard CMD 777";
+    frame.allow = "camera; microphone; clipboard-read; clipboard-write; fullscreen; geolocation; web-share";
+    frame.setAttribute("allowfullscreen", "");
+
+    let done = false;
+    const finish = () => { if (!done) { done = true; hide("loading"); } };
+    frame.addEventListener("load", finish);
+    setTimeout(finish, 15000); // jangan tertahan di layar memuat selamanya
+
+    $("shell").appendChild(frame);
+  }
+
+  window.addEventListener("offline", () => show("offline"));
+  window.addEventListener("online", () => hide("offline"));
+
+  const url = (WEB_URL || store("get")).trim();
+
+  if (url) {
+    openDashboard(url);
+  } else {
+    hide("loading");
+    show("setup");
+    $("setupForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      let u = $("urlInput").value.trim();
+      if (!/^https?:\/\//i.test(u)) u = "https://" + u;
+      store("set", u);
+      hide("setup");
+      show("loading");
+      openDashboard(u);
+    });
+  }
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("sw.js").catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
