@@ -116,6 +116,9 @@
 #ucKetAr, #dtKetAr, #ucHintAdm, #mbHintAdm, #dtHintAdm,
 .tab-content .uc-sub, .ku-sub, .uc-catat { display: none !important; }
 .tab-content .hint:empty, .tab-content .uc-hint:empty { display: none !important; }
+
+/* CMO (HP): tanpa tulisan kecil di bawah tombol & di kotak angsuran, supaya tidak ramai */
+body.cmo .uc-hitung-ket, body.cmo .uc-ringkas-sub { display: none !important; }
 </style>
 
 <!-- LIBRARY EXPORT EXCEL -->
@@ -2639,6 +2642,63 @@ body.dark #tabMotorBekas .field input, body.dark #tabMotorBekas .field select {
 }
 body.dark #tabSorumBekas .uc-ringkas, body.dark #tabDanaTunai .uc-ringkas, body.dark #tabMotorBekas .uc-ringkas { background: #131a24; }
 body.dark #tabSorumBekas .cmo-nav, body.dark #tabDanaTunai .cmo-nav, body.dark #tabMotorBekas .cmo-nav { background: #131a24; }
+
+/* ================= LOGIN — tampilan baru (warna brand Capella) ================= */
+#loginOverlay { background: #081223; }
+#loginOverlay::before { background:
+  radial-gradient(520px 420px at 12% 18%, rgba(226,67,44,.30), transparent 70%),
+  radial-gradient(560px 460px at 88% 82%, rgba(240,180,41,.20), transparent 70%),
+  radial-gradient(700px 520px at 60% 30%, rgba(37,99,235,.18), transparent 70%) !important;
+  animation: lgAuraBaru 14s ease-in-out infinite alternate; }
+#loginOverlay::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image: linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size: 34px 34px; -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 30%, transparent 75%); mask-image: radial-gradient(circle at 50% 50%, #000 30%, transparent 75%); }
+@keyframes lgAuraBaru { 0% { transform: scale(1) translate(0,0); } 100% { transform: scale(1.12) translate(-3%, 2%); } }
+.login-shell { max-width: 920px; border-radius: 22px !important; overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.06) !important; animation: lgMuncul .55s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes lgMuncul { from { opacity: 0; transform: translateY(18px) scale(.98); } to { opacity: 1; transform: none; } }
+.login-brand { background: linear-gradient(155deg, #13294b 0%, #0d1d38 52%, #3a1410 100%) !important; overflow: hidden; }
+.login-brand h1 { font-size: 27px; }
+.login-brand h1::after { content: ""; display: block; width: 54px; height: 4px; border-radius: 4px; margin-top: 12px;
+  background: linear-gradient(90deg, #E2432C, #F0B429); }
+.login-logo { background: #fff; padding: 5px; object-fit: contain !important; }
+.login-feat svg { stroke: #F0B429 !important; }
+.login-card { padding: 40px 38px !important; }
+.login-card h2 { font-size: 24px !important; }
+.lg-kepala-hp { display: none; }
+.login-card .lg-input-wrap { margin-bottom: 12px; }
+.login-card .lg-input-wrap input { height: 50px; padding-left: 44px !important; padding-right: 46px !important; border-radius: 12px !important; font-size: 14.5px; }
+.login-card .lg-input-wrap input:focus { border-color: #E2432C !important; box-shadow: 0 0 0 4px rgba(226,67,44,.14) !important; }
+.lg-ikon { left: 15px !important; }
+.login-card button.btn-login { position: relative; overflow: hidden; height: 50px; border-radius: 12px !important; font-size: 14.5px; letter-spacing: .4px;
+  background: linear-gradient(135deg, #E2432C 0%, #B3261E 100%) !important; box-shadow: 0 10px 24px rgba(226,67,44,.35) !important; }
+.login-card button.btn-login:hover { box-shadow: 0 14px 30px rgba(226,67,44,.45) !important; }
+.login-card button.btn-login::after { content: ""; position: absolute; top: 0; bottom: 0; width: 40%; left: -60%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.28), transparent); animation: lgKilap 3.2s ease-in-out infinite; }
+@keyframes lgKilap { 0%, 60% { left: -60%; } 100% { left: 130%; } }
+.lg-tema button { flex: 0 0 26px !important; width: 26px !important; height: 26px !important; min-height: 0 !important; min-width: 0 !important; }
+.lg-tema button.aktif { border-color: #E2432C !important; box-shadow: 0 0 0 2.5px rgba(226,67,44,.18) !important; }
+.lg-kaki { margin-top: 14px; text-align: center; font-size: 10.5px; color: #94a3b8; letter-spacing: .3px; }
+body.dark .lg-kaki, body.cmd .lg-kaki { color: #64748b; }
+
+/* HP: kartu login ringkas — peta & daftar fitur disembunyikan */
+@media (max-width: 760px) {
+  #loginOverlay { align-items: flex-start; padding: 28px 16px; }
+  .login-shell { flex-direction: column; max-width: 420px; margin: auto; min-height: 0 !important; }
+  .login-brand { display: none !important; }
+  .lg-kepala-hp { display: flex; align-items: center; gap: 12px; margin: -6px 0 24px 0; padding-bottom: 18px; border-bottom: 1px dashed #e2e8f0; }
+  .lg-kepala-hp img { width: 52px; height: 52px; border-radius: 14px; object-fit: contain; background: #fff; padding: 5px;
+    box-shadow: 0 6px 18px rgba(226,67,44,.25); border: 1px solid #f1f5f9; }
+  .lg-kepala-hp b { display: block; font-size: 16px; color: #0f2540; letter-spacing: .3px; }
+  .lg-kepala-hp span { font-size: 10.5px; letter-spacing: 1.6px; text-transform: uppercase; color: #E2432C; font-weight: 800; }
+  body.dark .lg-kepala-hp b, body.cmd .lg-kepala-hp b { color: #f1f5f9; }
+  body.dark .lg-kepala-hp, body.cmd .lg-kepala-hp { border-bottom-color: #2a3b57; }
+  .login-card { padding: 30px 24px 22px 24px !important; }
+  .login-card h2 { font-size: 22px !important; }
+}
+
+#ucTabelTenor tr.uc-grup td { background: #0f2540; color: #fff; font-size: 11.5px; letter-spacing: .5px; padding: 8px 12px; }
+body.cmd #ucTabelTenor tr.uc-grup td { background: #7a1f12; }
 </style>
 
 </head>
@@ -2686,13 +2746,13 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       <div class="login-brand-top">
         <img src="https://lh3.googleusercontent.com/d/1fvC3s03Z2mtUzxJ05izFiacuoX8EX6Bt" alt="Logo CMD" class="login-logo logo-cmd">
         <div>
-          <b> AYDA CMD</b>
+          <b>TOOLS CMD</b>
           <span>Capella Multidana</span>
         </div>
       </div>
 
       <h1>Monitoring Tarikan &amp;<br>Monitoring Stock AYDA</h1>
-      <p class="lg-tag">Inventory Stock Ayda R2 & R4.</p>
+      <p class="lg-tag">Stock AYDA R2 &amp; R4, tarikan, dan kalkulator kredit dalam satu tempat.</p>
 
       <div class="login-peta" id="lgPetaBox" aria-hidden="true">
         <svg viewBox="0 0 600 470" xmlns="http://www.w3.org/2000/svg">
@@ -2764,7 +2824,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         </div>
         <div>
           <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2.5"/><path d="M8 6h8M8 11h2M8 15h2M14 11h2M14 15h2M11 18h2"/></svg>
-          <span>Kalkulator Used Car: simulasi angsuran &amp; refund sorum</span>
+          <span>Kalkulator Used Car, Dana Tunai &amp; Motor Bekas</span>
         </div>
       </div>
 
@@ -2773,8 +2833,12 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
 
     <!-- Sisi form -->
     <div class="login-card">
-      <h2>Selamat datang</h2>
-      <p class="lg-sub">Masuk dengan akun masing-masing</p>
+      <div class="lg-kepala-hp">
+        <img src="https://lh3.googleusercontent.com/d/1fvC3s03Z2mtUzxJ05izFiacuoX8EX6Bt" alt="" class="logo-cmd">
+        <div><b>TOOLS CMD</b><span>Capella Multidana</span></div>
+      </div>
+      <h2>Selamat datang &#128075;</h2>
+      <p class="lg-sub">Masuk untuk melanjutkan ke dashboard</p>
 
       <span class="lg-label">Username</span>
       <div class="lg-input-wrap">
@@ -2810,6 +2874,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <button type="button" data-tema="gelap" title="Gelap" onclick="pilihTemaLogin('gelap')"></button>
         <button type="button" data-tema="cmd" title="Mode CMD" onclick="pilihTemaLogin('cmd')"></button>
       </div>
+      <div class="lg-kaki">&copy; Capella Multidana &middot; Internal use only</div>
     </div>
 
   </div>
@@ -4788,7 +4853,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
           <div class="field uc-adv"><label>TRF Akhir Bulan &mdash; ADDB (Rp)</label><input type="text" id="ucTrfB" inputmode="numeric" oninput="ucHitung()"></div>
         </div>
         <div class="uc-hitung-bar">
-          <button type="button" class="uc-btn-hitung" id="ucBtnHitung" onclick="ucHitungUlang()">Hitung  Angsuran</button>
+          <button type="button" class="uc-btn-hitung" id="ucBtnHitung" onclick="ucHitungUlang()">HITUNG ANGSURAN</button>
           <div class="uc-hitung-ket" id="ucHintHitung"></div>
         </div>
         <div class="actions uc-adv">
@@ -4803,6 +4868,12 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       </div>
 
       <div id="ucPeringatan"></div>
+
+      <div class="card" id="ucKartuTenor" style="display:none;">
+        <h2>Tabel Angsuran per Tenor &mdash; ADDB &amp; ADDM</h2>
+        <div class="dt-tenor-grid" id="ucTenorKartu"></div>
+        <div class="table-container uc-tc"><table class="uc-table" id="ucTabelTenor"></table></div>
+      </div>
 
       <div class="card uc-lembar" id="ucKartuForm">
         <div class="uc-lembar-latar" aria-hidden="true">
@@ -5046,7 +5117,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         </div>
 
         <div class="uc-hitung-bar">
-          <button type="button" class="uc-btn-hitung" id="dtBtnHitung" onclick="dtHitungUlang()">Hitung Angsuran</button>
+          <button type="button" class="uc-btn-hitung" id="dtBtnHitung" onclick="dtHitungUlang()">HITUNG ANGSURAN</button>
           <div class="uc-hitung-ket" id="dtHintHitung"></div>
         </div>
 
@@ -5203,7 +5274,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         </div>
 
         <div class="uc-hitung-bar">
-          <button type="button" class="uc-btn-hitung" id="mbBtnHitung" onclick="mbHitungUlang()">Hitung Angsuran</button>
+          <button type="button" class="uc-btn-hitung" id="mbBtnHitung" onclick="mbHitungUlang()">HITUNG ANGSURAN</button>
           <div class="uc-hitung-ket" id="mbHintHitung"></div>
         </div>
       </div>
@@ -14217,7 +14288,7 @@ function ucGeserDp(delta) {
 function ucTandaiPerluHitung() {
   var b = document.getElementById('ucBtnHitung');
   var k = document.getElementById('ucHintHitung');
-  if (b) { b.classList.add('perlu'); b.innerText = 'Hitung Ulang Angsuran — nilai berubah'; }
+  if (b) { b.classList.add('perlu'); b.innerText = 'HITUNG ANGSURAN'; }
   if (k) {
     k.className = 'uc-hitung-ket perlu';
     k.innerText = 'Nilai baru diketik. Tekan tombol di atas untuk memastikan angsurannya sudah memakai angka terbaru.';
@@ -14231,9 +14302,14 @@ function ucHitungUlang() {
 
   var b = document.getElementById('ucBtnHitung');
   var k = document.getElementById('ucHintHitung');
-  if (b) { b.classList.remove('perlu'); b.innerText = 'Hitung Ulang Angsuran'; }
+  if (b) { b.classList.remove('perlu'); b.innerText = 'HITUNG ANGSURAN'; }
   if (!k) return;
 
+  if (ucTenorTolak) {
+    k.className = 'uc-hitung-ket perlu';
+    k.innerText = 'Cek tenor: ' + ucTenorTolak;
+    return;
+  }
   if (ucDpKurang) {
     k.className = 'uc-hitung-ket perlu';
     k.innerText = 'DP belum memenuhi ketentuan minimal ' + ucPct(ucDpKurang.min, 0) + ' (Rp ' + ucFmt(ucDpKurang.nominal) + '). Naikkan DP dulu supaya angsuran tampil.';
@@ -14512,12 +14588,7 @@ function ucSetMetode(mode) {
   var nav = document.getElementById('ucSubnav');
   if (nav) nav.style.display = 'none';
   ucTampilkanHal(mode);
-  if (ucHasil && !ucHasil.error && ucInfoUnit) {
-    ucRenderRingkas();
-    ucRenderKpiUtama();
-    ucRenderLekat(ucHasil, ucInfoUnit.inp);
-    ucRenderForm();
-  }
+  if (typeof ucSiap !== 'undefined' && ucSiap) ucHitung();
 }
 
 function simPilihMetode(mode) {
@@ -14534,6 +14605,51 @@ var ucHasil = null;
 var ucInfoUnit = null;
 var ucDpKurang = null;   /* terisi kalau DP belum memenuhi ketentuan -> hasil disembunyikan */
 
+
+/* ===== Tabel per tenor (seperti Motor Bekas): ADDB & ADDM untuk tenor 1–5 tahun ===== */
+function ucKosongkanTenor() {
+  var k = document.getElementById('ucKartuTenor'); if (k) k.style.display = 'none';
+}
+function ucRenderTabelTenor(inp, umur) {
+  var kartu = document.getElementById('ucKartuTenor');
+  if (!kartu) return;
+  var data = [1, 2, 3, 4, 5].map(function (th) {
+    var hh = null;
+    try { hh = UC_MESIN.hitung(Object.assign({}, inp, { tenor: th })); } catch (e) { hh = null; }
+    var tolakUmur = umur >= 9 && th === 5 && inp.pemakaian === 'PRIBADI';
+    function ambil(kode) {
+      if (!hh || hh.error || tolakUmur || !hh[kode] || !hh[kode].rate) return null;
+      return hh[kode];
+    }
+    return { th: th, bulan: th * 12, addb: ambil('addb'), addm: ambil('addm') };
+  });
+  var ada = data.some(function (d) { return d.addb || d.addm; });
+  if (!ada) { kartu.style.display = 'none'; return; }
+  var nilai = function (a, f) { return a ? ucRp(f(a)) : '<span style="color:#94a3b8">tidak tersedia</span>'; };
+
+  document.getElementById('ucTenorKartu').innerHTML = data.map(function (d) {
+    return '<div class="dt-tenor"><h4>Tenor ' + d.bulan + ' bulan</h4>' +
+      '<div class="dt-nilai">' + (d.addb ? ucRp(d.addb.angsuran) : '&mdash;') + '</div>' +
+      '<div class="dt-ket">ADDB per bulan<br>ADDM <b>' + (d.addm ? ucRp(d.addm.angsuran) : '&mdash;') + '</b></div></div>';
+  }).join('');
+
+  var h = '<thead><tr><th>Keterangan</th>' + data.map(function (d) { return '<th style="text-align:right;">' + d.bulan + ' bulan</th>'; }).join('') + '</tr></thead><tbody>';
+  function grup(judul) { return '<tr class="uc-grup"><td colspan="' + (data.length + 1) + '"><b>' + judul + '</b></td></tr>'; }
+  function row(label, kelas, kode, f) {
+    return '<tr class="' + (kelas || '') + '"><td class="uc-lbl">' + label + '</td>' +
+      data.map(function (d) { return '<td class="uc-num">' + nilai(d[kode], f) + '</td>'; }).join('') + '</tr>';
+  }
+  [['addb', 'ADDB — angsuran di belakang'], ['addm', 'ADDM — angsuran di muka']].forEach(function (m) {
+    h += grup(m[1]);
+    h += row('ANGSURAN per bulan', 'dt-angsuran', m[0], function (a) { return a.angsuran; });
+    h += row('Nominal pencairan', 'mb-tebal', m[0], function (a) { return a.pencairan; });
+    h += row('Refund bersih', 'dt-komisi mb-tebal', m[0], function (a) { return a.refundBersih; });
+    h += row('ALL IN', 'uc-tebal', m[0], function (a) { return a.allIn; });
+  });
+  document.getElementById('ucTabelTenor').innerHTML = h + '</tbody>';
+  kartu.style.display = '';
+}
+var ucTenorTolak = null;
 function ucHitung() {  if (!ucSiap) return;
   var r = ucBarisTerpilih();
   var thnIni = new Date().getFullYear();
@@ -14541,6 +14657,7 @@ function ucHitung() {  if (!ucSiap) return;
   var kpi = document.getElementById('ucKpi');
   var chips = document.getElementById('ucChips');
   var peringatan = document.getElementById('ucPeringatan');
+  ucKosongkanTenor();
 
   if (!r || !tahun) {
     chips.innerHTML = '';
@@ -14616,6 +14733,7 @@ function ucHitung() {  if (!ucSiap) return;
     ucRenderKpiUtama();
     ucRenderRingkas();
     ucRenderLekat(null);
+    ucRenderForm();
     ucKosongkanSkema();
     document.getElementById('ucTabelHasil').innerHTML = '';
     document.getElementById('ucTabelRincian').innerHTML = '';
@@ -14633,6 +14751,35 @@ function ucHitung() {  if (!ucSiap) return;
   var h = UC_MESIN.hitung(inp);
   ucHasil = h;
   ucInfoUnit = { baris: r, tahun: tahun, otr: otr, mrp: mrp, umur: umur, inp: inp };
+
+  /* ===== GERBANG TENOR =====
+     Kalau tarif untuk tenor / metode ini tidak tersedia, hitungan TIDAK ditampilkan —
+     cukup ingatkan untuk cek tenor (supaya CMO tidak memakai angka yang salah). */
+  ucTenorTolak = null;
+  if (!h.error) {
+    var namaMetode = ucMetode === 'addm' ? 'ADDM' : 'ADDB', lainMetode = ucMetode === 'addm' ? 'ADDB' : 'ADDM';
+    if (umur >= 9 && tenor === 5 && inp.pemakaian === 'PRIBADI')
+      ucTenorTolak = 'Unit umur ' + umur + ' tahun tidak bisa tenor 5 tahun. Turunkan tenor ke 4 tahun atau kurang.';
+    else if (h.addm.rate === 0 && h.addb.rate === 0)
+      ucTenorTolak = 'Tenor ' + tenor + ' tahun belum tersedia untuk unit ini. Pilih tenor lain.';
+    else if (!(h[ucMetode] && h[ucMetode].rate))
+      ucTenorTolak = namaMetode + ' tidak tersedia untuk tenor ' + tenor + ' tahun. Pilih tenor lain atau ganti ke ' + lainMetode + '.';
+  }
+  if (ucTenorTolak) {
+    ucHasil = null;
+    ucInfoUnit = null;
+    peringatan.innerHTML = '<div class="uc-warn bahaya"><span>&#9888;&#65039; <b>Cek tenor.</b> ' + ucTenorTolak + '</span></div>';
+    ucRenderKpiUtama();
+    ucRenderRingkas();
+    ucRenderLekat(null);
+    ucRenderForm();
+    ucKosongkanSkema();
+    document.getElementById('ucTabelHasil').innerHTML = '';
+    document.getElementById('ucTabelRincian').innerHTML = '';
+    document.getElementById('ucKetentuanDp').innerHTML = '';
+    document.getElementById('ucCatatan').innerHTML = ucTeksCatatan();
+    return;
+  }
 
   if (h.error) {
     peringatan.innerHTML = '<div class="uc-warn bahaya">' + h.error + '</div>';
@@ -14655,10 +14802,6 @@ function ucHitung() {  if (!ucSiap) return;
   } else {
     /* DP sudah sesuai: tidak perlu banner hijau, cukup keterangan di bawah kolom DP */
   }
-  if (h.addm.rate === 0 && h.addb.rate === 0) pesan.push(['bahaya', 'Tarif bunga untuk kombinasi ini 0% di tabel RUMUS — artinya tidak tersedia. Cek tenor/umur unit.']);
-  else if (h.addm.rate === 0) pesan.push(['hati', 'ADDM tidak tersedia (tarif 0% di tabel' + (inp.pemakaian === 'NIAGA' ? ' GO RENTAL untuk NIAGA' : '') + '). Pakai ADDB.']);
-  else if (h.addb.rate === 0) pesan.push(['hati', 'ADDB tidak tersedia (tarif 0% di tabel). Pakai ADDM.']);
-  if (umur >= 9 && tenor === 5 && inp.pemakaian === 'PRIBADI') pesan.push(['hati', 'Unit ≥9 tahun dengan tenor 5 tahun tidak punya tarif di tabel — turunkan tenor ke 4 tahun.']);
   if (h.sisa <= 0) pesan.push(['hati', 'DP sudah melebihi OTR, sisa pembiayaan jadi ' + ucRp(h.sisa) + '.']);
   if (tahun === 2015 || umur > 11) pesan.push(['hati', 'Tahun ' + tahun + ' belum ditangani rumus OTR di file Excel (rumusnya berhenti di ' + (thnIni - 10) + '). Angka OTR di sini dibulatkan ke bawah — mohon dicek manual.']);
   peringatan.innerHTML = pesan.map(function (p) { return '<div class="uc-warn ' + p[0] + '">' + p[1] + '</div>'; }).join('');
@@ -14675,6 +14818,7 @@ function ucHitung() {  if (!ucSiap) return;
   ucRenderForm();
   ucRenderSkema('addm');
   ucRenderSkema('addb');
+  ucRenderTabelTenor(inp, umur);
 
   /* --- rincian hutang --- */
   var rin = [
@@ -15998,7 +16142,7 @@ function dtSetMaksimal() {
 }
 function dtTandaiPerluHitung() {
   var b = dtEl('dtBtnHitung'), k = dtEl('dtHintHitung');
-  if (b) { b.classList.add('perlu'); b.innerText = 'Hitung Ulang Angsuran \u2014 nilai berubah'; }
+  if (b) { b.classList.add('perlu'); b.innerText = 'HITUNG ANGSURAN'; }
   if (k) { k.className = 'uc-hitung-ket perlu'; k.innerText = 'Nilai baru diketik. Tekan tombol di atas untuk memastikan angsurannya memakai angka terbaru.'; }
 }
 function dtHitungUlang() {
@@ -16006,7 +16150,7 @@ function dtHitungUlang() {
   dtRapikanPinjaman();
   dtHitung();
   var b = dtEl('dtBtnHitung'), k = dtEl('dtHintHitung');
-  if (b) { b.classList.remove('perlu'); b.innerText = 'Hitung Angsuran'; }
+  if (b) { b.classList.remove('perlu'); b.innerText = 'HITUNG ANGSURAN'; }
   if (!k) return;
   if (!dtHasil) { k.className = 'uc-hitung-ket'; k.innerText = 'Lengkapi dulu unit dan nilai pinjamannya.'; return; }
   k.className = 'uc-hitung-ket pasti';
@@ -16084,7 +16228,7 @@ function dtHitung() {
   var idx = dtIndex(pinjaman);
   if (idx < 0) {
     dtKosongkanHasil('hati', '<span>Pinjaman harus kelipatan <b>' + ucRp(dtStepGrid()) +
-      '</b> supaya cocok dengan tabel rate. Tekan <b>Hitung Angsuran</b> dan nilainya akan dibulatkan otomatis.</span>');
+      '</b> supaya cocok dengan tabel rate. Tekan <b>HITUNG ANGSURAN</b> dan nilainya akan dibulatkan otomatis.</span>');
     return;
   }
 
@@ -16611,14 +16755,14 @@ function mbPersenDiketik() {
 }
 function mbTandaiPerluHitung() {
   var b = mbEl('mbBtnHitung'), k = mbEl('mbHintHitung');
-  if (b) { b.classList.add('perlu'); b.innerText = 'Hitung Ulang Angsuran \u2014 nilai berubah'; }
+  if (b) { b.classList.add('perlu'); b.innerText = 'HITUNG ANGSURAN'; }
   if (k) { k.className = 'uc-hitung-ket perlu'; k.innerText = 'Nilai DP berubah. Tekan tombol di atas supaya angsurannya dipastikan memakai angka terbaru.'; }
 }
 function mbHitungUlang() {
   try { if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); } catch (e) { }
   mbHitung();
   var b = mbEl('mbBtnHitung'), k = mbEl('mbHintHitung');
-  if (b) { b.classList.remove('perlu'); b.innerText = 'Hitung Angsuran'; }
+  if (b) { b.classList.remove('perlu'); b.innerText = 'HITUNG ANGSURAN'; }
   if (!k) return;
   if (!mbHasil) { k.className = 'uc-hitung-ket'; k.innerText = 'Lengkapi dulu unit dan DP-nya.'; return; }
   k.className = 'uc-hitung-ket pasti';
@@ -16709,11 +16853,13 @@ function mbHitung() {
       return '<tr class="' + (kelas || '') + '"><td class="uc-lbl">' + label + '</td>' +
         baris.map(function (b) { return '<td class="uc-num">' + ambil(b) + '</td>'; }).join('') + '</tr>';
     }
-    h += row('Sisa yang dibiayai', '', function (b) { return ucRp(b.pencairan); });
-    h += row('Adm + fidusia + polis', '', function (b) { return ucRp(mbInfo.adm); });
-    var ringkas = modeRingkas();   /* CMO diringkas, HO & Cabang lengkap */
-    if (!ringkas) h += row('Premi asuransi', '', function (b) { return ucRp(b.premi); });
-    h += row('Total hutang', 'uc-tebal', function (b) { return ucRp(b.hutang); });
+    var ringkas = modeRingkas();   /* CMO diringkas: angsuran, pencairan, refund bersih, all in */
+    if (!ringkas) {
+      h += row('Sisa yang dibiayai', '', function (b) { return ucRp(b.pencairan); });
+      h += row('Adm + fidusia + polis', '', function (b) { return ucRp(mbInfo.adm); });
+      h += row('Premi asuransi', '', function (b) { return ucRp(b.premi); });
+      h += row('Total hutang', 'uc-tebal', function (b) { return ucRp(b.hutang); });
+    }
     if (!ringkas) {
       h += row('Bunga flat per tahun', '', function (b) { return ucPct(b.flat, 2); });
       h += row('Bunga efektif (setara)', '', function (b) { return ucPct(b.eff, 2); });
@@ -16722,8 +16868,10 @@ function mbHitung() {
     if (!ringkas) h += row('Total angsuran', '', function (b) { return ucRp(b.angsuran * b.tenor); });
     h += row('Nominal pencairan', 'mb-tebal', function (b) { return ucRp(b.pencairan); });
     if (!ringkas) h += row('% refund', '', function (b) { return ucPct(b.persenRefund, 0); });
-    h += row('Refund', '', function (b) { return ucRp(b.refund); });
-    h += row('PPh 21 (2,5%)', '', function (b) { return ucRp(b.pph); });
+    if (!ringkas) {
+      h += row('Refund', '', function (b) { return ucRp(b.refund); });
+      h += row('PPh 21 (2,5%)', '', function (b) { return ucRp(b.pph); });
+    }
     h += row('Refund bersih', 'dt-komisi mb-tebal', function (b) { return ucRp(b.refundBersih); });
     h += row('ALL IN (pencairan + refund bersih)', 'uc-tebal', function (b) { return ucRp(b.allIn); });
     t.innerHTML = h + '</tbody>';
