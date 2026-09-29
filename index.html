@@ -2703,6 +2703,39 @@ body.cmd #ucTabelTenor tr.uc-grup td { background: #7a1f12; }
 /* Used Car: tampilan disamakan dengan Motor Bekas (unit -> DP -> tabel per tenor) */
 #tabSorumBekas .uc-sembunyi, #ucMetodeField, #ucKartuForm, #ucLekat, #ucKpi, #ucKartu3, #ucKartu4,
 #ucLanjutan, #tabSorumBekas .uc-adv { display: none !important; }
+
+/* disembunyikan: kolom biaya admin (nilainya tetap dipakai di hitungan) & bar sumber MRP */
+.field:has(> #dtAdm), .field:has(> #mbAdm), .field:has(> #ucAdm),
+#tabSorumBekas .uc-src, #tabDanaTunai .uc-src, #tabMotorBekas .uc-src { display: none !important; }
+
+/* ===== Tabel angsuran dibalik (tenor per baris) — muat 1 layar, siap screenshot ===== */
+table.uc-table.kh-tabel { min-width: 0 !important; width: 100%; table-layout: fixed; border-collapse: collapse; caption-side: bottom; }
+.kh-tabel caption { text-align: right; font-size: 10.5px; color: #94a3b8; padding: 6px 4px 0; }
+.kh-tabel th { font-size: 11px !important; text-transform: uppercase; letter-spacing: .3px; text-align: right !important; padding: 9px 6px !important; white-space: nowrap; }
+.kh-tabel th small, .kh-tabel td small { display: block; font-size: 9.5px; font-weight: 600; opacity: .7; text-transform: none; letter-spacing: 0; }
+.kh-tabel th:first-child, .kh-tabel td.kh-tenor { text-align: left !important; width: 16%; }
+.kh-tabel td { text-align: right; padding: 10px 6px !important; font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; border-top: 1px solid #eef1f5; }
+.kh-tabel td.kh-tenor { font-weight: 800; color: #0f2540; font-size: 15px; line-height: 1.05; }
+.kh-tabel td.kh-angs { background: #eaf7ef; color: #14532d; font-weight: 900; }
+.kh-tabel td.kh-refund { color: #1d4ed8; }
+.kh-tabel td.kh-allin { color: #0f2540; font-weight: 900; }
+.kh-tabel td.kh-na, .kh-tabel .kh-na { text-align: center; color: #94a3b8; font-weight: 600; }
+.kh-tabel tr.uc-grup td { text-align: left !important; }
+body.dark .kh-tabel td { border-top-color: #22324d; }
+body.dark .kh-tabel td.kh-tenor, body.dark .kh-tabel td.kh-allin { color: #e2e8f0; }
+body.dark .kh-tabel td.kh-angs { background: #10301f; color: #86efac; }
+body.dark .kh-tabel td.kh-refund { color: #93c5fd; }
+body.cmd .kh-tabel td.kh-tenor, body.cmd .kh-tabel td.kh-allin { color: #fbf3ea; }
+body.cmd .kh-tabel td.kh-angs { background: #2b2012; color: #fcd34d; }
+@media (max-width: 480px) {
+  .kh-tabel th { font-size: 9.5px !important; padding: 8px 3px !important; }
+  .kh-tabel td { font-size: 11.5px !important; padding: 9px 3px !important; }
+  .kh-tabel td.kh-tenor { font-size: 13px; }
+}
+
+/* kartu tenor dobel dengan tabel -> disembunyikan supaya 1 layar cukup untuk screenshot */
+#ucTenorKartu, #mbKartuTenor { display: none !important; }
+.kh-tabel caption { padding-bottom: 4px; }
 </style>
 
 </head>
@@ -5295,7 +5328,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <div class="table-container uc-tc"><table class="uc-table" id="mbTabel"></table></div>
         <div class="actions" style="margin-top:16px;">
           <button class="btn-pdf" onclick="mbUnduhPdf()">Unduh PDF</button>
-          <span class="hint" id="mbHint">.</span>
+          <span class="hint" id="mbHint"></span>
         </div>
       </div>
 
@@ -14639,20 +14672,22 @@ function ucRenderTabelTenor(inp, umur) {
       '<div class="dt-ket">ADDB per bulan<br>ADDM <b>' + (d.addm ? ucRp(d.addm.angsuran) : '&mdash;') + '</b></div></div>';
   }).join('');
 
-  var h = '<thead><tr><th>Keterangan</th>' + data.map(function (d) { return '<th style="text-align:right;">' + d.bulan + ' bulan</th>'; }).join('') + '</tr></thead><tbody>';
-  function grup(judul) { return '<tr class="uc-grup"><td colspan="' + (data.length + 1) + '"><b>' + judul + '</b></td></tr>'; }
-  function row(label, kelas, kode, f) {
-    return '<tr class="' + (kelas || '') + '"><td class="uc-lbl">' + label + '</td>' +
-      data.map(function (d) { return '<td class="uc-num">' + nilai(d[kode], f) + '</td>'; }).join('') + '</tr>';
-  }
-  [['addb', 'ADDB — angsuran di belakang'], ['addm', 'ADDM — angsuran di muka']].forEach(function (m) {
-    h += grup(m[1]);
-    h += row('ANGSURAN per bulan', 'dt-angsuran', m[0], function (a) { return a.angsuran; });
-    h += row('Nominal pencairan', 'mb-tebal', m[0], function (a) { return a.pencairan; });
-    h += row('Refund bersih', 'dt-komisi mb-tebal', m[0], function (a) { return a.refundBersih; });
-    h += row('ALL IN', 'uc-tebal', m[0], function (a) { return a.allIn; });
+  /* tabel dibalik: tiap baris = satu tenor, supaya muat 1 layar HP (tinggal screenshot) */
+  var tb = document.getElementById('ucTabelTenor');
+  tb.classList.add('kh-tabel');
+  var h = '<thead><tr><th>Tenor</th><th>Angsuran<small>/bulan</small></th><th>Pencairan</th><th>Refund<small>bersih</small></th><th>All In</th></tr></thead><tbody>';
+  var sel = function (a, f, kelas) { return '<td class="' + (kelas || '') + '">' + (a ? ucFmt(f(a)) : '<span class="kh-na">&ndash;</span>') + '</td>'; };
+  [['addb', 'ADDB &mdash; angsuran di belakang'], ['addm', 'ADDM &mdash; angsuran di muka']].forEach(function (m) {
+    h += '<tr class="uc-grup"><td colspan="5"><b>' + m[1] + '</b></td></tr>';
+    data.forEach(function (d) {
+      var a = d[m[0]];
+      h += '<tr><td class="kh-tenor">' + d.bulan + '<small>bln</small></td>' +
+        (a ? sel(a, function (x) { return x.angsuran; }, 'kh-angs') + sel(a, function (x) { return x.pencairan; }) +
+             sel(a, function (x) { return x.refundBersih; }, 'kh-refund') + sel(a, function (x) { return x.allIn; }, 'kh-allin')
+           : '<td colspan="4" class="kh-na">tidak tersedia</td>') + '</tr>';
+    });
   });
-  document.getElementById('ucTabelTenor').innerHTML = h + '</tbody>';
+  tb.innerHTML = h + '</tbody><caption>Semua nilai dalam Rupiah</caption>';
   kartu.style.display = '';
   return true;
 }
@@ -16919,24 +16954,17 @@ function mbHitung() {
 
   var t = mbEl('mbTabel');
   if (t) {
-    var h = '<thead><tr><th>Keterangan</th>' + baris.map(function (b) { return '<th style="text-align:right;">' + b.tenor + ' bulan</th>'; }).join('') + '</tr></thead><tbody>';
-    function row(label, kelas, ambil) {
-      return '<tr class="' + (kelas || '') + '"><td class="uc-lbl">' + label + '</td>' +
-        baris.map(function (b) { return '<td class="uc-num">' + ambil(b) + '</td>'; }).join('') + '</tr>';
-    }
-    var ringkas = modeRingkas();   /* CMO diringkas */
-    if (!ringkas) {
-      h += row('Bunga flat per tahun', '', function (b) { return ucPct(b.flat, 2); });
-      h += row('Bunga efektif (setara)', '', function (b) { return ucPct(b.eff, 2); });
-    }
-    h += row('ANGSURAN per bulan', 'dt-angsuran', function (b) { return ucRp(b.angsuran); });
-    if (!ringkas) h += row('Total angsuran', '', function (b) { return ucRp(b.angsuran * b.tenor); });
-    h += row('Nominal pencairan', 'mb-tebal', function (b) { return ucRp(b.pencairan); });
-    if (!ringkas) h += row('% refund', '', function (b) { return ucPct(b.persenRefund, 0); });
-
-    h += row('Refund bersih', 'dt-komisi mb-tebal', function (b) { return ucRp(b.refundBersih); });
-    h += row('ALL IN (pencairan + refund bersih)', 'uc-tebal', function (b) { return ucRp(b.allIn); });
-    t.innerHTML = h + '</tbody>';
+    /* tabel dibalik: tiap baris = satu tenor, supaya muat 1 layar HP (tinggal screenshot) */
+    t.classList.add('kh-tabel');
+    var h = '<thead><tr><th>Tenor</th><th>Angsuran<small>/bulan</small></th><th>Pencairan</th><th>Refund<small>bersih</small></th><th>All In</th></tr></thead><tbody>';
+    baris.forEach(function (b) {
+      h += '<tr><td class="kh-tenor">' + b.tenor + '<small>bln</small></td>' +
+        '<td class="kh-angs">' + ucFmt(b.angsuran) + '</td>' +
+        '<td>' + ucFmt(b.pencairan) + '</td>' +
+        '<td class="kh-refund">' + ucFmt(b.refundBersih) + '</td>' +
+        '<td class="kh-allin">' + ucFmt(b.allIn) + '</td></tr>';
+    });
+    t.innerHTML = h + '</tbody><caption>Semua nilai dalam Rupiah</caption>';
   }
 }
 
