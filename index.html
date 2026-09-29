@@ -2736,6 +2736,53 @@ body.cmd .kh-tabel td.kh-angs { background: #2b2012; color: #fcd34d; }
 /* kartu tenor dobel dengan tabel -> disembunyikan supaya 1 layar cukup untuk screenshot */
 #ucTenorKartu, #mbKartuTenor { display: none !important; }
 .kh-tabel caption { padding-bottom: 4px; }
+
+/* ===== Lembar tabel angsuran v2 — kolom tetap, rapi di Android, siap screenshot ===== */
+table.uc-table.kh-tabel { width: 100% !important; min-width: 0 !important; table-layout: fixed !important; border-collapse: separate !important;
+  border-spacing: 0; font-size: clamp(9.5px, 2.75vw, 14px) !important; background: #fff; border-radius: 14px; overflow: hidden; }
+.kh-tabel col.c-t { width: 10%; } .kh-tabel col.c-a { width: 21%; } .kh-tabel col.c-p { width: 23%; }
+.kh-tabel col.c-r { width: 21%; } .kh-tabel col.c-i { width: 25%; }
+.kh-tabel th, .kh-tabel td { font-size: inherit !important; padding: .8em .32em !important; white-space: nowrap; overflow: hidden; text-overflow: clip; line-height: 1.2;
+  font-variant-numeric: tabular-nums; border: 0 !important; text-align: right !important; }
+.kh-tabel tr.kh-kop th { text-align: left !important; white-space: normal; padding: 1em 1em .9em !important;
+  background: linear-gradient(135deg, #0f2540 0%, #1b3a66 60%, #7a1f12 140%) !important; color: #fff !important; text-transform: none !important; letter-spacing: 0 !important; }
+.kh-kop-atas { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.kh-kop-judul { font-size: .78em; font-weight: 900; letter-spacing: .12em; color: #F0B429; }
+.kh-kop-tgl { font-size: .74em; font-weight: 600; opacity: .7; }
+.kh-kop-unit { font-size: 1.15em; font-weight: 900; margin-top: .35em; }
+.kh-kop-sub { font-size: .8em; font-weight: 600; opacity: .72; margin-top: .15em; }
+.kh-kop-angka { display: grid; grid-template-columns: 1fr 1fr; gap: .5em; margin-top: .7em; }
+.kh-kop-angka div { background: rgba(255,255,255,.1); border-radius: 9px; padding: .45em .7em; }
+.kh-kop-angka small { display: block; font-size: .7em; font-weight: 800; letter-spacing: .06em; opacity: .75; text-transform: uppercase; }
+.kh-kop-angka b { font-size: 1.05em; font-weight: 900; }
+.kh-tabel tr.kh-judul th { background: #f1f4f8 !important; color: #475569 !important; font-size: .74em !important; font-weight: 900 !important;
+  text-transform: uppercase; letter-spacing: .04em; padding: .95em .45em !important; }
+.kh-tabel tr.kh-judul th:first-child, .kh-tabel td.kh-tenor { text-align: center !important; }
+.kh-tabel tbody td { font-weight: 700; color: #1e293b; border-top: 1px solid #edf1f6 !important; }
+.kh-tabel tbody tr:nth-child(even) td { background: #fafbfd; }
+.kh-tabel td.kh-tenor { font-weight: 900; color: #0f2540; background: #f6f8fb !important; }
+.kh-tabel td.kh-angs { color: #14532d; font-weight: 900; background: #eaf7ef !important; }
+.kh-tabel td.kh-refund { color: #1d4ed8; }
+.kh-tabel td.kh-allin { color: #0f2540; font-weight: 900; }
+.kh-tabel td.kh-na { text-align: center !important; color: #94a3b8; font-weight: 600; font-style: italic; }
+.kh-tabel tr.kh-grup td { text-align: left !important; background: #0f2540 !important; color: #fff !important; font-size: .8em; font-weight: 900;
+  letter-spacing: .06em; text-transform: uppercase; padding: .7em 1em !important; }
+.kh-tabel tfoot td { text-align: center !important; white-space: normal; font-size: .68em; font-weight: 600; color: #94a3b8; background: #f6f8fb; padding: .8em !important; }
+.kh-tabel tr.kh-judul th small { display: none; }
+.kh-kop-angka small { display: block !important; font-size: .68em !important; }
+.kh-tabel td.kh-tenor { text-align: center !important; }
+.kh-tabel tr.kh-judul th { font-size: .72em !important; }
+.kh-tabel tr.kh-grup td { font-size: .8em !important; }
+.kh-tabel tfoot td { font-size: .68em !important; }
+#mbKartu3 .uc-tc, #ucKartuTenor .uc-tc { overflow: visible !important; border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 4px 14px rgba(15,37,64,.06); }
+body.dark table.uc-table.kh-tabel { background: #0f1a2e; }
+body.dark .kh-tabel tr.kh-judul th, body.dark .kh-tabel td.kh-tenor, body.dark .kh-tabel tfoot td { background: #131f36 !important; color: #cbd5e1 !important; }
+body.dark .kh-tabel tbody td { color: #e2e8f0; border-top-color: #22324d !important; }
+body.dark .kh-tabel tbody tr:nth-child(even) td { background: #0c1627; }
+body.dark .kh-tabel td.kh-angs { background: #10301f !important; color: #86efac; }
+body.dark .kh-tabel td.kh-refund { color: #93c5fd; }
+body.dark .kh-tabel td.kh-allin { color: #fff; }
+body.dark #mbKartu3 .uc-tc, body.dark #ucKartuTenor .uc-tc { border-color: #22324d; }
 </style>
 
 </head>
@@ -14672,24 +14719,48 @@ function ucRenderTabelTenor(inp, umur) {
       '<div class="dt-ket">ADDB per bulan<br>ADDM <b>' + (d.addm ? ucRp(d.addm.angsuran) : '&mdash;') + '</b></div></div>';
   }).join('');
 
-  /* tabel dibalik: tiap baris = satu tenor, supaya muat 1 layar HP (tinggal screenshot) */
   var tb = document.getElementById('ucTabelTenor');
   tb.classList.add('kh-tabel');
-  var h = '<thead><tr><th>Tenor</th><th>Angsuran<small>/bulan</small></th><th>Pencairan</th><th>Refund<small>bersih</small></th><th>All In</th></tr></thead><tbody>';
-  var sel = function (a, f, kelas) { return '<td class="' + (kelas || '') + '">' + (a ? ucFmt(f(a)) : '<span class="kh-na">&ndash;</span>') + '</td>'; };
-  [['addb', 'ADDB &mdash; angsuran di belakang'], ['addm', 'ADDM &mdash; angsuran di muka']].forEach(function (m) {
-    h += '<tr class="uc-grup"><td colspan="5"><b>' + m[1] + '</b></td></tr>';
-    data.forEach(function (d) {
-      var a = d[m[0]];
-      h += '<tr><td class="kh-tenor">' + d.bulan + '<small>bln</small></td>' +
-        (a ? sel(a, function (x) { return x.angsuran; }, 'kh-angs') + sel(a, function (x) { return x.pencairan; }) +
-             sel(a, function (x) { return x.refundBersih; }, 'kh-refund') + sel(a, function (x) { return x.allIn; }, 'kh-allin')
-           : '<td colspan="4" class="kh-na">tidak tersedia</td>') + '</tr>';
-    });
-  });
-  tb.innerHTML = h + '</tbody><caption>Semua nilai dalam Rupiah</caption>';
+  var rU = ucBarisTerpilih(), thnU = +document.getElementById('ucTahun').value;
+  var ubah = function (kode) { return data.map(function (d) {
+    var a = d[kode];
+    return { tenor: d.bulan, a: a ? { angsuran: a.angsuran, pencairan: a.pencairan, refund: a.refundBersih, allIn: a.allIn } : null };
+  }); };
+  tb.innerHTML = khTabelHtml({
+    judul: 'SIMULASI USED CAR', unit: (rU ? rU.brand + ' ' + rU.tipe : '') + ' \u00b7 ' + thnU,
+    sub: rU ? (rU.jenis + (rU.kategori ? ' \u00b7 ' + rU.kategori : '')) : '', otr: inp.otr, dp: inp.dp,
+    nama: ucTeksInput('ucNama'), nopol: ucTeksInput('ucNopol')
+  }, [{ judul: 'ADDB &mdash; angsuran di belakang', baris: ubah('addb') },
+      { judul: 'ADDM &mdash; angsuran di muka', baris: ubah('addm') }]);
   kartu.style.display = '';
   return true;
+}
+
+/* ===== Lembar tabel angsuran siap screenshot (dipakai Motor Bekas & Used Car) =====
+   info: {judul, unit, sub, otr, dp, nama, nopol}; bagian: [{judul|null, baris:[{tenor, a:{angsuran,pencairan,refund,allIn}|null}]}] */
+function khTabelHtml(info, bagian) {
+  var tgl = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+  var konsumen = [info.nama, info.nopol].filter(Boolean).join(' \u00b7 ');
+  var h = '<colgroup><col class="c-t"><col class="c-a"><col class="c-p"><col class="c-r"><col class="c-i"></colgroup>';
+  h += '<thead><tr class="kh-kop"><th colspan="5">' +
+    '<div class="kh-kop-atas"><span class="kh-kop-judul">' + info.judul + '</span><span class="kh-kop-tgl">' + tgl + '</span></div>' +
+    '<div class="kh-kop-unit">' + info.unit + '</div>' +
+    (info.sub ? '<div class="kh-kop-sub">' + info.sub + '</div>' : '') +
+    '<div class="kh-kop-angka"><div><small>OTR / MRP</small><b>' + ucRp(info.otr) + '</b></div>' +
+    '<div><small>DP ' + ucPct(info.dp / info.otr, 1) + '</small><b>' + ucRp(info.dp) + '</b></div></div>' +
+    (konsumen ? '<div class="kh-kop-sub">Konsumen: ' + konsumen + '</div>' : '') +
+    '</th></tr>' +
+    '<tr class="kh-judul"><th>Tenor</th><th>Angsuran</th><th>Pencairan</th><th>Refund</th><th>All&nbsp;In</th></tr></thead><tbody>';
+  bagian.forEach(function (bg) {
+    if (bg.judul) h += '<tr class="kh-grup"><td colspan="5">' + bg.judul + '</td></tr>';
+    bg.baris.forEach(function (r) {
+      h += '<tr><td class="kh-tenor">' + r.tenor + 'x</td>' +
+        (r.a ? '<td class="kh-angs">' + ucFmt(r.a.angsuran) + '</td><td>' + ucFmt(r.a.pencairan) + '</td>' +
+               '<td class="kh-refund">' + ucFmt(r.a.refund) + '</td><td class="kh-allin">' + ucFmt(r.a.allIn) + '</td>'
+             : '<td colspan="4" class="kh-na">tidak tersedia</td>') + '</tr>';
+    });
+  });
+  return h + '</tbody><tfoot><tr><td colspan="5">Nilai dalam Rupiah &middot; angsuran per bulan &middot; refund = refund bersih &middot; Capella Multidana</td></tr></tfoot>';
 }
 var ucTenorData = null;
 function ucUnduhPdfTenor() {
@@ -16954,17 +17025,14 @@ function mbHitung() {
 
   var t = mbEl('mbTabel');
   if (t) {
-    /* tabel dibalik: tiap baris = satu tenor, supaya muat 1 layar HP (tinggal screenshot) */
     t.classList.add('kh-tabel');
-    var h = '<thead><tr><th>Tenor</th><th>Angsuran<small>/bulan</small></th><th>Pencairan</th><th>Refund<small>bersih</small></th><th>All In</th></tr></thead><tbody>';
-    baris.forEach(function (b) {
-      h += '<tr><td class="kh-tenor">' + b.tenor + '<small>bln</small></td>' +
-        '<td class="kh-angs">' + ucFmt(b.angsuran) + '</td>' +
-        '<td>' + ucFmt(b.pencairan) + '</td>' +
-        '<td class="kh-refund">' + ucFmt(b.refundBersih) + '</td>' +
-        '<td class="kh-allin">' + ucFmt(b.allIn) + '</td></tr>';
-    });
-    t.innerHTML = h + '</tbody><caption>Semua nilai dalam Rupiah</caption>';
+    t.innerHTML = khTabelHtml({
+      judul: 'SIMULASI MOTOR BEKAS', unit: r.brand + ' ' + r.tipe + ' \u00b7 ' + thn,
+      sub: (r.jenis || '') + (r.kategori ? ' \u00b7 ' + r.kategori : ''), otr: otr, dp: dp,
+      nama: ucTeksInput('mbNama'), nopol: ucTeksInput('mbNopol')
+    }, [{ judul: null, baris: baris.map(function (b) {
+      return { tenor: b.tenor, a: { angsuran: b.angsuran, pencairan: b.pencairan, refund: b.refundBersih, allIn: b.allIn } };
+    }) }]);
   }
 }
 
