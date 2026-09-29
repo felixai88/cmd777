@@ -108,6 +108,14 @@
 @keyframes csTeks { to { background-position: -200% 0; } }
 @keyframes csGeser { 0% { transform: translateX(-110%); } 100% { transform: translateX(280%); } }
 @media (prefers-reduced-motion: reduce) { #cmdSplash * { animation-duration: 3s !important; } }
+
+/* ===== Tampilan bersih: keterangan / petunjuk statis disembunyikan.
+   Peringatan (merah/kuning), angka hitungan, status & tombol tetap tampil. ===== */
+.tab-content span.hint:not([id]), .tab-content .uc-hint:not([id]), .rk-hint,
+#ucKetKunci, #dtKetKunci, #mbKetKunci, #ucHintOtr, #mbHintOtr,
+#ucKetAr, #dtKetAr, #ucHintAdm, #mbHintAdm, #dtHintAdm,
+.tab-content .uc-sub, .ku-sub, .uc-catat { display: none !important; }
+.tab-content .hint:empty, .tab-content .uc-hint:empty { display: none !important; }
 </style>
 
 <!-- LIBRARY EXPORT EXCEL -->
@@ -3202,7 +3210,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <div class="actions">
           <button id="excelBtn" class="btn-excel">Download Excel</button>
           <button id="pdfBtn" class="btn-pdf">Download PDF</button>
-          <span class="hint" id="exportHint">Tanpa checklist = mengunduh semua data hasil filter.</span>
+          <span class="hint" id="exportHint"></span>
         </div>
       </div>
 
@@ -4760,7 +4768,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
               <button onclick="ucGeserDp(-1000000)">&minus;1 jt</button>
               <button onclick="ucGeserDp(1000000)">+1 jt</button>
             </div>
-            <div class="uc-hint" id="ucHintDp">Boleh diketik manual, tapi tidak boleh di bawah 15% dari OTR. Kalau kurang, otomatis dinaikkan ke 15% begitu kolom ditinggalkan.</div>
+            <div class="uc-hint" id="ucHintDp"></div>
           </div>
           <div class="field"><label>Tenor (tahun)</label><select id="ucTenor" onchange="ucHitung()"><option value="1">1 tahun (12x)</option><option value="2">2 tahun (24x)</option><option value="3">3 tahun (36x)</option><option value="4">4 tahun (48x)</option><option value="5" selected>5 tahun (60x)</option></select></div>
           <div class="field">
@@ -4876,7 +4884,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
           <div class="table-container uc-tc"><table class="uc-table" id="ucTabelHasil"></table></div>
           <div class="actions">
             <button class="btn-pdf" onclick="ucUnduhPdf('semua')">Unduh PDF</button>
-            <span class="hint" id="ucHint">Satu lembar A4, berisi ADDM dan ADDB sekaligus.</span>
+            <span class="hint" id="ucHint"></span>
           </div>
         </div>
 
@@ -4887,7 +4895,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
           <div class="table-container uc-tc"><table class="uc-table" id="ucTabelAddm"></table></div>
           <div class="actions">
             <button class="btn-pdf" onclick="ucUnduhPdf('addm')">Unduh PDF ADDM</button>
-            <span class="hint" id="ucHintAddm">Satu lembar A4, hanya skema ADDM.</span>
+            <span class="hint" id="ucHintAddm"></span>
           </div>
         </div>
 
@@ -4898,7 +4906,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
           <div class="table-container uc-tc"><table class="uc-table" id="ucTabelAddb"></table></div>
           <div class="actions">
             <button class="btn-pdf" onclick="ucUnduhPdf('addb')">Unduh PDF ADDB</button>
-            <span class="hint" id="ucHintAddb">Satu lembar A4, hanya skema ADDB.</span>
+            <span class="hint" id="ucHintAddb"></span>
           </div>
         </div>
       </div>
@@ -4909,7 +4917,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <div class="uc-dp" id="ucKetentuanDp"></div>
         <div class="actions" style="margin-top:16px;">
           <button class="btn-pdf" onclick="ucUnduhPdf('semua')">Unduh PDF Lengkap</button>
-          <span class="hint" id="ucHintLengkap">Satu lembar A4 siap cetak: data unit, rincian hutang, dan skema yang dipilih.</span>
+          <span class="hint" id="ucHintLengkap"></span>
         </div>
         <div class="uc-catat" style="margin-top:16px;" id="ucCatatan"></div>
       </div>
@@ -6169,7 +6177,7 @@ function updateSelected() {
   const hint = document.getElementById("exportHint");
   if (hint) {
     hint.innerText = selectedData.size === 0
-      ? "Tanpa checklist = mengunduh semua data hasil filter."
+      ? ""
       : "Akan mengunduh " + selectedData.size.toLocaleString("id-ID") + " unit yang dicentang.";
   }
 }
@@ -14256,6 +14264,7 @@ function ucNominalDpMinimum() { return Math.ceil(ucAngka('ucOtr') * UC_DP_MIN_PE
 function ucHintDpTulis(teks, bahaya) {
   var el = document.getElementById('ucHintDp');
   if (!el) return;
+  if (!bahaya) teks = '';   /* keterangan biasa tidak ditampilkan, hanya peringatan */
   el.innerHTML = teks;
   el.style.color = bahaya ? '#e0574f' : '';
   el.style.fontWeight = bahaya ? '600' : '';
@@ -18063,7 +18072,7 @@ function rkFile(k, f) {
     if (info) {
       info.textContent = pilih.length
         ? pilih.length + " unit dicentang. Berkasnya akan diunduh jadi satu PDF, lalu ditandai sedang pengajuan."
-        : "Belum ada unit dicentang. Hanya unit yang berkasnya sudah digabung yang bisa dipilih.";
+        : "Belum ada unit dicentang.";
     }
     var semua = keEl("keCekSemua");
     if (semua) {
