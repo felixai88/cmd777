@@ -2783,6 +2783,21 @@ body.dark .kh-tabel td.kh-angs { background: #10301f !important; color: #86efac;
 body.dark .kh-tabel td.kh-refund { color: #93c5fd; }
 body.dark .kh-tabel td.kh-allin { color: #fff; }
 body.dark #mbKartu3 .uc-tc, body.dark #ucKartuTenor .uc-tc { border-color: #22324d; }
+
+/* Dana Tunai: disamakan dengan Used Car & Motor Bekas */
+#dtFieldAr, #dtKartuTenor, #tabDanaTunai .dt-tenor-grid { display: none !important; }
+#dtKartu3 .uc-tc { overflow: visible !important; border: 1px solid #e2e8f0; border-radius: 14px; box-shadow: 0 4px 14px rgba(15,37,64,.06); }
+body.dark #dtKartu3 .uc-tc { border-color: #22324d; }
+#tabDanaTunai .sim-rp-box { display: flex; align-items: stretch; border: 1.5px solid #cfd6e0; border-radius: 10px; overflow: hidden; background: #fff; }
+#tabDanaTunai .sim-rp-box:focus-within { border-color: #DA0000; box-shadow: 0 0 0 3px rgba(218,0,0,.10); }
+#tabDanaTunai .sim-rp-pfx, #tabDanaTunai .sim-rp-sfx { flex: none; display: flex; align-items: center; padding: 0 13px; background: #f1f4f8; color: #475569; font-weight: 800; font-size: 13px; }
+#tabDanaTunai .sim-rp-pfx { border-right: 1.5px solid #cfd6e0; } #tabDanaTunai .sim-rp-sfx { border-left: 1.5px solid #cfd6e0; }
+#tabDanaTunai .sim-rp-box input { border: none !important; border-radius: 0 !important; box-shadow: none !important; flex: 1 1 auto; min-width: 0; background: transparent !important; margin: 0 !important; font-weight: 700; height: 42px; }
+body.dark #tabDanaTunai .sim-rp-box { background: #131f36; border-color: #2a3b57; }
+body.dark #tabDanaTunai .sim-rp-pfx, body.dark #tabDanaTunai .sim-rp-sfx { background: #0f1a2e; color: #cbd5e1; border-color: #2a3b57; }
+body.cmd #tabDanaTunai .sim-rp-box { background: #1c1512; border-color: #4d2f23; }
+body.cmd #tabDanaTunai .sim-rp-pfx, body.cmd #tabDanaTunai .sim-rp-sfx { background: #140f0d; color: #f0d9c4; border-color: #4d2f23; }
+#dtHintPinjaman { display: block !important; }
 </style>
 
 </head>
@@ -5178,9 +5193,16 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
             <label>No. Polisi</label>
             <input type="text" id="dtNopol" placeholder="BK1904WAD" autocomplete="off" style="text-transform:uppercase;">
           </div>
-          <div class="field">
-            <label>Pinjaman (Rp)</label>
-            <input type="text" id="dtPinjaman" inputmode="numeric">
+          <div class="field uc-span2">
+            <label>Harga Kendaraan (MRP)</label>
+            <div class="sim-rp-box kh-harga"><span class="sim-rp-pfx">Rp</span><input type="text" id="dtOtrTampil" class="uc-terkunci" readonly tabindex="-1" placeholder="pilih unit dulu"></div>
+          </div>
+          <div class="field uc-span2">
+            <label>Pinjaman &mdash; isi persen dari MRP <i>atau</i> nominal</label>
+            <div class="kh-dp">
+              <div class="sim-rp-box kh-pct"><input type="text" id="dtPinjamanPersen" inputmode="decimal" placeholder="50" autocomplete="off"><span class="sim-rp-sfx">%</span></div>
+              <div class="sim-rp-box"><span class="sim-rp-pfx">Rp</span><input type="text" id="dtPinjaman" inputmode="numeric" autocomplete="off"></div>
+            </div>
             <div class="uc-cepat" id="dtCepat">
               <button type="button" onclick="dtGeserPinjaman(-5000000)">&minus;5 jt</button>
               <button type="button" onclick="dtGeserPinjaman(5000000)">+5 jt</button>
@@ -5225,7 +5247,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <div class="table-container uc-tc"><table class="uc-table" id="dtTabel"></table></div>
         <div class="actions" style="margin-top:16px;">
           <button class="btn-pdf" onclick="dtUnduhPdf()">Unduh PDF</button>
-          <span class="hint" id="dtHint">.</span>
+          <span class="hint" id="dtHint"></span>
         </div>
         <div class="uc-catat" style="margin-top:16px;" id="dtCatatan"></div>
       </div>
@@ -14746,21 +14768,28 @@ function khTabelHtml(info, bagian) {
     '<div class="kh-kop-atas"><span class="kh-kop-judul">' + info.judul + '</span><span class="kh-kop-tgl">' + tgl + '</span></div>' +
     '<div class="kh-kop-unit">' + info.unit + '</div>' +
     (info.sub ? '<div class="kh-kop-sub">' + info.sub + '</div>' : '') +
-    '<div class="kh-kop-angka"><div><small>OTR / MRP</small><b>' + ucRp(info.otr) + '</b></div>' +
-    '<div><small>DP ' + ucPct(info.dp / info.otr, 1) + '</small><b>' + ucRp(info.dp) + '</b></div></div>' +
+    '<div class="kh-kop-angka"><div><small>' + (info.otrLabel || 'OTR / MRP') + '</small><b>' + ucRp(info.otr) + '</b></div>' +
+    '<div><small>' + (info.dpLabel || 'DP') + ' ' + (info.otr ? ucPct(info.dp / info.otr, 1) : '') + '</small><b>' + ucRp(info.dp) + '</b></div></div>' +
     (konsumen ? '<div class="kh-kop-sub">Konsumen: ' + konsumen + '</div>' : '') +
     '</th></tr>' +
-    '<tr class="kh-judul"><th>Tenor</th><th>Angsuran</th><th>Pencairan</th><th>Refund</th><th>All&nbsp;In</th></tr></thead><tbody>';
+    '<tr class="kh-judul"><th>Tenor</th>' + (info.kolom || ['Angsuran', 'Pencairan', 'Refund', 'All&nbsp;In']).map(function (k) { return '<th>' + k + '</th>'; }).join('') + '</tr></thead><tbody>';
   bagian.forEach(function (bg) {
     if (bg.judul) h += '<tr class="kh-grup"><td colspan="5">' + bg.judul + '</td></tr>';
     bg.baris.forEach(function (r) {
+      if (r.v !== undefined) {
+        var kls = ['kh-angs', '', 'kh-refund', 'kh-allin'];
+        h += '<tr><td class="kh-tenor">' + r.tenor + 'x</td>' + (r.v
+          ? r.v.map(function (n, q) { return '<td class="' + kls[q] + '">' + ucFmt(n) + '</td>'; }).join('')
+          : '<td colspan="4" class="kh-na">tidak tersedia</td>') + '</tr>';
+        return;
+      }
       h += '<tr><td class="kh-tenor">' + r.tenor + 'x</td>' +
         (r.a ? '<td class="kh-angs">' + ucFmt(r.a.angsuran) + '</td><td>' + ucFmt(r.a.pencairan) + '</td>' +
                '<td class="kh-refund">' + ucFmt(r.a.refund) + '</td><td class="kh-allin">' + ucFmt(r.a.allIn) + '</td>'
              : '<td colspan="4" class="kh-na">tidak tersedia</td>') + '</tr>';
     });
   });
-  return h + '</tbody><tfoot><tr><td colspan="5">Nilai dalam Rupiah &middot; angsuran per bulan &middot; refund = refund bersih &middot; Capella Multidana</td></tr></tfoot>';
+  return h + '</tbody><tfoot><tr><td colspan="5">' + (info.kaki || 'Nilai dalam Rupiah &middot; angsuran per bulan &middot; refund = refund bersih &middot; Capella Multidana') + '</td></tr></tfoot>';
 }
 var ucTenorData = null;
 function ucUnduhPdfTenor() {
@@ -16296,8 +16325,21 @@ function dtLabelBatas() {
   if (!l || !l.boleh || !l.p) return 'MRP unit';
   return 'LTV ' + ucPct(l.p, 0) + (dtRo() ? ' (' + ucPct(l.dasar, 0) + ' + 5% RO)' : '') + ' \u00b7 ' + l.ket;
 }
+function dtSinkronPersen() {
+  var el = dtEl('dtPinjamanPersen');
+  if (!el || document.activeElement === el) return;
+  var mrp = dtMrpUnit(), n = ucAngka('dtPinjaman');
+  el.value = mrp && n ? khTeksPersen(n / mrp * 100) : '';
+}
+function dtPersenDiketik() {
+  var mrp = dtMrpUnit(), p = Math.max(0, Math.min(ucAngka('dtPinjamanPersen'), 100));
+  if (!mrp) return;
+  dtEl('dtPinjaman').value = p ? ucFmt(dtBulatkanKeGrid(mrp * p / 100, true)) : '';
+  dtTandaiPerluHitung();
+}
 function dtSetNilaiPinjaman(n) {
   dtEl('dtPinjaman').value = ucFmt(n);
+  setTimeout(dtSinkronPersen, 0);
   dtTandaiPerluHitung();
   dtHitung();
 }
@@ -16331,7 +16373,7 @@ function dtHitungUlang() {
   if (!k) return;
   if (!dtHasil) { k.className = 'uc-hitung-ket'; k.innerText = 'Lengkapi dulu unit dan nilai pinjamannya.'; return; }
   k.className = 'uc-hitung-ket pasti';
-  k.innerText = 'Sudah dihitung ulang untuk pinjaman ' + ucRp(dtInfo.pinjaman) + ' \u2014 ' + dtInfo.labelJenis + '.';
+  k.innerText = 'Sudah dihitung dengan angka terbaru.';
 }
 /* pinjaman dibulatkan ke kelipatan tabel.
    Kalau yang diketik memang melewati plafon, nilainya TIDAK dipotong diam-diam:
@@ -16373,12 +16415,11 @@ function dtHitung() {
   var mrp = dtMrpUnit();
 
   if (chips) {
-    chips.innerHTML = r ? ucChip('Brand / Tipe', r.brand + ' ' + r.tipe, '') +
-      ucChip(motor ? 'Jenis' : 'Object Type', (motor ? r.jenis : r.objek) || '-', '') +
-      ucChip('Kategori', r.kategori || '-', /FAST/i.test(r.kategori) ? 'fast' : 'slow') +
-      ucChip('MRP ' + (tahun || '-'), mrp ? ucRp(mrp) : '-', 'otr') +
+    chips.innerHTML = r ? ucChip('Kategori', r.kategori || '-', /FAST/i.test(r.kategori) ? 'fast' : 'slow') +
       ucChip('Usia unit', tahun ? (new Date().getFullYear() - tahun) + ' tahun' : '-', '') : '';
   }
+  var otrEl = dtEl('dtOtrTampil'); if (otrEl) otrEl.value = mrp ? ucFmt(mrp) : '';
+  dtSinkronPersen();
 
   if (!r || !tahun) { dtKosongkanHasil('hati', RK_WAJIB ? 'Scan STNK atau isi nomor rangka dulu untuk mulai menghitung.' : 'Pilih unit dan tahun unit dulu untuk mulai menghitung.'); return; }
 
@@ -16443,19 +16484,12 @@ function dtHitung() {
   };
   dtHasil = baris;
 
-  var sisaPersen = mrp ? (pinjaman / mrp) : 0;
-  dtPeringatan('info', '<span>' + dtLabelJenis() + ' \u00b7 pinjaman <b>' + ucRp(pinjaman) + '</b>' +
-    (sisaPersen ? ' (' + ucPct(sisaPersen, 1) + ' dari MRP)' : '') +
-    (batas ? ' \u00b7 plafon <b>' + ucRp(batas) + '</b> (' + dtLabelBatas() + ')' : '') +
-    ' \u00b7 adm + polis <b>' + ucRp(adm) + '</b>.' +
-    (tenorMaks ? '<br><small>Unit usia ' + (new Date().getFullYear() - tahun) + ' tahun: tenor maksimal <b>' + tenorMaks + ' bulan</b>.</small>' : '') + (ltv && ltv.catatan ? '<br><small>' + ltv.catatan + '</small>' : '') + '</span>');
-
+  var pw = dtEl('dtPeringatan'); if (pw) pw.innerHTML = '';   /* ringkasan sudah ada di kop tabel */
   dtRenderKartu(baris);
   dtRenderTabel(baris);
   var c = dtEl('dtCatatan'); if (c) c.innerHTML = dtTeksCatatan();
   var hp = dtEl('dtHintPinjaman');
-  if (hp) hp.innerText = 'Kelipatan ' + ucRp(dtStepGrid()) + ' \u00b7 batas tabel ' + ucRp(dtMinGrid()) + ' \u2013 ' + ucRp(dtMaxGrid()) +
-    (batas ? ' \u00b7 plafon ' + ucRp(batas) + ' (' + dtLabelBatas() + ')' : '');
+  if (hp) hp.innerText = batas ? 'Plafon maksimal ' + ucRp(batas) + ' (' + dtLabelBatas() + ')' : '';
 }
 
 function dtRenderKartu(baris) {
@@ -16475,26 +16509,21 @@ function dtRenderKartu(baris) {
 
 function dtRenderTabel(baris) {
   var t = dtEl('dtTabel');
-  if (!t) return;
-  var h = '<thead><tr><th>Keterangan</th>' + baris.map(function (b) { return '<th style="text-align:right;">' + b.tenor + ' bulan</th>'; }).join('') + '</tr></thead><tbody>';
-  function row(label, kelas, ambil) {
-    return '<tr class="' + (kelas || '') + '"><td class="uc-lbl">' + label + '</td>' +
-      baris.map(function (b) { return '<td class="uc-num">' + (b.tersedia === false ? '&ndash;' : ambil(b)) + '</td>'; }).join('') + '</tr>';
-  }
-  /* CMO: pinjaman, adm + polis, pokok hutang, angsuran, komisi agen. HO & Cabang: lengkap. */
-  var ringkas = modeRingkas();
-  h += row('Pinjaman', '', function () { return ucRp(dtInfo.pinjaman); });
-  if (!ringkas) {
-    h += row((dtPu() || dtMotor()) ? 'Rate bunga flat (per tahun)' : 'Rate jual', '', function (b) { return ucPct(b.rate, 2); });
-    h += row('Premi asuransi', '', function (b) { return ucRp(b.premi); });
-  }
-  h += row('Adm + polis', '', function (b) { return ucRp(b.adm); });
-  h += row('Pokok hutang', 'uc-tebal', function (b) { return ucRp(b.pokok); });
-  h += row('ANGSURAN per bulan', 'dt-angsuran', function (b) { return ucRp(b.angsuran); });
-  if (!ringkas) h += row('Total angsuran', '', function (b) { return ucRp(b.angsuran * b.tenor); });
-  h += row(dtPu() ? 'Inc / komisi agen' : 'Komisi agen', 'dt-komisi', function (b) { return ucRp(b.komisi || 0); });
-  if (!ringkas && dtPu()) h += row('Total inc dikeluarkan', '', function (b) { return ucRp((b.komisi || 0) + b.insentif.total); });
-  t.innerHTML = h + '</tbody>';
+  if (!t || !dtInfo) return;
+  var r = dtInfo.baris;
+  t.classList.add('kh-tabel');
+  t.innerHTML = khTabelHtml({
+    judul: 'SIMULASI DANA TUNAI',
+    unit: (r ? r.brand + ' ' + r.tipe : '') + ' \u00b7 ' + dtInfo.tahun,
+    sub: dtLabelJenis(),
+    otr: dtInfo.mrp, otrLabel: 'Harga / MRP',
+    dp: dtInfo.pinjaman, dpLabel: 'Pinjaman',
+    nama: ucTeksInput('dtNama'), nopol: ucTeksInput('dtNopol'),
+    kolom: ['Angsuran', 'Pokok&nbsp;Hutang', dtPu() ? 'Inc&nbsp;/&nbsp;Komisi' : 'Komisi&nbsp;Agen', 'Total&nbsp;Angs.'],
+    kaki: 'Nilai dalam Rupiah &middot; angsuran per bulan &middot; asuransi TLO &middot; Capella Multidana'
+  }, [{ judul: null, baris: baris.map(function (b) {
+    return { tenor: b.tenor, v: b.tersedia === false ? null : [b.angsuran, b.pokok, b.komisi || 0, b.angsuran * b.tenor] };
+  }) }]);
 }
 
 /* angsuran akhir: motor RO pakai tabel RO kalau ada */
@@ -16641,7 +16670,7 @@ function dtUnduhPdf() {
     ['dtPinjaman'].forEach(function (id) {
       var el = dtEl(id);
       if (!el) return;
-      el.addEventListener('input', function () { ucFormatKetik(el); dtTandaiPerluHitung(); });
+      el.addEventListener('input', function () { ucFormatKetik(el); dtTandaiPerluHitung(); dtSinkronPersen(); });
       el.addEventListener('compositionstart', function () { ucSedangMenyusun = true; });
       el.addEventListener('compositionend', function () { ucSedangMenyusun = false; ucFormatKetik(el); });
       el.addEventListener('keydown', function (ev) {
@@ -16649,6 +16678,12 @@ function dtUnduhPdf() {
       });
       el.addEventListener('blur', function () { el.value = ucFmt(ucAngka(id)); });
     });
+    var ep = dtEl('dtPinjamanPersen');
+    if (ep) {
+      ep.addEventListener('input', function () { ep.value = ep.value.replace(/[^0-9.,]/g, ''); dtPersenDiketik(); });
+      ep.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.keyCode === 13) { ev.preventDefault(); ep.blur(); dtHitungUlang(); } });
+      ep.addEventListener('blur', function () { dtHitung(); dtSinkronPersen(); });
+    }
     dtSesuaikanTampilan();
   }
   window.dtMulai = function () {
