@@ -2798,6 +2798,18 @@ body.dark #tabDanaTunai .sim-rp-pfx, body.dark #tabDanaTunai .sim-rp-sfx { backg
 body.cmd #tabDanaTunai .sim-rp-box { background: #1c1512; border-color: #4d2f23; }
 body.cmd #tabDanaTunai .sim-rp-pfx, body.cmd #tabDanaTunai .sim-rp-sfx { background: #140f0d; color: #f0d9c4; border-color: #4d2f23; }
 #dtHintPinjaman { display: block !important; }
+
+/* ===== Form BAST Gudang ===== */
+.bg-kartu { padding-bottom: 14px !important; }
+.bg-kepala { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+.bg-kepala h2 { margin: 0 0 2px 0; } .bg-kepala p { margin: 0; font-size: 12px; color: #7b8899; }
+.bg-buka { display: inline-flex; align-items: center; gap: 6px; padding: 9px 14px; border-radius: 9px; background: #0f2540; color: #fff !important;
+  font-size: 12.5px; font-weight: 800; text-decoration: none; }
+.bg-bingkai { border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; background: #fff; }
+.bg-bingkai iframe { display: block; width: 100%; height: calc(100vh - 210px); min-height: 560px; border: 0; }
+body.dark .bg-bingkai { border-color: #22324d; }
+.ku-role.GUDANG { background: #eff6ff; color: #1d4ed8; }
+@media (max-width: 640px) { .bg-bingkai iframe { height: calc(100vh - 170px); min-height: 480px; } }
 </style>
 
 </head>
@@ -3017,6 +3029,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <button class="tab-btn" data-tab="tabListHarga" id="btnTab2" onclick="switchTab('tabListHarga')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4L12 22l-9-9V3h10l7.6 7.6a2 2 0 010 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg><span>List Harga</span></button>
         <button class="tab-btn" data-tab="tabHargaAyda" id="btnTabHargaAyda" onclick="switchTab('tabHargaAyda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h3"/></svg><span>Harga AYDA</span></button>
         <button class="tab-btn" data-tab="tabKelengkapan" id="btnTabKelengkapan" onclick="switchTab('tabKelengkapan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg><span>Kelengkapan Estimasi</span></button>
+        <button class="tab-btn" data-tab="tabBastGudang" id="btnTabBast" onclick="switchTab('tabBastGudang')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-6 9 6v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 21v-7h6v7"/></svg><span>Form BAST Gudang</span></button>
         <button class="tab-btn" data-tab="tabGrafik" id="btnTab3" onclick="switchTab('tabGrafik')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg><span>Grafik &amp; Analisis</span></button>
         <button class="tab-btn" data-tab="tabTarikanJualan" id="btnTab4" onclick="switchTab('tabTarikanJualan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="6" height="12" rx="1"/><rect x="15" y="4" width="6" height="17" rx="1"/></svg><span>Tarikan vs Jualan</span></button>
         <button class="tab-btn" data-tab="tabLor" id="btnTabLor" onclick="switchTab('tabLor')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg><span>LOR</span></button>
@@ -3580,6 +3593,16 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     <!-- ==================== AKHIR TAB HARGA AYDA ==================== -->
 
     <!-- ==================== TAB 3: GRAFIK & ANALISIS ==================== -->
+    <div id="tabBastGudang" class="tab-content">
+      <div class="card bg-kartu">
+        <div class="bg-kepala">
+          <div><h2>Form BAST Gudang</h2><p>Berita acara serah terima unit ke gudang.</p></div>
+          <a class="bg-buka" href="https://script.google.com/macros/s/AKfycbyUC7-9bf0anv1AuUk1RcNTc-ojCYC4uzexY4gdJDSo-IP6xBpyszigPk0mxvbT4lWm/exec" target="_blank" rel="noopener">Buka di tab baru &#8599;</a>
+        </div>
+        <div class="bg-bingkai"><iframe id="bgFrame" data-src="https://script.google.com/macros/s/AKfycbyUC7-9bf0anv1AuUk1RcNTc-ojCYC4uzexY4gdJDSo-IP6xBpyszigPk0mxvbT4lWm/exec" title="Form BAST Gudang" allow="camera; clipboard-write; fullscreen" loading="lazy"></iframe></div>
+      </div>
+    </div>
+
     <div id="tabKelengkapan" class="tab-content">
 
       <style>
@@ -5565,6 +5588,14 @@ function masukAplikasi(u) {
   const tbUser = document.getElementById("btnTabUser");
   if (tbUser) tbUser.style.display = kuBolehBuatApa().length ? "" : "none";
 
+  /* GUDANG: hanya Form BAST Gudang & Kelengkapan Estimasi */
+  const modeGudang = currentLoginRole === "GUDANG";
+  if (modeGudang) {
+    document.body.classList.add("gudang");
+    document.querySelectorAll(".side-nav .tab-btn").forEach(el => {
+      el.style.display = (el.id === "btnTabBast" || el.id === "btnTabKelengkapan") ? "" : "none";
+    });
+  }
   /* CMO: hanya kalkulator used car, tampilan diringkas untuk HP */
   if (modeCmo) {
     document.body.classList.add("cmo");
@@ -5578,15 +5609,16 @@ function masukAplikasi(u) {
     document.getElementById("loginOverlay").style.display = "none";
     document.getElementById("appContent").style.display = "block";
     if (modeCmo) switchTab("tabSorumBekas");
+    else if (modeGudang) switchTab("tabBastGudang");
     else if (!bolehLihat) switchTab("tabDashboard");
     setTombolMasukSibuk(false);
-    if (!modeCmo) loadData();   /* kalkulator tidak butuh data tarikan, biar ringan di HP */
+    if (!modeCmo && !modeGudang) loadData();   /* kalkulator & gudang tidak butuh data tarikan, biar ringan di HP */
     else if (window.cmdSplash) setTimeout(function () { cmdSplash.sembunyi(); }, 700);
   }, 260);
 }
 
 /* ---------- Akun: chip user, keluar, ganti password ---------- */
-const LABEL_ROLE = { HO: "Head Office", AREA: "Area", CBG: "Cabang", CABANG: "Cabang", CMO: "CMO" };
+const LABEL_ROLE = { HO: "Head Office", AREA: "Area", CBG: "Cabang", CABANG: "Cabang", CMO: "CMO", GUDANG: "Gudang" };
 function tampilkanUser() {
   const u = currentUser; if (!u) return;
   const chip = document.getElementById("userChip");
@@ -5670,8 +5702,8 @@ function kuRun(nama, args, ok, gagal) {
    AREA   -> boleh membuat CABANG & CMO di cabang wilayahnya (kolom cabang akun AREA = nama wilayah)
    CABANG -> boleh membuat CMO di cabangnya sendiri
    Akses menu AREA sama dengan CABANG; CMO tetap kalkulator saja. */
-const KU_BOLEH_BUAT = { HO: ["AREA", "CABANG", "CMO"], AREA: ["CABANG", "CMO"], CABANG: ["CMO"], CMO: [] };
-const KU_LABEL_OPSI = { AREA: "AREA (wilayah)", CABANG: "CABANG", CMO: "CMO (kalkulator saja)" };
+const KU_BOLEH_BUAT = { HO: ["AREA", "CABANG", "CMO", "GUDANG"], AREA: ["CABANG", "CMO", "GUDANG"], CABANG: ["CMO", "GUDANG"], CMO: [], GUDANG: [] };
+const KU_LABEL_OPSI = { AREA: "AREA (wilayah)", CABANG: "CABANG", CMO: "CMO (kalkulator saja)", GUDANG: "GUDANG (BAST & kelengkapan)" };
 function kuKodeRole(r) { r = String(r || "").toUpperCase().trim(); return r === "CBG" ? "CABANG" : r; }
 function kuPeranSaya() { return kuKodeRole(currentUser && currentUser.role); }
 function kuBolehBuatApa() { return KU_BOLEH_BUAT[kuPeranSaya()] || []; }
@@ -5853,6 +5885,7 @@ const JUDUL_TAB = {
   tabDataTarikan:    ["Data Tarikan CMD", "Detail unit tarikan lengkap dengan status harga"],
   tabListHarga:      ["List Harga", "Daftar harga memo, tertinggi, terendah, dan peninjauan"],
   tabHargaAyda:      ["Harga AYDA", "Harga tertinggi, terendah, peninjauan, dan surat konfirmasi"],
+  tabBastGudang:     ["Form BAST Gudang", "Serah terima unit ke gudang"],
   tabKelengkapan:    ["Kelengkapan Estimasi", "Estimasi, SP 1, dan SP 2 digabung dengan BAST gudang"],
   tabGrafik:         ["Grafik & Analisis Mutasi", "Analisis cabang, mutasi, dan kategori R2/R4"],
   tabTarikanJualan:  ["Tarikan vs Jualan", "Perbandingan tarikan dan penjualan per periode"],
@@ -5891,6 +5924,10 @@ function switchTab(tabId) {
 
   if (tabId === "tabDashboard") {
     renderDashboard();
+  }
+  if (tabId === "tabBastGudang") {
+    const f = document.getElementById("bgFrame");
+    if (f && !f.getAttribute("src")) f.setAttribute("src", f.dataset.src);
   }
   if (tabId === "tabHargaAyda" && typeof haRender === "function") {
     haRender();
