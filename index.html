@@ -5936,6 +5936,8 @@ function lingkupInfo() {
   }
   return { role: "CABANG", cabang: cab ? [cab] : [], wilayah: [] };
 }
+/* nominal harga (tertinggi / terendah / memo / PDF harga) hanya untuk HO */
+function bolehLihatHarga() { return !lingkupInfo(); }
 function lingkupBoleh(kode) {
   const L = lingkupInfo();
   if (!L) return true;
@@ -11962,10 +11964,10 @@ function agRenderTabelUnit(data) {
   }
 
   const kepala = '<thead><tr><th>Cabang</th><th>No Kontrak</th><th>No Polisi</th><th>Type</th><th>Thn</th>' +
-    '<th>Tgl Tarik</th><th>Umur</th><th>Kelompok</th><th>OS</th><th>Harga Tertinggi</th><th>St. Harga</th><th>Mutasi</th></tr></thead>';
+    '<th>Tgl Tarik</th><th>Umur</th><th>Kelompok</th><th>OS</th>' + (bolehLihatHarga() ? '<th>Harga Tertinggi</th><th>St. Harga</th>' : '') + '<th>Mutasi</th></tr></thead>';
 
   if (!agUnitTampil.length) {
-    t.innerHTML = kepala + '<tbody><tr><td colspan="12">Tidak ada unit pada filter ini.</td></tr></tbody>';
+    t.innerHTML = kepala + '<tbody><tr><td colspan="10">Tidak ada unit pada filter ini.</td></tr></tbody>';
     return;
   }
 
@@ -11981,8 +11983,8 @@ function agRenderTabelUnit(data) {
       '<td><span class="ag-umur" style="background:' + d.bucket.warna + ';">' + d.umur + '</span></td>' +
       '<td style="color:' + d.bucket.warna + '; font-weight:bold;">' + d.bucket.risiko + '</td>' +
       '<td>' + dkSingkatRupiah(r.RAW_OS) + '</td>' +
-      '<td>' + (r.RAW_HARGA_TERTINGGI > 0 ? dkSingkatRupiah(r.RAW_HARGA_TERTINGGI) : '<span class="cb-nol">-</span>') + '</td>' +
-      '<td><span class="ag-pil ' + (d.adaHarga ? "ada" : "blm") + '">' + (d.adaHarga ? "ADA" : "BELUM") + '</span></td>' +
+      (bolehLihatHarga() ? '<td>' + (r.RAW_HARGA_TERTINGGI > 0 ? dkSingkatRupiah(r.RAW_HARGA_TERTINGGI) : '<span class="cb-nol">-</span>') + '</td>' +
+        '<td><span class="ag-pil ' + (d.adaHarga ? "ada" : "blm") + '">' + (d.adaHarga ? "ADA" : "BELUM") + '</span></td>' : '') +
       '<td style="text-align:left;">' + escapeHtml(r.MUTASI) + '</td>' +
     '</tr>';
   }).join("");
@@ -12052,19 +12054,20 @@ function agBukaRincian(judul, daftar) {
   document.getElementById("agRinciJml").innerText = urut.length.toLocaleString("id-ID") + " unit · OS " +
     dkSingkatRupiah(urut.reduce((t, d) => t + (d.row.RAW_OS || 0), 0));
   document.getElementById("agRinciTabel").innerHTML =
-    '<thead><tr><th>No Polisi</th><th>Cabang</th><th>Type</th><th>Umur</th><th>OS</th><th>Harga</th><th>Mutasi</th></tr></thead><tbody>' +
+    '<thead><tr><th>No Polisi</th><th>Cabang</th><th>Type</th><th>Umur</th><th>OS</th>' + (bolehLihatHarga() ? '<th>Harga</th>' : '') + '<th>Mutasi</th></tr></thead><tbody>' +
     (urut.length ? urut.map(d => {
       const r = d.row;
       return '<tr><td class="plat">' + escapeHtml(r.NO_POL || "-") + '</td><td>' + escapeHtml(r.CABANG) + '</td><td>' + escapeHtml(r.TYPE) + '</td>' +
         '<td><span class="ag-umur" style="background:' + d.bucket.warna + ';">' + d.umur + '</span></td>' +
         '<td>' + dkSingkatRupiah(r.RAW_OS) + '</td>' +
-        '<td>' + (d.adaHarga ? dkSingkatRupiah(r.RAW_HARGA_TERTINGGI) : '<span class="ag-pil blm">BELUM</span>') + '</td>' +
+        (bolehLihatHarga() ? '<td>' + (d.adaHarga ? dkSingkatRupiah(r.RAW_HARGA_TERTINGGI) : '<span class="ag-pil blm">BELUM</span>') + '</td>' : '') +
         '<td>' + escapeHtml(r.MUTASI || "") + '</td></tr>';
-    }).join("") : '<tr><td colspan="7">Tidak ada unit.</td></tr>') + '</tbody>';
+    }).join("") : '<tr><td colspan="6">Tidak ada unit.</td></tr>') + '</tbody>';
   document.getElementById("agRinciExcel").onclick = function () {
     if (typeof XLSX === "undefined") return;
-    const aoa = [["No Polisi", "No Kontrak", "Cabang", "Type", "Tahun", "Tgl Tarik", "Umur (hari)", "OS", "Harga Tertinggi", "Mutasi"]];
-    urut.forEach(d => { const r = d.row; aoa.push([r.NO_POL, r.NO_KONTRAK, r.CABANG, r.TYPE, r.TAHUN_UNIT, r.TANGGAL_TARIK, d.umur, r.RAW_OS, r.RAW_HARGA_TERTINGGI || 0, r.MUTASI]); });
+    const H = bolehLihatHarga();
+    const aoa = [["No Polisi", "No Kontrak", "Cabang", "Type", "Tahun", "Tgl Tarik", "Umur (hari)", "OS"].concat(H ? ["Harga Tertinggi"] : []).concat(["Mutasi"])];
+    urut.forEach(d => { const r = d.row; aoa.push([r.NO_POL, r.NO_KONTRAK, r.CABANG, r.TYPE, r.TAHUN_UNIT, r.TANGGAL_TARIK, d.umur, r.RAW_OS].concat(H ? [r.RAW_HARGA_TERTINGGI || 0] : []).concat([r.MUTASI])); });
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), "RINCIAN");
     XLSX.writeFile(wb, "Rincian_Aging_" + String(judul).replace(/<[^>]+>|&[a-z]+;/g, " ").replace(/[^A-Za-z0-9]+/g, "_").slice(0, 40) + ".xlsx");
@@ -12203,12 +12206,12 @@ if (agExcelEl) {
     semua.sort((a, b) => b.umur - a.umur);
 
     const s3 = [["NO", "CABANG", "NO KONTRAK", "NO POLISI", "TYPE", "TAHUN", "TGL TARIK",
-                 "UMUR (HARI)", "KELOMPOK", "RISIKO", "OS", "HARGA TERTINGGI", "ST. HARGA", "MUTASI", "KATEGORI"]];
+                 "UMUR (HARI)", "KELOMPOK", "RISIKO", "OS"].concat(bolehLihatHarga() ? ["HARGA TERTINGGI", "ST. HARGA"] : []).concat(["MUTASI", "KATEGORI"])];
     semua.forEach((d, i) => {
       const r = d.row;
       s3.push([i + 1, r.CABANG, r.NO_KONTRAK, r.NO_POL, r.TYPE, r.TAHUN_UNIT, r.TANGGAL_TARIK,
-               d.umur, d.bucket.label, d.bucket.risiko, r.RAW_OS, r.RAW_HARGA_TERTINGGI,
-               d.adaHarga ? "ADA" : "BELUM", r.MUTASI, r.KATEGORI]);
+               d.umur, d.bucket.label, d.bucket.risiko, r.RAW_OS]
+               .concat(bolehLihatHarga() ? [r.RAW_HARGA_TERTINGGI, d.adaHarga ? "ADA" : "BELUM"] : []).concat([r.MUTASI, r.KATEGORI]));
     });
     const ws3 = XLSX.utils.aoa_to_sheet(s3);
     ws3["!cols"] = [{ wch: 5 }, { wch: 10 }, { wch: 16 }, { wch: 13 }, { wch: 20 }, { wch: 7 }, { wch: 12 },
@@ -12396,14 +12399,14 @@ if (agPdfEl) {
     halamanBaru();
     judul("Daftar Unit Tertua (" + agUnitTampil.length.toLocaleString("id-ID") + " unit)", 13);
     y += 2;
-    tabel(["CABANG", "NO KONTRAK", "NO POLISI", "TYPE", "THN", "TGL TARIK", "UMUR", "RISIKO", "OS", "HRG TERTINGGI", "ST. HARGA", "MUTASI"],
+    tabel(["CABANG", "NO KONTRAK", "NO POLISI", "TYPE", "THN", "TGL TARIK", "UMUR", "RISIKO", "OS"].concat(bolehLihatHarga() ? ["HRG TERTINGGI", "ST. HARGA"] : []).concat(["MUTASI"]),
       agUnitTampil.map(d => [d.row.CABANG, d.row.NO_KONTRAK, d.row.NO_POL, d.row.TYPE, d.row.TAHUN_UNIT,
-        d.row.TANGGAL_TARIK, d.umur + " hr", d.bucket.risiko, dkSingkatRupiah(d.row.RAW_OS),
-        d.row.RAW_HARGA_TERTINGGI > 0 ? dkSingkatRupiah(d.row.RAW_HARGA_TERTINGGI) : "-",
-        d.adaHarga ? "ADA" : "BELUM", d.row.MUTASI]),
+        d.row.TANGGAL_TARIK, d.umur + " hr", d.bucket.risiko, dkSingkatRupiah(d.row.RAW_OS)]
+        .concat(bolehLihatHarga() ? [d.row.RAW_HARGA_TERTINGGI > 0 ? dkSingkatRupiah(d.row.RAW_HARGA_TERTINGGI) : "-", d.adaHarga ? "ADA" : "BELUM"] : [])
+        .concat([d.row.MUTASI])),
       {
         columnStyles: { 0: { halign: "left", fontStyle: "bold" }, 1: { halign: "left" }, 2: { halign: "left" },
-                        3: { halign: "left", cellWidth: 30 }, 11: { halign: "left" } },
+                        3: { halign: "left", cellWidth: bolehLihatHarga() ? 30 : 34 } },
         didParseCell: function(h) {
           if (h.section !== "body") return;
           const d = agUnitTampil[h.row.index];
@@ -12412,10 +12415,6 @@ if (agPdfEl) {
             const k = d.bucket.kunci;
             h.cell.styles.textColor = k === "b30" ? [31,122,77] : k === "b60" ? [101,163,13]
                                     : k === "b90" ? [217,119,6] : k === "b180" ? [234,88,12] : [220,38,38];
-            h.cell.styles.fontStyle = "bold";
-          }
-          if (h.column.index === 10) {
-            h.cell.styles.textColor = d.adaHarga ? [31,122,77] : [220,38,38];
             h.cell.styles.fontStyle = "bold";
           }
         }
@@ -18974,7 +18973,9 @@ function rkFile(k, f) {
   function keSelMemo(r) {
     var isi = "";
     if (r.memo)  isi += '<div class="ke-nomemo">' + keAman(r.memo) + '</div>';
-    if (r.harga) isi += '<a class="ke-ada" href="' + keAman(r.harga) + '" target="_blank" rel="noopener">&#10003; PDF harga</a>';
+    if (r.harga) isi += bolehLihatHarga()
+      ? '<a class="ke-ada" href="' + keAman(r.harga) + '" target="_blank" rel="noopener">&#10003; PDF harga</a>'
+      : '<span class="ke-ada">&#10003; Harga sudah ditetapkan HO</span>';
 
     if (!keAdalahHo()) {
       return isi || '<span class="ke-progres">Menunggu HO</span>';
