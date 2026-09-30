@@ -4668,6 +4668,34 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         #tabPembiayaan .pd-rej { color: #a32222; }
         #tabPembiayaan .pd-pend { color: #b45309; }
         #tabPembiayaan .pd-tabel th { position: sticky; top: 0; z-index: 3; }
+        #tabPembiayaan table.pd-banding { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 12.5px; }
+        #tabPembiayaan table.pd-banding th, #tabPembiayaan table.pd-banding td { padding: 9px 10px; white-space: nowrap; }
+        #tabPembiayaan table.pd-banding thead tr:nth-child(2) th { top: 36px; font-size: 11px; }
+        #tabPembiayaan table.pd-banding th.pd-grp { text-align: center; border-left: 2px solid rgba(255,255,255,.25); }
+        #tabPembiayaan table.pd-banding td.pd-awal, #tabPembiayaan table.pd-banding th.pd-awal { border-left: 2px solid #e2e8f0; }
+        #tabPembiayaan table.pd-banding th:first-child, #tabPembiayaan table.pd-banding td:first-child { position: sticky; left: 0; z-index: 2; background: #fff; text-align: left; min-width: 118px; max-width: 170px; overflow: hidden; text-overflow: ellipsis; box-shadow: 1px 0 0 #e2e8f0; }
+        #tabPembiayaan table.pd-banding thead th:first-child { z-index: 5; background: #0f2540; }
+        #tabPembiayaan table.pd-banding td.pd-lalu { color: #8b98a8; }
+        #tabPembiayaan table.pd-banding td.pd-ini { font-weight: 800; }
+        #tabPembiayaan table.pd-banding td.pd-d { font-weight: 800; font-size: 11.5px; }
+        #tabPembiayaan table.pd-banding td.pd-d.baik { color: #15803d; background: #f0fdf4; }
+        #tabPembiayaan table.pd-banding td.pd-d.buruk { color: #b91c1c; background: #fef2f2; }
+        #tabPembiayaan table.pd-banding tr.pd-grup-cab td { background: #eef3fa !important; color: #0f2540; font-weight: 800; font-size: 11.5px; letter-spacing: .4px; }
+        #tabPembiayaan table.pd-banding tr.pb-total td { background: #0f2540 !important; color: #fff !important; }
+        #tabPembiayaan table.pd-banding tr.pb-total td.pd-d { background: #0f2540 !important; }
+        #tabPembiayaan table.pd-banding tr.pb-total td.pd-d.baik { color: #86efac !important; }
+        #tabPembiayaan table.pd-banding tr.pb-total td.pd-d.buruk { color: #fca5a5 !important; }
+        #tabPembiayaan table.pd-banding td.pd-nama { cursor: pointer; }
+        #tabPembiayaan table.pd-banding td.pd-nama:hover { text-decoration: underline; }
+        body.dark #tabPembiayaan table.pd-banding th:first-child, body.dark #tabPembiayaan table.pd-banding td:first-child { background: #131f36; box-shadow: 1px 0 0 #22334f; }
+        body.cmd #tabPembiayaan table.pd-banding th:first-child, body.cmd #tabPembiayaan table.pd-banding td:first-child { background: #241a16; box-shadow: 1px 0 0 #45291f; }
+        body.dark #tabPembiayaan table.pd-banding thead th:first-child { background: #0b1220; }
+        body.cmd #tabPembiayaan table.pd-banding thead th:first-child { background: #e2432c; }
+        body.dark #tabPembiayaan table.pd-banding td.pd-d.baik, body.cmd #tabPembiayaan table.pd-banding td.pd-d.baik { background: rgba(34,197,94,.12); color: #4ade80; }
+        body.dark #tabPembiayaan table.pd-banding td.pd-d.buruk, body.cmd #tabPembiayaan table.pd-banding td.pd-d.buruk { background: rgba(239,68,68,.14); color: #fca5a5; }
+        body.dark #tabPembiayaan table.pd-banding tr.pd-grup-cab td { background: #16263f !important; color: #e2e8f0; }
+        body.cmd #tabPembiayaan table.pd-banding tr.pd-grup-cab td { background: #2a1a15 !important; color: #ffcc4d; }
+        body.dark #tabPembiayaan table.pd-banding td.pd-awal, body.dark #tabPembiayaan table.pd-banding th.pd-awal { border-left-color: #22334f; }
         #tabPembiayaan .pd-tabel th.pd-grp { text-align: center; }
         #tabPembiayaan .pd-tabel td.pd-dealer { cursor: pointer; }
         #tabPembiayaan .pd-tabel td.pd-dealer:hover { text-decoration: underline; }
@@ -4733,15 +4761,19 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       </div>
 
       <div class="lipat-kepala" data-lipat="lipatPdTabel" onclick="lorLipat('lipatPdTabel')">
-        <div><b>Rekap Cabang &amp; Dealer</b><small>Tabel New, Leaseback, Sh Bekas, Total, OS, reject &amp; pending + selisih bulan lalu</small></div>
+        <div><b>Rekap Cabang &amp; Dealer</b><small>Unit, OS &amp; reject bulan lalu vs bulan ini &middot; versi per cabang atau per dealer</small></div>
         <button type="button" class="lipat-btn">Tampilkan &#9662;</button>
       </div>
       <div class="lipat-isi tertutup" id="lipatPdTabel">
         <div class="card">
-          <div class="table-container" style="max-height:560px;">
-            <table class="pd-tabel" id="pdTabel"></table>
+          <div class="pb-seg" id="pdTabelMode" style="margin-bottom:12px;">
+            <button type="button" data-m="cabang" class="aktif">Per Cabang</button>
+            <button type="button" data-m="dealer">Per Dealer</button>
           </div>
-          <p class="pb-klik" style="margin:10px 0 0 2px;">Klik nama dealer untuk menyaring. &Delta; Unit hijau = pembiayaan naik; &Delta; Reject merah = reject naik dibanding bulan lalu.</p>
+          <div class="table-container" style="max-height:600px;">
+            <table class="pd-tabel pd-banding" id="pdTabel"></table>
+          </div>
+          <p class="pb-klik" style="margin:10px 0 0 2px;">Hijau = membaik, merah = memburuk (unit/OS turun atau reject naik). Klik nama cabang/dealer untuk menyaring.</p>
         </div>
       </div>
 
@@ -5672,6 +5704,11 @@ function masukAplikasi(u) {
     document.querySelectorAll(".side-nav .tab-btn").forEach(el => {
       el.style.display = (el.id === "btnTabBast" || el.id === "btnTabKelengkapan") ? "" : "none";
     });
+  }
+  /* Form BAST Gudang: sementara tidak untuk akun CABANG / AREA (HO & GUDANG tetap bisa) */
+  if (["CBG", "CABANG", "AREA"].indexOf(String(currentLoginRole || "").toUpperCase()) >= 0) {
+    const tbBast = document.getElementById("btnTabBast");
+    if (tbBast) tbBast.style.display = "none";
   }
   /* CMO: hanya kalkulator used car, tampilan diringkas untuk HP */
   if (modeCmo) {
@@ -20573,45 +20610,77 @@ function pdRenderChart(baris, f) {
     function (x) { pdEl('pdCabang').value = x.cabang; pdIsiFilter(); pdEl('pdDealer').value = x.dealer; pdRender(); }, os ? '#10b981' : '#3b82f6');
 }
 
+var pdTabelMode = 'cabang';
+var PD_BLN_PENDEK = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+function pdLabelPendek(t) { var d = pdUraiTgl(t); return d ? PD_BLN_PENDEK[d.getMonth()] + ' ' + String(d.getFullYear()).slice(2) : String(t); }
+
 function pdRenderTabel(baris, f) {
   var t = pdEl('pdTabel'); if (!t) return;
   var ada = !!f.perLalu;
-  var n = function (v) { return v ? Number(v).toLocaleString('id-ID') : '<span style="opacity:.35">0</span>'; };
-  var sel = function (o, b) {
-    var d = ada && b ? o.total - b.total : null;
-    return '<td class="pb-num">' + n(o['new']) + '</td><td class="pb-num">' + n(o.leaseback) + '</td><td class="pb-num">' + n(o.shbekas) +
-      '</td><td class="pb-num"><b>' + n(o.total) + '</b></td><td class="pb-num">' + (o.os ? rupiah(o.os) : '-') + '</td>' +
-      (ada ? '<td class="pb-num">' + (b ? n(b.total) : '-') + '</td><td class="pb-num pd-delta ' + (d > 0 ? 'naik' : (d < 0 ? 'turun' : '')) + '">' + (d ? (d > 0 ? '+' : '') + d.toLocaleString('id-ID') : '0') + '</td>' : '') +
-      '<td class="pb-num pd-rej">' + n(o.slik) + '</td><td class="pb-num pd-rej">' + n(o.nslik) + '</td>' +
-      (ada ? (function () { var rj = o.slik + o.nslik, rl = b ? b.slik + b.nslik : 0, dr = rj - rl;
-        return '<td class="pb-num">' + (b ? n(rl) : '-') + '</td><td class="pb-num pd-delta ' + (dr > 0 ? 'turun' : (dr < 0 ? 'naik' : '')) + '">' + (dr ? (dr > 0 ? '+' : '') + dr.toLocaleString('id-ID') : '0') + '</td>'; })() : '') +
-      '<td class="pb-num pd-pend">' + n(o.pendok) + '</td><td class="pb-num pd-pend">' + n(o.pendproses) + '</td>';
+  var L = ada ? pdLabelPendek(f.perLalu) : '', I = pdLabelPendek(f.per);
+  var angka = function (v) { return Number(v || 0).toLocaleString('id-ID'); };
+  /* tiga kelompok: unit, OS, reject. balik = naik itu buruk */
+  var grup = [
+    { judul: 'Unit Dibiayai', ambil: function (o) { return o.total; }, fmt: angka },
+    { judul: 'OS', ambil: function (o) { return o.os; }, fmt: function (v) { return v ? dkSingkatRupiah(v) : '-'; }, rp: true },
+    { judul: 'Reject', ambil: function (o) { return o.slik + o.nslik; }, fmt: angka, balik: true }
+  ];
+  var selDelta = function (g, a, b) {
+    var d = a - b;
+    if (!d) return '<td class="pb-num pd-d">0</td>';
+    var baik = g.balik ? d < 0 : d > 0;
+    var teks = g.rp ? (b ? (d > 0 ? '+' : '') + (d / b * 100).toFixed(1) + '%' : 'baru')
+                    : (d > 0 ? '+' : '') + d.toLocaleString('id-ID');
+    var judul = b ? (d > 0 ? '+' : '') + (d / b * 100).toFixed(1) + '% dibanding bulan lalu' : '';
+    return '<td class="pb-num pd-d ' + (baik ? 'baik' : 'buruk') + '" title="' + judul + '">' + (d > 0 ? '&#9650; ' : '&#9660; ') + teks + '</td>';
   };
-  var kolom = 11 + (ada ? 4 : 0);
-  var kepala = '<thead><tr><th rowspan="2">Cabang</th><th rowspan="2">Dealer</th><th colspan="5" class="pd-grp">Pembiayaan ' + escapeHtml(pdLabelPeriode(f.per)) + '</th>' +
-    (ada ? '<th colspan="2" class="pd-grp">vs ' + escapeHtml(pdLabelPeriode(f.perLalu)) + '</th>' : '') +
-    '<th colspan="' + (ada ? 4 : 2) + '" class="pd-grp">Jlh Reject' + (ada ? ' (vs ' + escapeHtml(pdLabelPeriode(f.perLalu)) + ')' : '') + '</th><th colspan="2" class="pd-grp">Jlh Pending</th></tr><tr>' +
-    '<th class="pb-num">New</th><th class="pb-num">Leaseback</th><th class="pb-num">Sh Bekas</th><th class="pb-num">Total</th><th class="pb-num">OS</th>' +
-    (ada ? '<th class="pb-num">Total</th><th class="pb-num">&Delta; Unit</th>' : '') +
-    '<th class="pb-num">Slik</th><th class="pb-num">N.Slik</th>' + (ada ? '<th class="pb-num">Reject lalu</th><th class="pb-num">&Delta; Reject</th>' : '') +
-    '<th class="pb-num">Pend ok</th><th class="pb-num">Pend proses</th></tr></thead>';
-  if (!baris.length) { t.innerHTML = kepala + '<tbody><tr><td colspan="' + kolom + '" class="pb-kosong">Tidak ada dealer pada filter ini.</td></tr></tbody>'; return; }
-  var grup = {}, urut = [];
-  baris.forEach(function (x) { if (!grup[x.cabang]) { grup[x.cabang] = []; urut.push(x.cabang); } grup[x.cabang].push(x); });
-  var GA = pdKosong(), GB = pdKosong(), h = '';
-  urut.forEach(function (c) {
-    var sa = pdKosong(), sb = pdKosong();
-    grup[c].sort(function (p, q) { return q.a.total - p.a.total || q.a.os - p.a.os; }).forEach(function (x, i) {
-      pdTambah(sa, x.a); if (x.b) pdTambah(sb, x.b);
-      h += '<tr><td>' + (i === 0 ? '<b>' + escapeHtml(c) + '</b>' : '') + '</td><td class="pd-dealer" data-c="' + escapeHtml(c) + '" data-d="' + escapeHtml(x.dealer) + '">' + escapeHtml(x.dealer) + '</td>' + sel(x.a, x.b) + '</tr>';
-    });
-    pdTambah(GA, sa); pdTambah(GB, sb);
-    if (urut.length > 1) h += '<tr class="pb-sub"><td colspan="2">TOTAL ' + escapeHtml(c) + '</td>' + sel(sa, ada ? sb : null) + '</tr>';
+  var sel = function (a, b) {
+    return grup.map(function (g) {
+      var va = g.ambil(a);
+      if (!ada) return '<td class="pb-num pd-ini pd-awal">' + g.fmt(va) + '</td>';
+      var vb = g.ambil(b || pdKosong());
+      return '<td class="pb-num pd-lalu pd-awal">' + g.fmt(vb) + '</td><td class="pb-num pd-ini">' + g.fmt(va) + '</td>' + selDelta(g, va, vb);
+    }).join('');
+  };
+  var nKol = 1 + grup.length * (ada ? 3 : 1);
+  var judulNama = pdTabelMode === 'cabang' ? 'Cabang' : 'Dealer';
+  var kepala = '<thead><tr><th rowspan="' + (ada ? 2 : 1) + '">' + judulNama + '</th>' +
+    grup.map(function (g) { return '<th class="pd-grp" colspan="' + (ada ? 3 : 1) + '">' + g.judul + (ada ? '' : ' ' + I) + '</th>'; }).join('') + '</tr>' +
+    (ada ? '<tr>' + grup.map(function () { return '<th class="pb-num pd-awal">' + L + '</th><th class="pb-num">' + I + '</th><th class="pb-num">&Delta;</th>'; }).join('') + '</tr>' : '') + '</thead>';
+  if (!baris.length) { t.innerHTML = kepala + '<tbody><tr><td colspan="' + nKol + '" class="pb-kosong">Tidak ada data pada filter ini.</td></tr></tbody>'; return; }
+
+  var peta = {}, urut = [];
+  baris.forEach(function (x) {
+    if (!peta[x.cabang]) { peta[x.cabang] = { a: pdKosong(), b: pdKosong(), dealer: [] }; urut.push(x.cabang); }
+    pdTambah(peta[x.cabang].a, x.a); if (x.b) pdTambah(peta[x.cabang].b, x.b);
+    peta[x.cabang].dealer.push(x);
   });
-  h += '<tr class="pb-total"><td colspan="2">TOTAL' + (f.unit ? ' ' + f.unit : '') + '</td>' + sel(GA, ada ? GB : null) + '</tr>';
+  urut.sort(function (p, q) { return peta[q].a.total - peta[p].a.total || peta[q].a.os - peta[p].a.os; });
+  var GA = pdKosong(), GB = pdKosong(), h = '';
+  urut.forEach(function (c) { pdTambah(GA, peta[c].a); pdTambah(GB, peta[c].b); });
+
+  if (pdTabelMode === 'cabang') {
+    urut.forEach(function (c) {
+      h += '<tr><td class="pd-nama" data-c="' + escapeHtml(c) + '"><b>' + escapeHtml(c) + '</b> <span style="font-size:10.5px;opacity:.6">' + peta[c].dealer.length + ' dealer</span></td>' + sel(peta[c].a, peta[c].b) + '</tr>';
+    });
+  } else {
+    urut.forEach(function (c) {
+      if (urut.length > 1) h += '<tr class="pd-grup-cab"><td class="pd-nama" data-c="' + escapeHtml(c) + '">' + escapeHtml(c) + '</td>' + sel(peta[c].a, peta[c].b) + '</tr>';
+      peta[c].dealer.slice().sort(function (p, q) { return q.a.total - p.a.total || q.a.os - p.a.os; }).forEach(function (x) {
+        if (!x.a.total && !(x.b && x.b.total) && !x.a.os && !(x.a.slik + x.a.nslik) && !(x.b && (x.b.slik + x.b.nslik))) return;   /* dealer kosong dua bulan dilewati */
+        h += '<tr><td class="pd-nama" data-c="' + escapeHtml(c) + '" data-d="' + escapeHtml(x.dealer) + '" title="' + escapeHtml(x.dealer) + '">' + escapeHtml(x.dealer) + '</td>' + sel(x.a, x.b) + '</tr>';
+      });
+    });
+  }
+  h += '<tr class="pb-total"><td>TOTAL' + (f.unit ? ' ' + f.unit : '') + '</td>' + sel(GA, GB) + '</tr>';
   t.innerHTML = kepala + '<tbody>' + h + '</tbody>';
-  t.querySelectorAll('td.pd-dealer').forEach(function (td) {
-    td.onclick = function () { pdEl('pdCabang').value = td.dataset.c; pdIsiFilter(); pdEl('pdDealer').value = td.dataset.d; pdRender(); };
+  t.querySelectorAll('td.pd-nama').forEach(function (td) {
+    td.onclick = function () {
+      pdEl('pdCabang').value = td.dataset.c; pdIsiFilter();
+      pdEl('pdDealer').value = td.dataset.d || '';
+      if (!td.dataset.d) { pdTabelMode = 'dealer'; var sg = pdEl('pdTabelMode'); if (sg) sg.querySelectorAll('button').forEach(function (x) { x.classList.toggle('aktif', x.dataset.m === 'dealer'); }); }
+      pdRender();
+    };
   });
 }
 
@@ -20629,6 +20698,21 @@ function pdUnduhExcel() {
     aoa.push([r.cabang, r.dealer, a['new'], a.leaseback, a.shbekas, a.total, a.os].concat(ada ? [b.total, a.total - b.total] : []).concat([a.slik, a.nslik]).concat(ada ? [b.slik + b.nslik, (a.slik + a.nslik) - (b.slik + b.nslik)] : []).concat([a.pendok, a.pendproses]));
   });
   var wb = XLSX.utils.book_new();
+  var pc = {}, pcUrut = [];
+  pdData.forEach(function (r) {
+    if (!pdBolehCabang(r.cabang) || (f.cabang && r.cabang !== f.cabang)) return;
+    if (!pc[r.cabang]) { pc[r.cabang] = { a: pdKosong(), b: pdKosong(), n: 0 }; pcUrut.push(r.cabang); }
+    pdTambah(pc[r.cabang].a, pdAmbil(r, f.per, f.unit)); if (ada) pdTambah(pc[r.cabang].b, pdAmbil(r, f.perLalu, f.unit)); pc[r.cabang].n++;
+  });
+  var L = ada ? pdLabelPeriode(f.perLalu) : '', I = pdLabelPeriode(f.per);
+  var aoaC = [['REKAP PER CABANG - ' + (ada ? L + ' vs ' : '') + I + (f.unit ? ' - ' + f.unit : ' - R2 & R4')],
+    ['Cabang', 'Jumlah Dealer'].concat(ada ? ['Unit ' + L, 'Unit ' + I, 'Selisih Unit', 'OS ' + L, 'OS ' + I, 'Selisih OS', 'Reject ' + L, 'Reject ' + I, 'Selisih Reject']
+                                            : ['Unit ' + I, 'OS ' + I, 'Reject ' + I])];
+  pcUrut.sort(function (p, q) { return pc[q].a.total - pc[p].a.total; }).forEach(function (c) {
+    var a = pc[c].a, b = pc[c].b, ra = a.slik + a.nslik, rb = b.slik + b.nslik;
+    aoaC.push([c, pc[c].n].concat(ada ? [b.total, a.total, a.total - b.total, b.os, a.os, a.os - b.os, rb, ra, ra - rb] : [a.total, a.os, ra]));
+  });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoaC), 'PER CABANG');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), 'PER DEALER');
   XLSX.writeFile(wb, ('Pembiayaan_Dealer_' + pdLabelPeriode(f.per) + (f.unit ? '_' + f.unit : '') + (f.cabang ? '_' + f.cabang : '')).replace(/\s+/g, '_') + '.xlsx');
 }
@@ -20646,6 +20730,10 @@ function pdUnduhExcel() {
     pdIsiFilter(); pdRender();
   });
   var ex = pdEl('pdExcel'); if (ex) ex.addEventListener('click', pdUnduhExcel);
+  var tm = pdEl('pdTabelMode');
+  if (tm) tm.querySelectorAll('button').forEach(function (b) {
+    b.addEventListener('click', function () { pdTabelMode = b.dataset.m; tm.querySelectorAll('button').forEach(function (x) { x.classList.toggle('aktif', x === b); }); pdRender(); });
+  });
   var seg = pdEl('pdUkuran');
   if (seg) seg.querySelectorAll('button').forEach(function (b) {
     b.addEventListener('click', function () { pdUkur = b.dataset.ukur; seg.querySelectorAll('button').forEach(function (x) { x.classList.toggle('aktif', x === b); }); pdRender(); });
@@ -21177,5 +21265,92 @@ function tacUnduh() {
 })();
 </script>
 
+
+<script>
+/* ==================== KOLOM PERTAMA MENEMPEL SAAT TABEL DIGESER ====================
+   Berlaku untuk semua tabel di dalam kotak yang bisa digeser. Kolom pertama (nama) tetap
+   terlihat; kalau kolom pertama cuma "No", kolom kedua ikut menempel.
+   Tabel yang sudah punya kolom lekat sendiri, atau diberi class "no-lekat", dilewati. */
+(function () {
+  var WADAH = '.table-container, .sm-table-wrap, .qh-wrap';
+  function transparan(c) { return !c || c === 'transparent' || /rgba\([^)]*,\s*0\)$/.test(c); }
+  function latar(el) {
+    while (el && el !== document.documentElement) {
+      var c = getComputedStyle(el).backgroundColor;
+      if (!transparan(c)) return c;
+      el = el.parentElement;
+    }
+    var b = getComputedStyle(document.body).backgroundColor;
+    return transparan(b) ? '#fff' : b;
+  }
+  /* posisi kolom logis tiap sel (menghitung rowspan/colspan) */
+  function petaKolom(rows) {
+    var isi = [], hasil = [];
+    for (var r = 0; r < rows.length; r++) {
+      isi[r] = isi[r] || [];
+      var c = 0;
+      for (var i = 0; i < rows[r].cells.length; i++) {
+        var sel = rows[r].cells[i];
+        while (isi[r][c]) c++;
+        hasil.push({ sel: sel, kol: c, lebar: sel.colSpan || 1 });
+        for (var rr = 0; rr < (sel.rowSpan || 1); rr++) {
+          isi[r + rr] = isi[r + rr] || [];
+          for (var cc = 0; cc < (sel.colSpan || 1); cc++) isi[r + rr][c + cc] = 1;
+        }
+        c += sel.colSpan || 1;
+      }
+    }
+    return hasil;
+  }
+  function proses(tbl) {
+    if (tbl.classList.contains('no-lekat') || tbl.classList.contains('kh-tabel')) return;
+    if (!tbl.rows.length || tbl.rows.length > 4000) return;
+    var pertama = tbl.rows[0].cells[0];
+    if (!pertama) return;
+    if (!pertama.dataset.lk && getComputedStyle(pertama).position === 'sticky' && getComputedStyle(pertama).left !== 'auto') return;   /* sudah lekat sendiri */
+    var teks = String(pertama.innerText || '').trim().toUpperCase();
+    var jmlLekat = (/^(NO\.?|#|NO URUT)$/.test(teks) && tbl.rows[0].cells.length > 2) ? 2 : 1;
+    var bagian = [tbl.tHead, tbl.tBodies[0], tbl.tFoot];
+    for (var t = 1; t < tbl.tBodies.length; t++) bagian.push(tbl.tBodies[t]);
+    var lebarKol0 = 0;
+    bagian.forEach(function (sec) {
+      if (!sec) return;
+      var kepala = sec === tbl.tHead;
+      petaKolom(sec.rows).forEach(function (x) {
+        var sel = x.sel;
+        if (x.kol >= jmlLekat || x.kol + x.lebar > jmlLekat) {
+          if (sel.dataset.lk) { sel.style.position = ''; sel.style.left = ''; sel.style.zIndex = ''; sel.style.backgroundColor = ''; sel.style.boxShadow = ''; delete sel.dataset.lk; }
+          return;
+        }
+        if (x.kol === 0 && !lebarKol0) lebarKol0 = sel.offsetWidth;
+        sel.style.backgroundColor = '';
+        sel.dataset.lk = '1';
+        sel.style.position = 'sticky';
+        sel.style.left = (x.kol === 0 ? 0 : lebarKol0) + 'px';
+        sel.style.zIndex = kepala ? 6 : 3;
+        sel.style.backgroundColor = latar(sel);
+        if (x.kol + x.lebar === jmlLekat) sel.style.boxShadow = 'inset -1px 0 0 rgba(100,116,139,.28)';
+      });
+    });
+  }
+  function semua() {
+    document.querySelectorAll(WADAH).forEach(function (w) {
+      w.querySelectorAll('table').forEach(function (tbl) { try { proses(tbl); } catch (e) {} });
+    });
+  }
+  var jeda = null;
+  function jadwal() { clearTimeout(jeda); jeda = setTimeout(semua, 180); }
+  function mulai() {
+    new MutationObserver(function (m) {
+      for (var i = 0; i < m.length; i++) {
+        if (m[i].type === 'attributes' || m[i].addedNodes.length || m[i].removedNodes.length) { jadwal(); return; }
+      }
+    }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });
+    window.addEventListener('resize', jadwal);
+    jadwal();
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mulai); else mulai();
+})();
+</script>
 </body>
 </html>
