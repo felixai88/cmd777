@@ -4063,34 +4063,16 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       <div class="chart-grid" style="grid-template-columns: 1fr; gap: 20px;">
         <div class="chart-card">
           <h3>SEMUA CABANG</h3>
-          <div class="lor-ringkas-grid">
-            <div class="lor-ringkas-kiri">
-              <div id="lorPctBadge" class="lm-lor-pct" style="padding: 12px 28px; border-radius: 8px; font-size: 22px; margin-bottom: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-                LOR: 0.00%
-              </div>
-              <div id="lorCompareBadge" style="font-size:11.5px; margin-bottom:20px; display:none;"></div>
-              <div style="display: flex; width: 100%; justify-content: space-around; text-align: center; border-top: 1px dashed #e1e5ea; padding-top: 15px; margin-bottom: 12px;">
-                <div>
-                  <span style="font-size: 11px; color: #64748b; text-transform: uppercase;">Total OS:</span><br>
-                  <strong id="lorTotalOsVal" style="font-size: 13px;" class="nilai-total">Rp 0</strong>
-                </div>
-                <div>
-                  <span style="font-size: 11px; color: #64748b; text-transform: uppercase;">Total Harga Jual:</span><br>
-                  <strong id="lorTotalHjVal" style="font-size: 13px;" class="nilai-total">Rp 0</strong>
-                </div>
-              </div>
-              <div style="display: flex; width: 100%; justify-content: center; text-align: center; border-top: 1px dashed #e1e5ea; padding-top: 12px;">
-                <div>
-                  <span style="font-size: 11px; color: #64748b; text-transform: uppercase;">Total Unit Terjual:</span><br>
-                  <strong id="lorTotalUnitVal" style="font-size: 14px;" class="nilai-total">0 Unit</strong>
-                  <div id="lorTebusInfo" style="font-size: 10.5px; color: #8b98a8; margin-top: 4px;"></div>
-                </div>
-              </div>
-            </div>
-            <div class="lor-ringkas-kanan">
-              <div class="lor-sub">Perbandingan Total OS vs Total Harga Jual</div>
-              <div class="chart-box"><canvas id="chartLorPerbandingan"></canvas></div>
-            </div>
+          <div class="chart-box" style="height:300px;"><canvas id="chartLorPerbandingan"></canvas></div>
+          <div style="display:none;">
+            <div id="lorPctBadge" class="lm-lor-pct"></div>
+            <strong id="lorTotalOsVal"></strong><strong id="lorTotalHjVal"></strong>
+          </div>
+          <div style="text-align:center; border-top:1px dashed #e1e5ea; margin-top:10px; padding-top:12px;">
+            <span style="font-size: 11px; color: #64748b; text-transform: uppercase;">Total Unit Terjual:</span>
+            <strong id="lorTotalUnitVal" style="font-size: 15px; margin-left:4px;" class="nilai-total">0 Unit</strong>
+            <div id="lorTebusInfo" style="font-size: 10.5px; color: #8b98a8; margin-top: 4px;"></div>
+            <div id="lorCompareBadge" style="font-size:11.5px; margin-top:6px; display:none;"></div>
           </div>
         </div>
       </div>
@@ -4716,30 +4698,59 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
 
       <div class="ag-kpi-row" id="pdKpi"></div>
 
-      <div class="dk-sec"><span>Grafik Pembiayaan</span><hr>
+      <div class="dk-sec"><span id="pdJudulBanding">Perbandingan Bulan Lalu vs Bulan Ini</span><hr></div>
+      <div class="dk-row c2">
+        <div class="dk-card"><h3>OS (Outstanding)</h3><div class="dk-box" style="height:260px;"><canvas id="pdChartOs"></canvas></div></div>
+        <div class="dk-card"><h3>Unit Dibiayai</h3><div class="dk-box" style="height:260px;"><canvas id="pdChartUnit"></canvas></div></div>
+      </div>
+      <div class="dk-row c2">
+        <div class="dk-card"><h3>Reject (Slik + N.Slik)</h3><div class="dk-box" style="height:260px;"><canvas id="pdChartRejectBanding"></canvas></div></div>
+        <div class="dk-card"><h3>Komposisi Pembiayaan</h3><div class="dk-box" style="height:260px;"><canvas id="pdChartKomposisi"></canvas></div></div>
+      </div>
+
+      <div class="dk-sec"><span>Rincian per Cabang &amp; Dealer</span><hr>
         <div class="pb-seg" id="pdUkuran">
           <button type="button" data-ukur="unit" class="aktif">Per Unit</button>
           <button type="button" data-ukur="os">Per OS</button>
         </div>
       </div>
       <div id="pdChipAktif"></div>
-      <p class="pb-klik">Batang biru = periode terpilih, abu-abu = periode sebelumnya. Klik batang untuk menyaring ke dealer / cabang tersebut.</p>
 
-      <div class="dk-row c2">
-        <div class="dk-card"><h3 id="pdJudulDealer">Per Dealer</h3><div class="dk-box" id="pdBoxDealer"><canvas id="pdChartDealer"></canvas></div></div>
-        <div class="dk-card"><h3>Per Cabang</h3><div class="dk-box" id="pdBoxCabang"><canvas id="pdChartCabang"></canvas></div></div>
+      <div class="lipat-kepala" data-lipat="lipatPdCabang" onclick="lorLipat('lipatPdCabang')">
+        <div><b>Grafik per Cabang</b><small>Bulan ini (warna) vs bulan lalu (abu-abu), diurutkan dari terbesar &middot; klik batang untuk menyaring</small></div>
+        <button type="button" class="lipat-btn">Tampilkan &#9662;</button>
       </div>
-      <div class="dk-row c2">
-        <div class="dk-card"><h3>Komposisi Pembiayaan</h3><div class="dk-box"><canvas id="pdChartKomposisi"></canvas></div></div>
-        <div class="dk-card"><h3>Dibiayai &amp; Reject per Cabang &middot; bulan ini vs bulan lalu</h3><div class="dk-box" id="pdBoxReject"><canvas id="pdChartReject"></canvas></div></div>
+      <div class="lipat-isi tertutup" id="lipatPdCabang">
+        <div class="dk-card" style="margin-bottom:12px;"><div class="dk-box" id="pdBoxCabang"><canvas id="pdChartCabang"></canvas></div></div>
       </div>
 
-      <div class="dk-sec"><span>Rekap Cabang &amp; Dealer</span><hr></div>
-      <div class="card">
-        <div class="table-container" style="max-height:560px;">
-          <table class="pd-tabel" id="pdTabel"></table>
+      <div class="lipat-kepala" data-lipat="lipatPdDealer" onclick="lorLipat('lipatPdDealer')">
+        <div><b id="pdJudulDealer">Grafik per Dealer (15 teratas)</b><small>Bulan ini vs bulan lalu &middot; klik batang untuk menyaring ke dealer</small></div>
+        <button type="button" class="lipat-btn">Tampilkan &#9662;</button>
+      </div>
+      <div class="lipat-isi tertutup" id="lipatPdDealer">
+        <div class="dk-card" style="margin-bottom:12px;"><div class="dk-box" id="pdBoxDealer"><canvas id="pdChartDealer"></canvas></div></div>
+      </div>
+
+      <div class="lipat-kepala" data-lipat="lipatPdTabel" onclick="lorLipat('lipatPdTabel')">
+        <div><b>Rekap Cabang &amp; Dealer</b><small>Tabel New, Leaseback, Sh Bekas, Total, OS, reject &amp; pending + selisih bulan lalu</small></div>
+        <button type="button" class="lipat-btn">Tampilkan &#9662;</button>
+      </div>
+      <div class="lipat-isi tertutup" id="lipatPdTabel">
+        <div class="card">
+          <div class="table-container" style="max-height:560px;">
+            <table class="pd-tabel" id="pdTabel"></table>
+          </div>
+          <p class="pb-klik" style="margin:10px 0 0 2px;">Klik nama dealer untuk menyaring. &Delta; Unit hijau = pembiayaan naik; &Delta; Reject merah = reject naik dibanding bulan lalu.</p>
         </div>
-        <p class="pb-klik" style="margin:10px 0 0 2px;">Klik nama dealer untuk menyaring. &Delta; Unit hijau = pembiayaan naik; &Delta; Reject merah = reject naik dibanding bulan lalu.</p>
+      </div>
+
+      <div id="pdDiagWrap" style="display:none;">
+        <div class="lipat-kepala" data-lipat="lipatPdDiag" onclick="lorLipat('lipatPdDiag')">
+          <div><b>Cek Pembacaan Kolom Sheet</b><small>Khusus HO &mdash; kolom mana dibaca sebagai apa. Screenshot bagian ini kalau angkanya tidak cocok.</small></div>
+          <button type="button" class="lipat-btn">Tampilkan &#9662;</button>
+        </div>
+        <div class="lipat-isi tertutup" id="lipatPdDiag"><div class="card"><div class="table-container" style="max-height:420px;"><table id="pdDiagTabel"></table></div><div id="pdDiagCatatan" style="font-size:12px;margin-top:8px;"></div></div></div>
       </div>
     </div>
     <!-- ==================== AKHIR TAB PEMBIAYAAN ==================== -->
@@ -12335,7 +12346,7 @@ function lorRenderCabangChart(rekap, cabangAktif) {
       responsive: true,
       maintainAspectRatio: false,
       animation: { duration: 400 },
-      layout: { padding: { right: 74, left: 74, top: 16, bottom: 4 } },
+      layout: { padding: { right: 12, left: 4, top: 16, bottom: 4 } },
       onClick: (evt, elements) => {
         if (!elements.length) return;
         lorCabangPilih(data[elements[0].index].nama);
@@ -12346,7 +12357,7 @@ function lorRenderCabangChart(rekap, cabangAktif) {
       plugins: {
         legend: { display: false },
         lorCbAvg: { nilai: rataLor },
-        lorCbLabel: { rekap: data, tampilUnit: data.length <= 40 },
+        lorCbLabel: { rekap: data, tampilUnit: false, mati: true },
         tooltip: {
           displayColors: false,
           padding: 10,
@@ -12379,11 +12390,19 @@ function lorRenderCabangChart(rekap, cabangAktif) {
         y: {
           grid: { display: false },
           border: { display: false },
-          ticks: { font: { size: 10.5, weight: "bold" }, padding: 2, autoSkip: false }
+          /* nama cabang + LOR + unit jadi satu label di kiri, jadi tidak pernah menimpa batang */
+          ticks: {
+            font: { size: 10.5, weight: "bold" }, padding: 6, autoSkip: false,
+            color: c => lorCbWarna(data[c.index] ? data[c.index].lor : 0),
+            callback: (v, i) => {
+              const m = data[i]; if (!m) return "";
+              return m.nama + "  " + (m.lor > 0 ? "+" : "") + m.lor.toFixed(2) + "%  (" + m.unit.toLocaleString("id-ID") + "u)";
+            }
+          }
         }
       }
     },
-    plugins: [lorCbAvgPlugin, lorCbLabelPlugin]
+    plugins: [lorCbAvgPlugin]
   });
 }
 
@@ -20192,10 +20211,15 @@ function pdBacaKepala(k) {
   if (kolDealer < 0) return null;
   var lebar = 0;
   for (i = 0; i <= rSub; i++) if (k[i]) lebar = Math.max(lebar, k[i].length);
-  var kolom = [], unit = '', per = '', grup = '', unitPertama = '';
+  var kolom = [], semua = [], unit = '', per = '', grup = '', unitPertama = '';
   for (j = kolDealer + 1; j < lebar; j++) {
     var tU = rUnit >= 0 ? String((k[rUnit] || [])[j] || '') : '';
-    if (/R2/i.test(tU)) unit = 'R2'; else if (/R4/i.test(tU)) unit = 'R4';
+    if (tU) {
+      if (/R2/i.test(tU) && /R4/i.test(tU)) unit = 'LEWAT';            /* blok gabungan R2+R4 -> jangan dihitung dua kali */
+      else if (/TOTAL|GABUNG|YTD|KUMULATIF|AKUMULASI|TARGET/i.test(tU)) unit = 'LEWAT';
+      else if (/R2/i.test(tU)) unit = 'R2'; else if (/R4/i.test(tU)) unit = 'R4';
+      else unit = 'LEWAT';
+    }
     if (unit && !unitPertama) unitPertama = unit;
     var tP = rPer >= 0 ? String((k[rPer] || [])[j] || '').trim() : '';
     if (tP) per = tP;
@@ -20207,17 +20231,30 @@ function pdBacaKepala(k) {
     if (/REJECT/.test(grup)) m = sub === 'SLIK' ? 'slik' : (sub === 'NSLIK' ? 'nslik' : null);
     else if (/PENDING/.test(grup)) m = /OK/.test(sub) ? 'pendok' : (/PROSES/.test(sub) ? 'pendproses' : null);
     else m = { NEW: 'new', LEASEBACK: 'leaseback', SHBEKAS: 'shbekas', TOTAL: 'total', OS: 'os' }[sub] || null;
-    if (m && per) kolom.push({ c: j, unit: unit, per: per, m: m });
+    semua.push({ c: j, unit: unit || '?', per: per, grup: tG, sub: String((k[rSub] || [])[j] || ''), m: m });
+    if (m && per && unit !== 'LEWAT') kolom.push({ c: j, unit: unit, per: per, m: m });
   }
   /* kolom sebelum judul unit pertama ikut unit pertama */
   kolom.forEach(function (x) { if (!x.unit) x.unit = unitPertama || 'R2'; });
   if (!kolom.length) return null;
+  /* satu unit+periode+metrik hanya boleh diambil dari SATU kolom (yang pertama) */
+  var sudah = {}, ganda = [];
+  kolom = kolom.filter(function (x) {
+    var kunci = x.unit + '|' + x.per + '|' + x.m;
+    if (sudah[kunci] !== undefined) { ganda.push(x); return false; }
+    sudah[kunci] = x.c; return true;
+  });
+  semua.forEach(function (x) {
+    var pakai = kolom.some(function (y) { return y.c === x.c; });
+    x.status = pakai ? 'dipakai' : (x.unit === 'LEWAT' ? 'dilewati (blok gabungan/total)' : (!x.m ? 'tidak dikenali' : 'dilewati (kolom ganda)'));
+  });
   var periode = [];
   kolom.forEach(function (x) { if (periode.indexOf(x.per) < 0) periode.push(x.per); });
   periode.sort(function (a, b) { return pdTglPeriode(a) - pdTglPeriode(b); });
   var unitAda = [];
   kolom.forEach(function (x) { if (unitAda.indexOf(x.unit) < 0) unitAda.push(x.unit); });
-  return { kolom: kolom, kolCabang: kolCabang, kolDealer: kolDealer, periode: periode, unit: unitAda, barisData: rSub + 2 };
+  return { kolom: kolom, semua: semua, ganda: ganda, kolCabang: kolCabang, kolDealer: kolDealer, periode: periode, unit: unitAda, barisData: rSub + 2,
+           baris: { unit: rUnit + 1, periode: rPer + 1, grup: rGrup + 1, sub: rSub + 1 } };
 }
 
 var PD_BLN = { JAN: 0, FEB: 1, MAR: 2, APR: 3, MAY: 4, MEI: 4, JUN: 5, JUL: 6, AUG: 7, AGU: 7, AGS: 7, SEP: 8, OCT: 9, OKT: 9, NOV: 10, DEC: 11, DES: 11 };
@@ -20266,6 +20303,34 @@ function pdAmbil(r, per, unit) {
 function pdTambah(a, b) { PD_METRIK.forEach(function (m) { a[m] = (a[m] || 0) + (b[m] || 0); }); return a; }
 function pdKosong() { var o = {}; PD_METRIK.forEach(function (m) { o[m] = 0; }); return o; }
 
+/* nama cabang di sheet PERDELEAR -> kode cabang login. Tambah di sini kalau ada nama baru. */
+var PD_ALIAS_CABANG = {
+  'BATAM': 'BTM', 'SUBULUSSALAM': 'SBM', 'TAPAKTUAN': 'TTN', 'TALUK KUANTAN': 'TLK', 'TELUK KUANTAN': 'TLK',
+  'BLANGPIDIE': 'BPD', 'BLANG PIDIE': 'BPD', 'KUTACANE': 'KTC', 'TAKENGON': 'TKN', 'SIGLI': 'SGL', 'FLAMBOYAN': 'FLM',
+  'MEULABOH': 'MLH', 'LHOKSEUMAWE': 'LSM', 'LANGSA': 'LGS', 'BIREUEN': 'BRN', 'BANDA ACEH': 'BNA', 'BLANGKEJEREN': 'BKJ',
+  'BINJAI': 'BJI', 'PEKANBARU': 'PBR', 'DURI': 'DRI', 'DUMAI': 'DMI', 'PADANG': 'PDG', 'KISARAN': 'KSN',
+  'RANTAU PRAPAT': 'RAP', 'RANTAUPRAPAT': 'RAP', 'PADANG SIDEMPUAN': 'PSP', 'PADANGSIDIMPUAN': 'PSP', 'SIANTAR': 'PMS', 'PEMATANG SIANTAR': 'PMS',
+  'UJUNG BATU': 'UBT', 'BAGAN BATU': 'BBT', 'AIR MOLEK': 'AMK', 'KANDIS': 'KDS', 'PANGKALAN KERINCI': 'PKC'
+};
+function pdKodeCabang(nama) {
+  var n = String(nama || '').toUpperCase().trim();
+  if (PD_ALIAS_CABANG[n]) return PD_ALIAS_CABANG[n];
+  return n;
+}
+/* HO: semua cabang. AREA: cabang di wilayahnya. CABANG: cabangnya sendiri. null = tanpa batas */
+function pdLingkup() {
+  var u = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : null;
+  var role = String((u && u.role) || (typeof currentLoginRole !== 'undefined' ? currentLoginRole : 'HO')).toUpperCase();
+  if (role === 'HO') return null;
+  var cab = String((u && u.cabang) || '').toUpperCase().trim();
+  if (role === 'AREA') return (REGIONAL_MAP[cab] || []).slice();
+  return cab ? [cab] : [];
+}
+function pdBolehCabang(nama) {
+  var l = pdLingkup();
+  return l === null || l.indexOf(pdKodeCabang(nama)) >= 0;
+}
+
 function pdIsiFilter(awal) {
   var sp = pdEl('pdPeriode');
   if (sp && (awal || !sp.options.length)) {
@@ -20277,12 +20342,13 @@ function pdIsiFilter(awal) {
   if (su) Array.prototype.forEach.call(su.options, function (o) { if (o.value) o.hidden = pdMeta.unit.indexOf(o.value) < 0; });
   var sc = pdEl('pdCabang'), sd = pdEl('pdDealer');
   var cab = [];
-  pdData.forEach(function (r) { if (cab.indexOf(r.cabang) < 0) cab.push(r.cabang); });
+  pdData.forEach(function (r) { if (pdBolehCabang(r.cabang) && cab.indexOf(r.cabang) < 0) cab.push(r.cabang); });
   var lc = sc.value;
   sc.innerHTML = '<option value="">Semua Cabang</option>' + cab.map(function (c) { return '<option>' + escapeHtml(c) + '</option>'; }).join('');
   sc.value = cab.indexOf(lc) >= 0 ? lc : '';
+  if (cab.length === 1) { sc.value = cab[0]; sc.disabled = true; } else sc.disabled = false;
   var dl = [];
-  pdData.forEach(function (r) { if ((!sc.value || r.cabang === sc.value) && dl.indexOf(r.dealer) < 0) dl.push(r.dealer); });
+  pdData.forEach(function (r) { if (pdBolehCabang(r.cabang) && (!sc.value || r.cabang === sc.value) && dl.indexOf(r.dealer) < 0) dl.push(r.dealer); });
   dl.sort();
   var ld = sd.value;
   sd.innerHTML = '<option value="">Semua Dealer</option>' + dl.map(function (d) { return '<option>' + escapeHtml(d) + '</option>'; }).join('');
@@ -20303,6 +20369,7 @@ function pdRender() {
   if (!pdData || !pdMeta) return;
   var f = pdPilihan();
   var baris = pdData.filter(function (r) {
+    if (!pdBolehCabang(r.cabang)) return false;
     if (f.cabang && r.cabang !== f.cabang) return false;
     if (f.dealer && r.dealer !== f.dealer) return false;
     if (f.cari && r.dealer.indexOf(f.cari) < 0) return false;
@@ -20314,6 +20381,30 @@ function pdRender() {
   pdRenderChip(f);
   pdRenderChart(baris, f);
   pdRenderTabel(baris, f);
+  pdRenderDiag();
+  if (!baris.length && pdLingkup() !== null) pdStatus('error', 'Cabang/area akun Anda (' + escapeHtml(String((currentUser && currentUser.cabang) || '-')) +
+    ') belum ditemukan di sheet PERDELEAR. Minta HO menambahkan nama cabangnya di daftar PD_ALIAS_CABANG.');
+}
+
+function pdRenderDiag() {
+  var w = pdEl('pdDiagWrap'); if (!w) return;
+  var ho = pdLingkup() === null;
+  w.style.display = ho ? '' : 'none';
+  if (!ho || !pdMeta || !pdMeta.semua) return;
+  var huruf = function (i) { var t = ''; i++; while (i > 0) { var m = (i - 1) % 26; t = String.fromCharCode(65 + m) + t; i = Math.floor((i - 1) / 26); } return t; };
+  pdEl('pdDiagTabel').innerHTML = '<thead><tr><th>Kolom</th><th>Unit</th><th>Periode (baris ' + pdMeta.baris.periode + ')</th><th>Kelompok (baris ' + pdMeta.baris.grup +
+    ')</th><th>Judul (baris ' + pdMeta.baris.sub + ')</th><th>Dibaca sebagai</th><th>Status</th></tr></thead><tbody>' +
+    pdMeta.semua.map(function (x) {
+      return '<tr' + (x.status === 'dipakai' ? '' : ' style="opacity:.55"') + '><td><b>' + huruf(x.c) + '</b></td><td>' + escapeHtml(x.unit) + '</td><td>' + escapeHtml(x.per) +
+        '</td><td>' + escapeHtml(x.grup) + '</td><td>' + escapeHtml(x.sub) + '</td><td>' + (x.m || '-') + '</td><td>' + x.status + '</td></tr>';
+    }).join('') + '</tbody>';
+  var tak = [];
+  pdData.forEach(function (r) { var k = pdKodeCabang(r.cabang); if (!REGIONAL_MAP_SEMUA()[k] && tak.indexOf(r.cabang) < 0) tak.push(r.cabang); });
+  pdEl('pdDiagCatatan').innerHTML = 'Kolom cabang: <b>' + huruf(pdMeta.kolCabang) + '</b> &middot; kolom dealer: <b>' + huruf(pdMeta.kolDealer) + '</b> &middot; data mulai baris <b>' + pdMeta.barisData + '</b>' +
+    (tak.length ? '<br><span style="color:#b45309">Nama cabang di sheet yang belum dikenali wilayahnya (akun AREA/CABANG tidak akan melihatnya): <b>' + tak.map(escapeHtml).join(', ') + '</b></span>' : '');
+}
+function REGIONAL_MAP_SEMUA() {
+  var o = {}; Object.keys(REGIONAL_MAP).forEach(function (w) { REGIONAL_MAP[w].forEach(function (c) { o[c] = w; }); }); return o;
 }
 
 function pdDelta(a, b, rp) {
@@ -20383,100 +20474,103 @@ function pdGrafik(id, cfg) {
 
 function pdRenderChart(baris, f) {
   var tema = warnaTema(), os = pdUkur === 'os';
-  var nilai = function (o) { return o ? (os ? o.os : o.total) : 0; };
-  var fmt = function (v) { return os ? dkSingkatRupiah(v) : Number(v).toLocaleString('id-ID'); };
   var lblPer = pdLabelPeriode(f.per), lblLalu = f.perLalu ? pdLabelPeriode(f.perLalu) : null;
-  var sumbu = { grid: { color: tema.grid }, ticks: { color: tema.teks, callback: function (v) { return os ? dkSingkatRupiah(v) : v; } }, beginAtZero: true };
-  var sumbuLabel = { grid: { display: false }, ticks: { color: tema.teksKuat, font: { size: 11, weight: 'bold' }, autoSkip: false } };
-  var plugNilai = {
-    id: 'pdNilai',
-    afterDatasetsDraw: function (ch) {
+  var A = pdKosong(), B = pdKosong();
+  baris.forEach(function (x) { pdTambah(A, x.a); if (x.b) pdTambah(B, x.b); });
+  var jb = pdEl('pdJudulBanding');
+  if (jb) jb.innerText = lblLalu ? 'Perbandingan ' + lblLalu + ' vs ' + lblPer : 'Ringkasan ' + lblPer;
+  var abu = 'rgba(148,163,184,.75)';
+  var labelPlug = function (fmt) {
+    return { id: 'pdLbl', afterDatasetsDraw: function (ch) {
       var ctx = ch.ctx, hor = ch.options.indexAxis === 'y';
-      var meta = ch.getDatasetMeta(0);
-      if (meta.hidden) return;
-      meta.data.forEach(function (el, i) {
-        var v = ch.data.datasets[0].data[i]; if (!v) return;
-        ctx.save(); ctx.font = 'bold 10.5px Arial'; ctx.fillStyle = tema.teksKuat;
-        if (hor) { ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(fmt(v), el.x + 4, el.y); }
-        else { ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.fillText(fmt(v), el.x, el.y - 3); }
-        ctx.restore();
+      ch.data.datasets.forEach(function (ds, i) {
+        var meta = ch.getDatasetMeta(i); if (meta.hidden) return;
+        meta.data.forEach(function (el, j) {
+          var v = ds.data[j]; if (!v) return;
+          ctx.save(); ctx.font = 'bold 11px Arial'; ctx.fillStyle = tema.teksKuat;
+          if (hor) { ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(fmt(v, i, j), el.x + 5, el.y); }
+          else { ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.fillText(fmt(v, i, j), el.x, el.y - 4); }
+          ctx.restore();
+        });
       });
+    } };
+  };
+  /* grafik 2 batang: bulan lalu vs bulan ini, + selisih di judul kecil */
+  var dua = function (id, nilaiLalu, nilaiIni, warna, rp, balik) {
+    var labels = lblLalu ? [lblLalu, lblPer] : [lblPer];
+    var data = lblLalu ? [nilaiLalu, nilaiIni] : [nilaiIni];
+    var fmt = function (v) { return rp ? dkSingkatRupiah(v) : Number(v).toLocaleString('id-ID'); };
+    var sub = '';
+    if (lblLalu) {
+      var d = nilaiIni - nilaiLalu, pct = nilaiLalu ? (d / nilaiLalu * 100) : null;
+      sub = (d > 0 ? '▲ ' : (d < 0 ? '▼ ' : '')) + (rp ? dkSingkatRupiah(Math.abs(d)) : Math.abs(d).toLocaleString('id-ID')) +
+        (pct === null ? '' : ' (' + (d > 0 ? '+' : '') + pct.toFixed(1) + '%)');
     }
+    var baik = balik ? nilaiIni <= nilaiLalu : nilaiIni >= nilaiLalu;
+    pdGrafik(id, {
+      type: 'bar',
+      data: { labels: labels, datasets: [{ data: data, backgroundColor: lblLalu ? [abu, warna] : [warna], borderRadius: 8, maxBarThickness: 90 }] },
+      options: { responsive: true, maintainAspectRatio: false, layout: { padding: { top: 8 } },
+        plugins: { legend: { display: false },
+          title: { display: !!sub, text: sub, color: baik ? '#1f7a4d' : '#dc2626', font: { size: 13, weight: 'bold' }, padding: { bottom: 24 } },
+          tooltip: { callbacks: { label: function (c) { return fmt(c.raw); } } } },
+        scales: { x: { grid: { display: false }, ticks: { color: tema.teksKuat, font: { weight: 'bold', size: 12 } } },
+                  y: { beginAtZero: true, grid: { color: tema.grid }, ticks: { color: tema.teks, callback: function (v) { return rp ? dkSingkatRupiah(v) : v; } } } } },
+      plugins: [labelPlug(fmt)]
+    });
   };
-  var dataset = function (arr, ambilA, ambilB) {
-    var ds = [{ label: lblPer, data: arr.map(ambilA), backgroundColor: os ? '#10b981' : '#3b82f6', borderRadius: 5, maxBarThickness: 26 }];
-    if (lblLalu) ds.push({ label: lblLalu, data: arr.map(ambilB), backgroundColor: 'rgba(148,163,184,.55)', borderRadius: 5, maxBarThickness: 26 });
-    return ds;
-  };
-  var opsiLegend = { display: !!lblLalu, position: 'bottom', labels: { color: tema.teksKuat, boxWidth: 12 } };
+  dua('pdChartOs', B.os, A.os, '#10b981', true);
+  dua('pdChartUnit', B.total, A.total, '#3b82f6', false);
+  dua('pdChartRejectBanding', B.slik + B.nslik, A.slik + A.nslik, '#ef4444', false, true);
 
-  /* per dealer: 15 teratas */
-  var dealer = baris.slice().sort(function (p, q) { return nilai(q.a) - nilai(p.a); }).filter(function (x) { return nilai(x.a) || nilai(x.b); }).slice(0, 15);
-  pdEl('pdJudulDealer').innerText = 'Per Dealer (' + dealer.length + ' teratas)';
-  var boxD = pdEl('pdBoxDealer'); if (boxD) boxD.style.height = Math.max(260, dealer.length * (lblLalu ? 30 : 22) + 60) + 'px';
-  pdGrafik('pdChartDealer', {
+  /* komposisi: New / Leaseback / Sh Bekas, bulan lalu vs bulan ini */
+  var jenis = [['New', 'new'], ['Leaseback', 'leaseback'], ['Sh Bekas', 'shbekas']];
+  var totA = A['new'] + A.leaseback + A.shbekas, totB = B['new'] + B.leaseback + B.shbekas;
+  var dsK = [{ label: lblPer, data: jenis.map(function (j) { return A[j[1]]; }), backgroundColor: '#8b5cf6', borderRadius: 6, maxBarThickness: 40 }];
+  if (lblLalu) dsK.unshift({ label: lblLalu, data: jenis.map(function (j) { return B[j[1]]; }), backgroundColor: abu, borderRadius: 6, maxBarThickness: 40 });
+  pdGrafik('pdChartKomposisi', {
     type: 'bar',
-    data: { labels: dealer.map(function (x) { return x.dealer.length > 24 ? x.dealer.slice(0, 23) + '…' : x.dealer; }),
-            datasets: dataset(dealer, function (x) { return nilai(x.a); }, function (x) { return nilai(x.b); }) },
-    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, layout: { padding: { right: 56 } },
-      plugins: { legend: opsiLegend, tooltip: { callbacks: { title: function (c) { return dealer[c[0].dataIndex].dealer + ' (' + dealer[c[0].dataIndex].cabang + ')'; }, label: function (c) { return c.dataset.label + ': ' + fmt(c.raw); } } } },
-      scales: { x: sumbu, y: sumbuLabel },
-      onClick: function (e, els) { if (!els.length) return; var d = dealer[els[0].index]; pdEl('pdCabang').value = d.cabang; pdIsiFilter(); pdEl('pdDealer').value = d.dealer; pdRender(); } },
-    plugins: [plugNilai]
+    data: { labels: jenis.map(function (j) { return j[0]; }), datasets: dsK },
+    options: { responsive: true, maintainAspectRatio: false, layout: { padding: { top: 22 } },
+      plugins: { legend: { display: !!lblLalu, position: 'bottom', labels: { color: tema.teksKuat, boxWidth: 12 } },
+        tooltip: { callbacks: { label: function (c) { var tot = (lblLalu && c.datasetIndex === 0) ? totB : totA; return c.dataset.label + ': ' + c.raw.toLocaleString('id-ID') + ' unit (' + (tot ? (c.raw / tot * 100).toFixed(1) : 0) + '%)'; } } } },
+      scales: { x: { grid: { display: false }, ticks: { color: tema.teksKuat, font: { weight: 'bold' } } },
+                y: { beginAtZero: true, grid: { color: tema.grid }, ticks: { color: tema.teks } } } },
+    plugins: [labelPlug(function (v, i) { var tot = (lblLalu && i === 0) ? totB : totA; return v.toLocaleString('id-ID') + (tot ? ' (' + Math.round(v / tot * 100) + '%)' : ''); })]
   });
 
-  /* per cabang */
+  /* ---- per cabang & per dealer: batang mendatar supaya nama terbaca ---- */
+  var nilai = function (o) { return o ? (os ? o.os : o.total) : 0; };
+  var fmtN = function (v) { return os ? dkSingkatRupiah(v) : Number(v).toLocaleString('id-ID'); };
+  var mendatar = function (id, boxId, daftar, namaFn, klik, warna) {
+    var box = pdEl(boxId); if (box) box.style.height = Math.max(220, daftar.length * (lblLalu ? 34 : 24) + 60) + 'px';
+    var ds = [{ label: lblPer, data: daftar.map(function (x) { return nilai(x.a); }), backgroundColor: warna, borderRadius: 4, barPercentage: .9, categoryPercentage: .8 }];
+    if (lblLalu) ds.push({ label: lblLalu, data: daftar.map(function (x) { return nilai(x.b); }), backgroundColor: abu, borderRadius: 4, barPercentage: .9, categoryPercentage: .8 });
+    pdGrafik(id, {
+      type: 'bar',
+      data: { labels: daftar.map(namaFn), datasets: ds },
+      options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, layout: { padding: { right: 70 } },
+        plugins: { legend: { display: !!lblLalu, position: 'top', labels: { color: tema.teksKuat, boxWidth: 12 } },
+          tooltip: { callbacks: { label: function (c) { return c.dataset.label + ': ' + fmtN(c.raw); } } } },
+        scales: { x: { beginAtZero: true, grid: { color: tema.grid }, ticks: { color: tema.teks, maxTicksLimit: 5, callback: function (v) { return os ? dkSingkatRupiah(v) : v; } } },
+                  y: { grid: { display: false }, ticks: { color: tema.teksKuat, font: { size: 11, weight: 'bold' }, autoSkip: false } } },
+        onClick: function (e, els) { if (els.length) klik(daftar[els[0].index]); } },
+      plugins: [labelPlug(function (v) { return fmtN(v); })]
+    });
+  };
   var peta = {}, urut = [];
   baris.forEach(function (x) {
-    if (!peta[x.cabang]) { peta[x.cabang] = { a: pdKosong(), b: pdKosong() }; urut.push(x.cabang); }
+    if (!peta[x.cabang]) { peta[x.cabang] = { cabang: x.cabang, a: pdKosong(), b: pdKosong() }; urut.push(x.cabang); }
     pdTambah(peta[x.cabang].a, x.a); if (x.b) pdTambah(peta[x.cabang].b, x.b);
   });
-  urut.sort(function (p, q) { return nilai(peta[q].a) - nilai(peta[p].a); });
-  pdGrafik('pdChartCabang', {
-    type: 'bar',
-    data: { labels: urut, datasets: dataset(urut, function (c) { return nilai(peta[c].a); }, function (c) { return nilai(peta[c].b); }) },
-    options: { responsive: true, maintainAspectRatio: false, layout: { padding: { top: 18 } },
-      plugins: { legend: opsiLegend, tooltip: { callbacks: { label: function (c) { return c.dataset.label + ': ' + fmt(c.raw); } } } },
-      scales: { x: sumbuLabel, y: sumbu },
-      onClick: function (e, els) { if (!els.length) return; pdEl('pdCabang').value = urut[els[0].index]; pdEl('pdDealer').value = ''; pdIsiFilter(); pdRender(); } },
-    plugins: [plugNilai]
-  });
+  var cabang = urut.map(function (c) { return peta[c]; }).sort(function (p, q) { return nilai(q.a) - nilai(p.a); });
+  mendatar('pdChartCabang', 'pdBoxCabang', cabang, function (x) { return x.cabang.length > 16 ? x.cabang.slice(0, 15) + '…' : x.cabang; },
+    function (x) { pdEl('pdCabang').value = x.cabang; pdEl('pdDealer').value = ''; pdIsiFilter(); pdRender(); }, os ? '#10b981' : '#3b82f6');
 
-  /* komposisi New / Leaseback / Sh Bekas */
-  var A = pdKosong(); baris.forEach(function (x) { pdTambah(A, x.a); });
-  var kompo = [['New', A['new'], '#3b82f6'], ['Leaseback', A.leaseback, '#f59e0b'], ['Sh Bekas', A.shbekas, '#8b5cf6']].filter(function (k) { return k[1] > 0; });
-  var totK = kompo.reduce(function (s, k) { return s + k[1]; }, 0);
-  pdGrafik('pdChartKomposisi', {
-    type: 'doughnut',
-    data: { labels: kompo.map(function (k) { return k[0]; }), datasets: [{ data: kompo.map(function (k) { return k[1]; }), backgroundColor: kompo.map(function (k) { return k[2]; }), borderColor: tema.permukaan, borderWidth: 2 }] },
-    options: { responsive: true, maintainAspectRatio: false, cutout: '60%',
-      plugins: { legend: { position: 'bottom', labels: { color: tema.teksKuat, generateLabels: function (ch) {
-        return ch.data.labels.map(function (l, i) { var v = ch.data.datasets[0].data[i]; return { text: l + ' - ' + v.toLocaleString('id-ID') + ' unit (' + (totK ? (v / totK * 100).toFixed(1) : 0) + '%)', fillStyle: ch.data.datasets[0].backgroundColor[i], strokeStyle: ch.data.datasets[0].backgroundColor[i], index: i }; });
-      } } } } }
-  });
-
-  /* dibiayai & reject per cabang: bulan ini vs bulan lalu */
-  var boxR = pdEl('pdBoxReject'); if (boxR) boxR.style.height = Math.max(280, urut.length * (lblLalu ? 44 : 30) + 80) + 'px';
-  var dsR = [
-    { label: 'Dibiayai ' + lblPer, data: urut.map(function (c) { return peta[c].a.total; }), backgroundColor: '#3b82f6', borderRadius: 4 },
-    { label: 'Reject ' + lblPer, data: urut.map(function (c) { return peta[c].a.slik + peta[c].a.nslik; }), backgroundColor: '#ef4444', borderRadius: 4 }
-  ];
-  if (lblLalu) {
-    dsR.splice(1, 0, { label: 'Dibiayai ' + lblLalu, data: urut.map(function (c) { return peta[c].b.total; }), backgroundColor: 'rgba(59,130,246,.35)', borderRadius: 4 });
-    dsR.push({ label: 'Reject ' + lblLalu, data: urut.map(function (c) { return peta[c].b.slik + peta[c].b.nslik; }), backgroundColor: 'rgba(239,68,68,.35)', borderRadius: 4 });
-  }
-  pdGrafik('pdChartReject', {
-    type: 'bar',
-    data: { labels: urut, datasets: dsR },
-    options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { color: tema.teksKuat, boxWidth: 12 } },
-        tooltip: { callbacks: { afterBody: function (c) {
-          var p = peta[urut[c[0].dataIndex]];
-          return 'Slik ' + p.a.slik + ' / N.Slik ' + p.a.nslik + ' · Pending ' + (p.a.pendok + p.a.pendproses);
-        } } } },
-      scales: { x: { grid: { color: tema.grid }, ticks: { color: tema.teks }, beginAtZero: true }, y: sumbuLabel },
-      onClick: function (e, els) { if (!els.length) return; pdEl('pdCabang').value = urut[els[0].index]; pdEl('pdDealer').value = ''; pdIsiFilter(); pdRender(); } }
-  });
+  var dealer = baris.slice().sort(function (p, q) { return nilai(q.a) - nilai(p.a); }).filter(function (x) { return nilai(x.a) || nilai(x.b); }).slice(0, 15);
+  var jd = pdEl('pdJudulDealer'); if (jd) jd.innerText = 'Grafik per Dealer (' + dealer.length + ' teratas)';
+  mendatar('pdChartDealer', 'pdBoxDealer', dealer, function (x) { return x.dealer.length > 20 ? x.dealer.slice(0, 19) + '…' : x.dealer; },
+    function (x) { pdEl('pdCabang').value = x.cabang; pdIsiFilter(); pdEl('pdDealer').value = x.dealer; pdRender(); }, os ? '#10b981' : '#3b82f6');
 }
 
 function pdRenderTabel(baris, f) {
@@ -20527,6 +20621,7 @@ function pdUnduhExcel() {
   var aoa = [['PEMBIAYAAN PER DEALER - ' + pdLabelPeriode(f.per) + (f.unit ? ' - ' + f.unit : ' - R2 & R4')],
     ['Cabang', 'Dealer', 'New', 'Leaseback', 'Sh Bekas', 'Total', 'OS'].concat(ada ? ['Total ' + pdLabelPeriode(f.perLalu), 'Selisih Unit'] : []).concat(['Reject Slik', 'Reject N.Slik']).concat(ada ? ['Reject ' + pdLabelPeriode(f.perLalu), 'Selisih Reject'] : []).concat(['Pending OK', 'Pending Proses'])];
   pdData.forEach(function (r) {
+    if (!pdBolehCabang(r.cabang)) return;
     if (f.cabang && r.cabang !== f.cabang) return;
     if (f.dealer && r.dealer !== f.dealer) return;
     if (f.cari && r.dealer.indexOf(f.cari) < 0) return;
