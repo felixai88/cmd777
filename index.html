@@ -14801,8 +14801,10 @@ function ucRenderTabelTenor(inp, umur) {
 function khTabelHtml(info, bagian) {
   var tgl = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
   var konsumen = [info.nama, info.nopol].filter(Boolean).join(' \u00b7 ');
-  var h = '<colgroup><col class="c-t"><col class="c-a"><col class="c-p"><col class="c-r"><col class="c-i"></colgroup>';
-  h += '<thead><tr class="kh-kop"><th colspan="5">' +
+  var nKol = (info.kolom || [1, 2, 3, 4]).length, nSpan = nKol + 1;
+  var h = nKol === 4 ? '<colgroup><col class="c-t"><col class="c-a"><col class="c-p"><col class="c-r"><col class="c-i"></colgroup>'
+                     : '<colgroup><col class="c-t">' + new Array(nKol + 1).join('<col>') + '</colgroup>';
+  h += '<thead><tr class="kh-kop"><th colspan="' + nSpan + '">' +
     '<div class="kh-kop-atas"><span class="kh-kop-judul">' + info.judul + '</span><span class="kh-kop-tgl">' + tgl + '</span></div>' +
     '<div class="kh-kop-unit">' + info.unit + '</div>' +
     (info.sub ? '<div class="kh-kop-sub">' + info.sub + '</div>' : '') +
@@ -14812,13 +14814,13 @@ function khTabelHtml(info, bagian) {
     '</th></tr>' +
     '<tr class="kh-judul"><th>Tenor</th>' + (info.kolom || ['Angsuran', 'Pencairan', 'Refund', 'All&nbsp;In']).map(function (k) { return '<th>' + k + '</th>'; }).join('') + '</tr></thead><tbody>';
   bagian.forEach(function (bg) {
-    if (bg.judul) h += '<tr class="kh-grup"><td colspan="5">' + bg.judul + '</td></tr>';
+    if (bg.judul) h += '<tr class="kh-grup"><td colspan="' + nSpan + '">' + bg.judul + '</td></tr>';
     bg.baris.forEach(function (r) {
       if (r.v !== undefined) {
         var kls = ['kh-angs', '', 'kh-refund', 'kh-allin'];
         h += '<tr><td class="kh-tenor">' + r.tenor + 'x</td>' + (r.v
           ? r.v.map(function (n, q) { return '<td class="' + kls[q] + '">' + ucFmt(n) + '</td>'; }).join('')
-          : '<td colspan="4" class="kh-na">tidak tersedia</td>') + '</tr>';
+          : '<td colspan="' + nKol + '" class="kh-na">tidak tersedia</td>') + '</tr>';
         return;
       }
       h += '<tr><td class="kh-tenor">' + r.tenor + 'x</td>' +
@@ -14827,7 +14829,7 @@ function khTabelHtml(info, bagian) {
              : '<td colspan="4" class="kh-na">tidak tersedia</td>') + '</tr>';
     });
   });
-  return h + '</tbody><tfoot><tr><td colspan="5">' + (info.kaki || 'Nilai dalam Rupiah &middot; angsuran per bulan &middot; refund = refund bersih &middot; Capella Multidana') + '</td></tr></tfoot>';
+  return h + '</tbody><tfoot><tr><td colspan="' + nSpan + '">' + (info.kaki || 'Nilai dalam Rupiah &middot; angsuran per bulan &middot; refund = refund bersih &middot; Capella Multidana') + '</td></tr></tfoot>';
 }
 var ucTenorData = null;
 function ucUnduhPdfTenor() {
@@ -16543,7 +16545,7 @@ function dtRenderKartu(baris) {
     }
     return '<div class="dt-tenor"><h4>Tenor ' + b.tenor + ' bulan</h4>' +
       '<div class="dt-nilai">' + ucRp(b.angsuran) + '</div>' +
-      '<div class="dt-ket">per bulan<br>Pokok hutang <b>' + ucRp(b.pokok) + '</b><br>Total angsuran <b>' + ucRp(b.angsuran * b.tenor) + '</b><br>Komisi agen <b>' + ucRp(b.komisi || 0) + '</b></div></div>';
+      '<div class="dt-ket">per bulan<br>' + (modeRingkas() ? '' : 'Pokok hutang <b>' + ucRp(b.pokok) + '</b><br>Total angsuran <b>' + ucRp(b.angsuran * b.tenor) + '</b><br>') + 'Komisi agen <b>' + ucRp(b.komisi || 0) + '</b></div></div>';
   }).join('');
 }
 
@@ -16559,10 +16561,12 @@ function dtRenderTabel(baris) {
     otr: dtInfo.mrp, otrLabel: 'Harga / MRP',
     dp: dtInfo.pinjaman, dpLabel: 'Pinjaman',
     nama: ucTeksInput('dtNama'), nopol: ucTeksInput('dtNopol'),
-    kolom: ['Angsuran', 'Pokok&nbsp;Hutang', dtPu() ? 'Inc&nbsp;/&nbsp;Komisi' : 'Komisi&nbsp;Agen', 'Total&nbsp;Angs.'],
+    kolom: modeRingkas() ? ['Angsuran', dtPu() ? 'Inc&nbsp;/&nbsp;Komisi' : 'Komisi&nbsp;Agen']
+                         : ['Angsuran', 'Pokok&nbsp;Hutang', dtPu() ? 'Inc&nbsp;/&nbsp;Komisi' : 'Komisi&nbsp;Agen', 'Total&nbsp;Angs.'],
     kaki: 'Nilai dalam Rupiah &middot; angsuran per bulan &middot; asuransi TLO &middot; Capella Multidana'
   }, [{ judul: null, baris: baris.map(function (b) {
-    return { tenor: b.tenor, v: b.tersedia === false ? null : [b.angsuran, b.pokok, b.komisi || 0, b.angsuran * b.tenor] };
+    return { tenor: b.tenor, v: b.tersedia === false ? null : (modeRingkas() ? [b.angsuran, b.komisi || 0]   /* CMO: tanpa pokok hutang & total angsuran */
+                                                                : [b.angsuran, b.pokok, b.komisi || 0, b.angsuran * b.tenor]) };
   }) }]);
 }
 
@@ -16645,9 +16649,9 @@ function dtGambarPdf() {
     body.push(['Premi asuransi'].concat(b.map(function (x) { return dtSel(x, function (y) { return ucRp(y.premi); }); })));
   }
   body.push(['Adm + polis'].concat(b.map(function (x) { return ucRp(x.adm); })));
-  body.push(['Pokok hutang'].concat(b.map(function (x) { return dtSel(x, function (y) { return ucRp(y.pokok); }); })));
+  if (!ringkas) body.push(['Pokok hutang'].concat(b.map(function (x) { return dtSel(x, function (y) { return ucRp(y.pokok); }); })));
   body.push(['ANGSURAN / BULAN'].concat(b.map(function (x) { return dtSel(x, function (y) { return ucRp(y.angsuran); }); })));
-  body.push(['Total angsuran'].concat(b.map(function (x) { return dtSel(x, function (y) { return ucRp(y.angsuran * y.tenor); }); })));
+  if (!ringkas) body.push(['Total angsuran'].concat(b.map(function (x) { return dtSel(x, function (y) { return ucRp(y.angsuran * y.tenor); }); })));
   if (!ringkas) body.push(['Total bunga'].concat(b.map(function (x) { return dtSel(x, function (y) { return ucRp(y.angsuran * y.tenor - y.pokok); }); })));
   body.push([dtPu() ? 'Inc / komisi agen' : 'Komisi agen'].concat(b.map(function (x) { return ucRp(x.komisi || 0); })));
   if (!ringkas && (dtPu() || dtMotor())) body.push(['Total inc dikeluarkan'].concat(b.map(function (x) { return ucRp((x.komisi || 0) + x.insentif.total); })));
