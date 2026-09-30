@@ -18238,6 +18238,7 @@ function rkFile(k, f) {
     if (!el) return;
     el.innerText = pesan;
     el.className = "status " + (tipe || "loading");
+    el.style.display = tipe === "success" ? "none" : "";   /* keterangan "berhasil mengambil" tidak ditampilkan */
   }
 
   function haOlahData(res) {
@@ -18716,7 +18717,7 @@ function rkFile(k, f) {
       if (res && res.adaKolomBast === false) {
         kePesan("Data terbaca, tapi kolom link PDF BAST belum ketemu. Beri judul \"LINK PDF\" pada kolom yang berisi link Drive.", "error");
       } else {
-        kePesan("Berhasil membaca " + keBaris.length + " unit.", "success");
+        kePesan("");   /* keterangan jumlah unit tidak ditampilkan */
       }
     }).catch(function (e) {
       keMuat = "gagal";
@@ -20360,7 +20361,7 @@ var pdChart = {};
 var PD_METRIK = ['new', 'leaseback', 'shbekas', 'total', 'os', 'slik', 'nslik', 'pendok', 'pendproses', 'target'];
 
 function pdEl(id) { return document.getElementById(id); }
-function pdStatus(k, t) { var el = pdEl('pdStatusMuat'); if (el) { el.className = 'status ' + (k || ''); el.innerHTML = t || ''; } }
+function pdStatus(k, t) { var el = pdEl('pdStatusMuat'); if (el) { el.className = 'status ' + (k || ''); el.innerHTML = t || ''; el.style.display = (k === 'success' || !t) ? 'none' : ''; } }
 function pdNorm(t) { return String(t == null ? '' : t).toUpperCase().replace(/[^A-Z0-9]/g, ''); }
 function pdAngka(v) {
   if (typeof v === 'number') return v;
@@ -21024,7 +21025,7 @@ var DP_TARGET_CMO = 150000000;   /* target OS per CMO per bulan */
 var dpData = null, dpSedangMuat = false;
 
 function dpEl(id) { return document.getElementById(id); }
-function dpStatus(k, t) { var el = dpEl('dpStatusMuat'); if (el) { el.className = 'status ' + (k || ''); el.innerHTML = t || ''; } }
+function dpStatus(k, t) { var el = dpEl('dpStatusMuat'); if (el) { el.className = 'status ' + (k || ''); el.innerHTML = t || ''; el.style.display = (k === 'success' || !t) ? 'none' : ''; } }
 function dpKunciBulan(d) { return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2); }
 function dpLabelBulan(k) { var p = k.split('-'); return PD_NAMA_BLN[+p[1] - 1] + ' ' + p[0]; }
 function dpLabelPendek(k) { var p = k.split('-'); return PD_BLN_PENDEK[+p[1] - 1] + ' ' + p[0].slice(2); }
