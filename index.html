@@ -20,7 +20,7 @@
   if (window.google && google.script && google.script.run) return;   /* sedang jalan di Apps Script */
 
   /* Link Web App Apps Script (deploy yang ujungnya /exec) */
-  var API_URL = "https://script.google.com/macros/s/AKfycbzU0UDYca-qg1n6L2Tj7gRdUkeHtaUdKYiIk57-w9l9qSE3l4urZi88VoRX5HjNPm6XKA/exec";
+  var API_URL = "https://script.google.com/macros/s/AKfycbwY5vR2hlG_fcqyE1i17mQcPJJpuaIVF-bLHQcW3eYFwuTKCOKPkICva7wvfjNqMILNqw/exec";
 
   /* fungsi server yang boleh dipanggil — harus sama dengan daftar di Api.gs */
   var FUNGSI = ["loginUser", "cekSesi", "logoutUser", "gantiPassword", "daftarUser", "tambahUser", "resetPasswordUser", "ubahStatusUser", "fetchSheetCSV", "fetchJualanCSV", "fetchTarikanCSV", "fetchLapMeetingCSV", "fetchTarikanAllCSV", "getPeriodeMrp", "getPeriodeMrpSorum", "getMrpSorumBekas", "getMatriksRangka", "bacaStnk", "fetchHargaAyda", "getDataPembiayaan", "bacaTacDealer", "ajukanPengajuanHarga", "ambilBerkasDrive", "fetchKelengkapanEstimasi", "fetchPengajuanHarga", "simpanBastLengkap", "simpanGabunganEstimasi", "simpanKeteranganEstimasi", "simpanMemoHarga", "simpanMemoMassal", "unggahBerkasEstimasi"];
@@ -4732,7 +4732,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <div class="dk-card"><h3>Unit Dibiayai</h3><div class="dk-box" style="height:260px;"><canvas id="pdChartUnit"></canvas></div></div>
       </div>
       <div class="dk-row c2">
-        <div class="dk-card"><h3>Reject (Slik + N.Slik)</h3><div class="dk-box" style="height:260px;"><canvas id="pdChartRejectBanding"></canvas></div></div>
+        <div class="dk-card"><h3>Reject &amp; Pending</h3><div class="dk-box" style="height:290px;"><canvas id="pdChartRejectBanding"></canvas></div></div>
         <div class="dk-card"><h3>Komposisi Pembiayaan</h3><div class="dk-box" style="height:260px;"><canvas id="pdChartKomposisi"></canvas></div></div>
       </div>
 
@@ -5642,6 +5642,20 @@ const REGIONAL_MAP = {
   "ACEH": ["LSM", "BRN", "BNA", "MLH", "LGS", "KTC", "BKJ", "TKN", "SBM", "SGL", "BPD", "TTN"]
 };
 
+/* Pembagian AREA untuk akun login AREA (3 area). REGIONAL_MAP di atas tetap dipakai untuk laporan per wilayah. */
+const AREA_MAP = {
+  "RIAU-KEPRI": REGIONAL_MAP.RIAU.concat(REGIONAL_MAP.KEPRI),
+  "PADANG":     REGIONAL_MAP.SUMBAR.slice(),
+  "SUMUT-ACEH": REGIONAL_MAP.SUMUT.concat(REGIONAL_MAP.ACEH)
+};
+/* cabang milik satu area; nama wilayah lama (RIAU, KEPRI, SUMBAR, SUMUT, ACEH) tetap dikenali */
+function cabangArea(nama) {
+  const n = String(nama || "").toUpperCase().trim().replace(/\s*[-\/&+]\s*|\s+/g, "-");
+  if (AREA_MAP[n]) return AREA_MAP[n].slice();
+  if (n === "SUMBAR") return AREA_MAP.PADANG.slice();
+  return (REGIONAL_MAP[n] || []).slice();
+}
+
 function getCabangListByWilayah(wilayah) {
   if (!wilayah) return null;
   return REGIONAL_MAP[wilayah] || [];
@@ -5830,7 +5844,7 @@ function kuSemuaCabang() {
 function kuCabangLingkup() {
   const p = kuPeranSaya(), c = String((currentUser && currentUser.cabang) || "").toUpperCase().trim();
   if (p === "HO") return kuSemuaCabang();
-  if (p === "AREA") return (REGIONAL_MAP[c] || []).slice().sort();
+  if (p === "AREA") return cabangArea(c).sort();
   if (p === "CABANG") return c ? [c] : [];
   return [];
 }
@@ -5857,7 +5871,7 @@ function kuRoleBerubah() {
   const sel = document.getElementById("kuCabang"), lbl = document.getElementById("kuLabelCabang");
   if (!sel) return;
   const lama = sel.value;
-  const daftar = role === "AREA" ? Object.keys(REGIONAL_MAP).sort() : kuCabangLingkup();
+  const daftar = role === "AREA" ? Object.keys(AREA_MAP) : kuCabangLingkup();
   if (lbl) lbl.innerText = role === "AREA" ? "Area / wilayah" : "Cabang";
   sel.innerHTML = (daftar.length > 1 ? '<option value="">- pilih -</option>' : '') +
     daftar.map(c => '<option value="' + c + '">' + c + '</option>').join("");
@@ -20386,7 +20400,7 @@ function pdLingkup() {
   var role = String((u && u.role) || (typeof currentLoginRole !== 'undefined' ? currentLoginRole : 'HO')).toUpperCase();
   if (role === 'HO') return null;
   var cab = String((u && u.cabang) || '').toUpperCase().trim();
-  if (role === 'AREA') return (REGIONAL_MAP[cab] || []).slice();
+  if (role === 'AREA') return cabangArea(cab);
   return cab ? [cab] : [];
 }
 function pdBolehCabang(nama) {
@@ -20487,7 +20501,7 @@ function pdRenderKpi(baris, f) {
   var aktif = baris.filter(function (x) { return x.a.total > 0; });
   var aktifLalu = ada ? baris.filter(function (x) { return x.b && x.b.total > 0; }).length : null;
   var top = aktif.slice().sort(function (p, q) { return q.a.total - p.a.total; })[0];
-  var rej = A.slik + A.nslik, rejLalu = B.slik + B.nslik;
+  var rej = Math.round(A.slik + A.nslik), rejLalu = Math.round(B.slik + B.nslik);
   var pend = A.pendok + A.pendproses;
   var rasio = function (r, t) { return (r + t) ? r / (r + t) * 100 : 0; };
   var kartu = function (label, nilai, sub, warna, bar) {
@@ -20590,7 +20604,27 @@ function pdRenderChart(baris, f) {
   };
   dua('pdChartOs', B.os, A.os, '#10b981', true);
   dua('pdChartUnit', B.total, A.total, '#3b82f6', false, false, A.target);
-  dua('pdChartRejectBanding', B.slik + B.nslik, A.slik + A.nslik, '#ef4444', false, true);
+  /* reject & pending dirinci: Slik, N.Slik, Pending OK, Pending Proses */
+  var bul = function (v) { return Math.round(v || 0); };
+  var rinci = [['Slik', 'slik', '#ef4444'], ['N.Slik', 'nslik', '#f87171'], ['Pend OK', 'pendok', '#f59e0b'], ['Pend Proses', 'pendproses', '#fbbf24']];
+  var dsR = [{ label: lblPer, data: rinci.map(function (r) { return bul(A[r[1]]); }), backgroundColor: rinci.map(function (r) { return r[2]; }), borderRadius: 6, maxBarThickness: 38 }];
+  if (lblLalu) dsR.unshift({ label: lblLalu, data: rinci.map(function (r) { return bul(B[r[1]]); }), backgroundColor: abu, borderRadius: 6, maxBarThickness: 38 });
+  var rjA = bul(A.slik + A.nslik), rjB = bul(B.slik + B.nslik), pdA = bul(A.pendok + A.pendproses), pdB = bul(B.pendok + B.pendproses);
+  var judulR = lblLalu ? 'Reject ' + rjB.toLocaleString('id-ID') + ' \u2192 ' + rjA.toLocaleString('id-ID') + '   \u00b7   Pending ' + pdB.toLocaleString('id-ID') + ' \u2192 ' + pdA.toLocaleString('id-ID')
+                       : 'Reject ' + rjA.toLocaleString('id-ID') + '   \u00b7   Pending ' + pdA.toLocaleString('id-ID');
+  pdGrafik('pdChartRejectBanding', {
+    type: 'bar',
+    data: { labels: rinci.map(function (r) { return r[0]; }), datasets: dsR },
+    options: { responsive: true, maintainAspectRatio: false, layout: { padding: { top: 8 } },
+      plugins: {
+        title: { display: true, text: judulR, color: lblLalu && rjA > rjB ? '#dc2626' : tema.teksKuat, font: { size: 12.5, weight: 'bold' }, padding: { bottom: 20 } },
+        legend: { display: !!lblLalu, position: 'bottom', labels: { color: tema.teksKuat, boxWidth: 12,
+          generateLabels: function (ch) { return ch.data.datasets.map(function (d, i) { return { text: d.label, fillStyle: i === 0 && lblLalu ? abu : '#ef4444', strokeStyle: 'transparent', datasetIndex: i }; }); } } },
+        tooltip: { callbacks: { label: function (c) { return c.dataset.label + ': ' + c.raw.toLocaleString('id-ID'); } } } },
+      scales: { x: { grid: { display: false }, ticks: { color: tema.teksKuat, font: { weight: 'bold', size: 11 } } },
+                y: { beginAtZero: true, grid: { color: tema.grid }, ticks: { color: tema.teks, precision: 0 } } } },
+    plugins: [labelPlug(function (v) { return Number(v).toLocaleString('id-ID'); })]
+  });
 
   /* komposisi: New / Leaseback / Sh Bekas, bulan lalu vs bulan ini */
   var jenis = [['New', 'new'], ['Leaseback', 'leaseback'], ['Sh Bekas', 'shbekas']];
