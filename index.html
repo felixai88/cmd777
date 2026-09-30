@@ -5919,6 +5919,49 @@ function cabangArea(nama) {
   return (REGIONAL_MAP[n] || []).slice();
 }
 
+/* ==================== LINGKUP DATA PER ROLE ====================
+   HO: semua cabang. AREA: cabang di area-nya. CABANG (dan CMO/CMC/GUDANG): cabangnya sendiri.
+   Data disaring sekali saat selesai dimuat, jadi semua grafik, tabel & download ikut tersaring. */
+const AREA_WILAYAH = { "RIAU-KEPRI": ["RIAU", "KEPRI"], "PADANG": ["SUMBAR"], "SUMUT-ACEH": ["SUMUT", "ACEH"] };
+function lingkupInfo() {
+  const u = (typeof currentUser !== "undefined" && currentUser) ? currentUser : null;
+  const role = String((u && u.role) || (typeof currentLoginRole !== "undefined" ? currentLoginRole : "HO")).toUpperCase();
+  if (!u || role === "HO") return null;
+  const cab = String(u.cabang || "").toUpperCase().trim();
+  if (role === "AREA") {
+    const n = cab.replace(/\s*[-\/&+]\s*|\s+/g, "-");
+    const kunci = AREA_MAP[n] ? n : (n === "SUMBAR" ? "PADANG" : "");
+    return { role: "AREA", cabang: kunci ? AREA_MAP[kunci] : (REGIONAL_MAP[n] || []),
+             wilayah: kunci ? AREA_WILAYAH[kunci] : (REGIONAL_MAP[n] ? [n] : []) };
+  }
+  return { role: "CABANG", cabang: cab ? [cab] : [], wilayah: [] };
+}
+function lingkupBoleh(kode) {
+  const L = lingkupInfo();
+  if (!L) return true;
+  let k = String(kode || "").toUpperCase().trim();
+  if (typeof PD_ALIAS_CABANG !== "undefined" && PD_ALIAS_CABANG[k]) k = PD_ALIAS_CABANG[k];
+  if (L.cabang.indexOf(k) >= 0) return true;
+  if (L.role === "AREA" && typeof getWilayahDariCabang === "function") return L.wilayah.indexOf(getWilayahDariCabang(k)) >= 0;
+  return false;
+}
+/* saring array objek (kolom CABANG) */
+function lingkupSaring(arr, ambil) {
+  if (!lingkupInfo() || !Array.isArray(arr)) return arr;
+  ambil = ambil || function (r) { return r && (r.CABANG != null ? r.CABANG : r.cabang); };
+  return arr.filter(function (r) { return lingkupBoleh(ambil(r)); });
+}
+/* saring baris mentah sheet: baris sebelum/sama dengan header dibiarkan */
+function lingkupSaringBaris(rows, idxHeader, kolCabang) {
+  if (!lingkupInfo() || !Array.isArray(rows) || kolCabang == null || kolCabang < 0) return rows;
+  return rows.filter(function (r, i) {
+    if (i <= idxHeader) return true;
+    if (!r) return false;
+    const v = String(r[kolCabang] == null ? "" : r[kolCabang]).trim();
+    return v !== "" && lingkupBoleh(v);
+  });
+}
+
 function getCabangListByWilayah(wilayah) {
   if (!wilayah) return null;
   return REGIONAL_MAP[wilayah] || [];
@@ -6381,7 +6424,7 @@ function loadData() {
   google.script.run
     .withSuccessHandler(function(rows) {
       try {
-        allData = parseRowsSmart(rows);
+        allData = lingkupSaring(parseRowsSmart(rows));
         if (allData.length === 0) {
           throw new Error("Data sheet kosong atau format header tidak dikenali");
         }
@@ -6445,7 +6488,8 @@ function populateWilayahDropdowns() {
     if (!sel) return;
     const cur = sel.value;
     sel.innerHTML = '<option value="">Semua Wilayah</option>';
-    Object.keys(REGIONAL_MAP).forEach(wil => {
+    const Lw = lingkupInfo();
+    Object.keys(REGIONAL_MAP).filter(wil => !Lw || REGIONAL_MAP[wil].some(c => lingkupBoleh(c))).forEach(wil => {
       const opt = document.createElement("option");
       opt.value = wil;
       opt.textContent = wil;
@@ -8293,7 +8337,7 @@ function loadTarikanJualanData() {
 
   google.script.run
     .withSuccessHandler(function(rows) {
-      jualanData = parseJualanRows(rows);
+      jualanData = lingkupSaring(parseJualanRows(rows));
       afterTJPartLoaded();
     })
     .withFailureHandler(function(err) {
@@ -8303,7 +8347,7 @@ function loadTarikanJualanData() {
 
   google.script.run
     .withSuccessHandler(function(rows) {
-      tarikanData = parseTarikanRowsTJ(rows);
+      tarikanData = lingkupSaring(parseTarikanRowsTJ(rows));
       afterTJPartLoaded();
     })
     .withFailureHandler(function(err) {
@@ -9888,6 +9932,9 @@ function loadLapMeetingData() {
     .withSuccessHandler(function(result) {
       try {
         lapMeetingRawData = result;
+        if (lingkupInfo() && lapMeetingRawData) Object.keys(LM_COL).forEach(function (nm) {
+          if (Array.isArray(lapMeetingRawData[nm])) lapMeetingRawData[nm] = lingkupSaringBaris(lapMeetingRawData[nm], 0, LM_COL[nm].cabang);
+        });
         processLapMeetingDataFromSheets();
         renderLapMeetingCharts();
         if (statusEl) statusEl.innerText = "Data Laporan Meeting berhasil disinkronkan.";
@@ -14063,6 +14110,7 @@ function loadTarikanAllData() {
       }
       taHeaderIdx = taCariBarisHeader(taRows);
       taKol = taDeteksiKolom(taRows[taHeaderIdx]);
+      taRows = lingkupSaringBaris(taRows, taHeaderIdx, taKol.cabang);
 
       if (taKol.periode < 0) {
         if (st) st.innerText = "Kolom PERIODE tidak ditemukan di sheet TARIKAN ALL.";
@@ -18832,7 +18880,7 @@ function rkFile(k, f) {
     kePesan("Mengambil data dari DATA BAST AYDA...", "loading");
 
     keJalankan("fetchKelengkapanEstimasi").then(function (res) {
-      keBaris = (res && res.rows) || [];
+      keBaris = lingkupSaring((res && res.rows) || []);
       return keJalankan("fetchPengajuanHarga").then(function (pj) {
         var peta = {};
         ((pj && pj.rows) || []).forEach(function (p) { peta[p.baris] = p; });
@@ -20730,8 +20778,7 @@ function pdLingkup() {
   return cab ? [cab] : [];
 }
 function pdBolehCabang(nama) {
-  var l = pdLingkup();
-  return l === null || l.indexOf(pdKodeCabang(nama)) >= 0;
+  return lingkupBoleh(pdKodeCabang(nama));
 }
 
 function pdIsiFilter(awal) {
