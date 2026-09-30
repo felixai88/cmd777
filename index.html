@@ -2846,6 +2846,13 @@ body.dark .bg-bingkai { border-color: #22324d; }
 .ku-role.GUDANG { background: #eff6ff; color: #1d4ed8; }
 .ku-role.CMC { background: #faf5ff; color: #7e22ce; }
 @media (max-width: 640px) { .bg-bingkai iframe { height: calc(100vh - 170px); min-height: 480px; } }
+
+/* ==================== HEADER: JUDUL PANJANG TIDAK MENDORONG TOMBOL KELUAR LAYAR ==================== */
+html, body { overflow-x: clip; }
+.topbar > div:not(.user-chip) { min-width: 0; flex: 1 1 auto; }
+.topbar #pageTitle, .topbar #pageSub { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.topbar .btn-refresh, .topbar .user-chip, .topbar .burger { flex: none; }
+@media (max-width: 420px) { .topbar #pageTitle { font-size: 15px !important; } .topbar .btn-refresh { padding-left: 10px !important; padding-right: 10px !important; } }
 </style>
 
 </head>
@@ -4883,6 +4890,27 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         #tabPbDatun .dt-cmo-bar { height: 7px; border-radius: 7px; background: #e2e8f0; overflow: hidden; margin-top: 4px; min-width: 70px; }
         #tabPbDatun .dt-cmo-bar i { display: block; height: 100%; border-radius: 7px; }
         body.dark #tabPbDatun .dt-cmo-bar, body.cmd #tabPbDatun .dt-cmo-bar { background: #22334f; }
+        #tabPbDatun .dp-str { border: 1px solid #e5e9f0; border-left: 4px solid #ef4444; border-radius: 10px; padding: 10px 12px; margin-bottom: 8px; }
+        #tabPbDatun .dp-str.s2 { border-left-color: #f97316; } #tabPbDatun .dp-str.s1 { border-left-color: #f59e0b; }
+        #tabPbDatun .dp-str-kepala { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
+        #tabPbDatun .dp-str-kepala b { font-size: 13px; color: #0f2540; }
+        #tabPbDatun .dp-str-kepala small { font-size: 11px; color: #64748b; font-weight: 700; }
+        #tabPbDatun .dp-str-badge { margin-left: auto; background: #fef2f2; color: #b91c1c; border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 800; white-space: nowrap; }
+        #tabPbDatun .dp-str-bulan { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 6px; }
+        #tabPbDatun .dp-str-sel { text-align: center; }
+        #tabPbDatun .dp-str-sel small { display: block; font-size: 10.5px; color: #64748b; font-weight: 700; }
+        #tabPbDatun .dp-str-sel .t { height: 38px; background: #f1f5f9; border-radius: 6px; position: relative; overflow: hidden; margin: 3px 0; }
+        #tabPbDatun .dp-str-sel .t i { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 6px 6px 0 0; }
+        #tabPbDatun .dp-str-sel b { font-size: 11px; }
+        #tabPbDatun .dp-str-sel.kini .t { outline: 2px solid #0f2540; outline-offset: 1px; }
+        #tabPbDatun .dp-str-kosong { color: #15803d; font-weight: 700; font-size: 13px; padding: 14px; text-align: center; background: #f0fdf4; border-radius: 10px; }
+        #tabPbDatun .dp-str-lagi { width: 100%; margin-top: 4px; }
+        body.dark #tabPbDatun .dp-str, body.cmd #tabPbDatun .dp-str { border-color: #22334f; }
+        body.dark #tabPbDatun .dp-str-kepala b, body.cmd #tabPbDatun .dp-str-kepala b { color: #e2e8f0; }
+        body.dark #tabPbDatun .dp-str-sel .t, body.cmd #tabPbDatun .dp-str-sel .t { background: #1a2841; }
+        body.dark #tabPbDatun .dp-str-sel.kini .t, body.cmd #tabPbDatun .dp-str-sel.kini .t { outline-color: #e2e8f0; }
+        body.dark #tabPbDatun .dp-str-badge, body.cmd #tabPbDatun .dp-str-badge { background: rgba(239,68,68,.15); color: #fca5a5; }
+        body.dark #tabPbDatun .dp-str-kosong, body.cmd #tabPbDatun .dp-str-kosong { background: rgba(34,197,94,.12); color: #4ade80; }
       </style>
 
       <div class="card">
@@ -4916,6 +4944,17 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
           <p class="pb-klik" style="margin:0 0 8px 0;">OS per CMO = OS cabang &divide; jumlah CMO cabang itu. Garis putus-putus = target per CMO. Klik batang untuk menyaring ke cabang.</p>
           <div class="dk-box" id="dpBoxCmo"><canvas id="dpChartCmo"></canvas></div>
         </div>
+      </div>
+
+      <div class="dk-card" style="margin-bottom:16px;">
+        <h3>CMO Belum Capai Target Beruntun</h3>
+        <p class="pb-klik" style="margin:0 0 10px 0;" id="dpStrKet">Pencapaian OS tiap CMO per bulan dibanding target. Dihitung mundur dari bulan terpilih.</p>
+        <div class="lor-cmp-bar" id="dpStrBar">
+          <span class="cb-view" data-n="1">&ge; 1 bulan</span>
+          <span class="cb-view active" data-n="2">&ge; 2 bulan</span>
+          <span class="cb-view" data-n="3">&ge; 3 bulan</span>
+        </div>
+        <div id="dpStrDaftar"></div>
       </div>
 
       <div class="dk-sec"><span>Rekap</span><hr></div>
@@ -21080,6 +21119,7 @@ function dpRender() {
   dpRenderChart(f);
   dpRenderTabelCabang(A, B, f);
   dpRenderTabelCmo(A, B, f);
+  dpRenderBeruntun(f);
 }
 
 /* rekap per cabang: unit, OS, daftar CMO (CMO dihitung dari bulan ini + bulan lalu) */
@@ -21272,6 +21312,61 @@ function dpRenderTabelCmo(A, B, f) {
   dpRapikanKepala(t);
 }
 
+
+/* ---------- CMO belum capai target beberapa bulan berturut-turut ---------- */
+var dpStrMin = 2, dpStrSemua = false;
+function dpRenderBeruntun(f) {
+  var el = dpEl('dpStrDaftar'); if (!el) return;
+  var bulan = dpBulanAda().filter(function (k) { return k <= f.per; });
+  var peta = {};
+  dpData.forEach(function (r) {
+    if (r.bulan > f.per || !pdBolehCabang(r.cabang)) return;
+    if (f.cabang && r.cabang !== f.cabang) return;
+    if (f.unit && r.unit !== f.unit) return;
+    if (f.cari && r.cmo.indexOf(f.cari) < 0) return;
+    var k = r.cabang + '|' + r.cmo;
+    var x = peta[k] = peta[k] || { cabang: r.cabang, cmo: r.cmo, os: {}, awal: r.bulan };
+    x.os[r.bulan] = (x.os[r.bulan] || 0) + r.os;
+    if (r.bulan < x.awal) x.awal = r.bulan;
+  });
+  var daftar = Object.keys(peta).map(function (k) {
+    var x = peta[k];
+    x.riwayat = bulan.filter(function (b) { return b >= x.awal; }).map(function (b) { return { b: b, pc: (x.os[b] || 0) / DP_TARGET_CMO * 100 }; });
+    x.beruntun = 0;
+    for (var i = x.riwayat.length - 1; i >= 0 && x.riwayat[i].pc < 100; i--) x.beruntun++;
+    x.pcKini = x.riwayat.length ? x.riwayat[x.riwayat.length - 1].pc : 0;
+    return x;
+  }).filter(function (x) { return x.beruntun >= dpStrMin; })
+    .sort(function (p, q) { return q.beruntun - p.beruntun || p.pcKini - q.pcKini; });
+
+  var ket = dpEl('dpStrKet');
+  if (ket) ket.innerHTML = 'Target ' + dkSingkatRupiah(DP_TARGET_CMO) + ' OS / CMO / bulan. Dihitung mundur dari <b>' + dpLabelBulan(f.per) +
+    '</b> &middot; bulan tanpa kontrak dihitung 0%. <b>' + daftar.length + ' CMO</b> belum capai target &ge; ' + dpStrMin + ' bulan berturut-turut.';
+  if (!daftar.length) { el.innerHTML = '<div class="dp-str-kosong">&#10004; Tidak ada CMO yang belum capai target &ge; ' + dpStrMin + ' bulan berturut-turut.</div>'; return; }
+  var warna = function (pc) { return pc >= 100 ? '#10b981' : (pc >= 70 ? '#f59e0b' : '#ef4444'); };
+  var tampil = dpStrSemua ? daftar : daftar.slice(0, 20);
+  el.innerHTML = tampil.map(function (x) {
+    var akhir = x.riwayat.slice(-6);
+    return '<div class="dp-str s' + Math.min(3, x.beruntun) + '"><div class="dp-str-kepala"><b>' + escapeHtml(x.cmo) + '</b><small>' + escapeHtml(x.cabang) + '</small>' +
+      '<span class="dp-str-badge">' + x.beruntun + ' bulan berturut-turut</span></div>' +
+      '<div class="dp-str-bulan">' + akhir.map(function (r) {
+        return '<div class="dp-str-sel' + (r.b === f.per ? ' kini' : '') + '" title="OS ' + dkSingkatRupiah(x.os[r.b] || 0) + '"><small>' + dpLabelPendek(r.b) + '</small>' +
+          '<div class="t"><i style="height:' + Math.min(100, r.pc).toFixed(0) + '%;background:' + warna(r.pc) + '"></i></div><b style="color:' + warna(r.pc) + '">' + r.pc.toFixed(0) + '%</b></div>';
+      }).join('') + '</div></div>';
+  }).join('') + (daftar.length > tampil.length ? '<button type="button" class="btn-excel dp-str-lagi" id="dpStrLagi" style="background:#64748b;">Tampilkan semua (' + daftar.length + ' CMO)</button>' : '');
+  var lg = dpEl('dpStrLagi'); if (lg) lg.onclick = function () { dpStrSemua = true; dpRenderBeruntun(f); };
+}
+(function () {
+  var bar = dpEl('dpStrBar');
+  if (bar) bar.querySelectorAll('.cb-view').forEach(function (c) {
+    c.addEventListener('click', function () {
+      dpStrMin = +c.dataset.n; dpStrSemua = false;
+      bar.querySelectorAll('.cb-view').forEach(function (x) { x.classList.toggle('active', x === c); });
+      if (dpData) dpRenderBeruntun(dpPilihan());
+    });
+  });
+})();
+
 function dpUnduhExcel() {
   if (!dpData || typeof XLSX === 'undefined') { dpStatus('error', 'Data atau library Excel belum siap.'); return; }
   var f = dpPilihan(), ada = !!f.perLalu, A = dpSaring(f, f.per), B = ada ? dpSaring(f, f.perLalu) : [];
@@ -21297,6 +21392,22 @@ function dpUnduhExcel() {
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoaC), 'PER CABANG');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoaM), 'PER CMO');
   XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoaK), 'DATA KONTRAK');
+  /* riwayat % target tiap CMO per bulan */
+  var semuaBln = dpBulanAda().filter(function (k) { return k <= f.per; });
+  var riw = {};
+  dpData.forEach(function (r) {
+    if (r.bulan > f.per || !pdBolehCabang(r.cabang) || (f.cabang && r.cabang !== f.cabang) || (f.unit && r.unit !== f.unit)) return;
+    var k = r.cabang + '|' + r.cmo; var x = riw[k] = riw[k] || { cabang: r.cabang, cmo: r.cmo, os: {}, awal: r.bulan };
+    x.os[r.bulan] = (x.os[r.bulan] || 0) + r.os; if (r.bulan < x.awal) x.awal = r.bulan;
+  });
+  var aoaR = [['RIWAYAT % TARGET CMO (target ' + DP_TARGET_CMO + ' / bulan)'], ['Cabang', 'CMO', 'Bulan Tidak Capai Berturut-turut'].concat(semuaBln.map(dpLabelBulan))];
+  Object.keys(riw).map(function (k) { return riw[k]; }).forEach(function (x) {
+    var pcs = semuaBln.map(function (b) { return b < x.awal ? '' : Math.round((x.os[b] || 0) / DP_TARGET_CMO * 1000) / 10; });
+    var n = 0; for (var i = pcs.length - 1; i >= 0 && pcs[i] !== '' && pcs[i] < 100; i--) n++;
+    aoaR.push([x.cabang, x.cmo, n].concat(pcs));
+  });
+  aoaR = aoaR.slice(0, 2).concat(aoaR.slice(2).sort(function (p, q) { return q[2] - p[2]; }));
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoaR), 'CMO BERUNTUN');
   XLSX.writeFile(wb, ('Pembiayaan_Dana_Tunai_' + I + (f.unit ? '_' + f.unit : '') + (f.cabang ? '_' + f.cabang : '')).replace(/\s+/g, '_') + '.xlsx');
 }
 
