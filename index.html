@@ -2809,6 +2809,7 @@ body.cmd #tabDanaTunai .sim-rp-pfx, body.cmd #tabDanaTunai .sim-rp-sfx { backgro
 .bg-bingkai iframe { display: block; width: 100%; height: calc(100vh - 210px); min-height: 560px; border: 0; }
 body.dark .bg-bingkai { border-color: #22324d; }
 .ku-role.GUDANG { background: #eff6ff; color: #1d4ed8; }
+.ku-role.CMC { background: #faf5ff; color: #7e22ce; }
 @media (max-width: 640px) { .bg-bingkai iframe { height: calc(100vh - 170px); min-height: 480px; } }
 </style>
 
@@ -5579,7 +5580,7 @@ function masukAplikasi(u) {
 
   const adminSaja = ["btnTab1", "btnTab2", "btnTab6", "btnTabHargaAyda"];
   const bolehLihat = currentLoginRole === "HO";
-  const modeCmo = currentLoginRole === "CMO";
+  const modeCmo = currentLoginRole === "CMO" || currentLoginRole === "CMC";   /* CMC: tampilan seperti CMO, PDF lengkap seperti Cabang */
   adminSaja.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.style.display = bolehLihat ? "" : "none";
@@ -5618,7 +5619,7 @@ function masukAplikasi(u) {
 }
 
 /* ---------- Akun: chip user, keluar, ganti password ---------- */
-const LABEL_ROLE = { HO: "Head Office", AREA: "Area", CBG: "Cabang", CABANG: "Cabang", CMO: "CMO", GUDANG: "Gudang" };
+const LABEL_ROLE = { HO: "Head Office", AREA: "Area", CBG: "Cabang", CABANG: "Cabang", CMO: "CMO", CMC: "CMC", GUDANG: "Gudang" };
 function tampilkanUser() {
   const u = currentUser; if (!u) return;
   const chip = document.getElementById("userChip");
@@ -5629,7 +5630,7 @@ function tampilkanUser() {
   set("userAva", inisial); set("userNama", u.nama); set("userRole", info);
   set("userMenuNama", u.nama); set("userMenuInfo", "@" + u.username + " \u00b7 " + info);
 }
-/* CMO: tabel & PDF simulasi diringkas. HO & Cabang: lengkap. */
+/* CMO: tabel & PDF simulasi diringkas. HO, Cabang & CMC: lengkap. */
 function modeRingkas() { return typeof currentLoginRole !== "undefined" && currentLoginRole === "CMO"; }
 /* dipakai PDF: "Dicetak oleh ..." */
 function namaPencetak() {
@@ -5702,8 +5703,8 @@ function kuRun(nama, args, ok, gagal) {
    AREA   -> boleh membuat CABANG & CMO di cabang wilayahnya (kolom cabang akun AREA = nama wilayah)
    CABANG -> boleh membuat CMO di cabangnya sendiri
    Akses menu AREA sama dengan CABANG; CMO tetap kalkulator saja. */
-const KU_BOLEH_BUAT = { HO: ["AREA", "CABANG", "CMO", "GUDANG"], AREA: ["CABANG", "CMO", "GUDANG"], CABANG: ["CMO", "GUDANG"], CMO: [], GUDANG: [] };
-const KU_LABEL_OPSI = { AREA: "AREA (wilayah)", CABANG: "CABANG", CMO: "CMO (kalkulator saja)", GUDANG: "GUDANG (BAST & kelengkapan)" };
+const KU_BOLEH_BUAT = { HO: ["AREA", "CABANG", "CMO", "CMC", "GUDANG"], AREA: ["CABANG", "CMO", "CMC", "GUDANG"], CABANG: ["CMO", "CMC", "GUDANG"], CMO: [], CMC: [], GUDANG: [] };
+const KU_LABEL_OPSI = { AREA: "AREA (wilayah)", CABANG: "CABANG", CMO: "CMO (kalkulator saja)", CMC: "CMC (kalkulator + PDF lengkap untuk PO)", GUDANG: "GUDANG (BAST & kelengkapan)" };
 function kuKodeRole(r) { r = String(r || "").toUpperCase().trim(); return r === "CBG" ? "CABANG" : r; }
 function kuPeranSaya() { return kuKodeRole(currentUser && currentUser.role); }
 function kuBolehBuatApa() { return KU_BOLEH_BUAT[kuPeranSaya()] || []; }
@@ -15676,6 +15677,7 @@ function ucPetaPdf(doc, yMin) {
 
 function ucUnduhPdf(mode) {
   mode = mode || 'semua';
+  if (mode === 'cmo' && !modeRingkas()) mode = 'semua';   /* CMC: PDF lengkap (rincian hutang, tarif asuransi, adm + polis) */
   var idHint = mode === 'addm' ? 'ucHintAddm' : (mode === 'addb' ? 'ucHintAddb' : 'ucHint');
   /* pengaman terakhir: DP tidak boleh di bawah 15% saat dicetak */
   if (ucKunciDpMinimum(false)) {
@@ -16541,7 +16543,7 @@ function dtRenderKartu(baris) {
     }
     return '<div class="dt-tenor"><h4>Tenor ' + b.tenor + ' bulan</h4>' +
       '<div class="dt-nilai">' + ucRp(b.angsuran) + '</div>' +
-      '<div class="dt-ket">per bulan<br>Pokok hutang <b>' + ucRp(b.pokok) + '</b><br>Komisi agen <b>' + ucRp(b.komisi || 0) + '</b></div></div>';
+      '<div class="dt-ket">per bulan<br>Pokok hutang <b>' + ucRp(b.pokok) + '</b><br>Total angsuran <b>' + ucRp(b.angsuran * b.tenor) + '</b><br>Komisi agen <b>' + ucRp(b.komisi || 0) + '</b></div></div>';
   }).join('');
 }
 
@@ -16617,6 +16619,10 @@ function dtGambarPdf() {
   dataUnit.push(['Kategori pinjaman', u.labelJenis]);
   dataUnit.push(['Pinjaman', ucRp(u.pinjaman)]);
   dataUnit.push(['Adm + polis', ucRp(u.adm)]);
+  if (!modeRingkas()) {
+    dataUnit.push(['Jenis asuransi', 'TLO (semua tahun tenor)']);
+    dataUnit.push(['Nilai pertanggungan (TSI)', ucRp(u.pinjaman + u.adm)]);
+  }
 
   doc.autoTable({
     startY: 32,
@@ -16635,14 +16641,16 @@ function dtGambarPdf() {
   var body = [['Pinjaman'].concat(b.map(function () { return ucRp(u.pinjaman); }))];
   if (!ringkas) {
     body.push([(dtPu() || dtMotor()) ? 'Rate bunga flat (p.a.)' : 'Rate jual'].concat(b.map(function (x) { return x.rate == null ? '-' : ucPct(x.rate, 2); })));
+    body.push(['Rate asuransi'].concat(b.map(function (x) { return dtSel(x, function (y) { return ucPct(y.premi / (u.pinjaman + y.adm), 3); }); })));
     body.push(['Premi asuransi'].concat(b.map(function (x) { return dtSel(x, function (y) { return ucRp(y.premi); }); })));
   }
   body.push(['Adm + polis'].concat(b.map(function (x) { return ucRp(x.adm); })));
   body.push(['Pokok hutang'].concat(b.map(function (x) { return dtSel(x, function (y) { return ucRp(y.pokok); }); })));
   body.push(['ANGSURAN / BULAN'].concat(b.map(function (x) { return dtSel(x, function (y) { return ucRp(y.angsuran); }); })));
-  if (!ringkas) body.push(['Total angsuran'].concat(b.map(function (x) { return dtSel(x, function (y) { return ucRp(y.angsuran * y.tenor); }); })));
+  body.push(['Total angsuran'].concat(b.map(function (x) { return dtSel(x, function (y) { return ucRp(y.angsuran * y.tenor); }); })));
+  if (!ringkas) body.push(['Total bunga'].concat(b.map(function (x) { return dtSel(x, function (y) { return ucRp(y.angsuran * y.tenor - y.pokok); }); })));
   body.push([dtPu() ? 'Inc / komisi agen' : 'Komisi agen'].concat(b.map(function (x) { return ucRp(x.komisi || 0); })));
-  if (!ringkas && dtPu()) body.push(['Total inc dikeluarkan'].concat(b.map(function (x) { return ucRp((x.komisi || 0) + x.insentif.total); })));
+  if (!ringkas && (dtPu() || dtMotor())) body.push(['Total inc dikeluarkan'].concat(b.map(function (x) { return ucRp((x.komisi || 0) + x.insentif.total); })));
   doc.autoTable({
     startY: doc.lastAutoTable.finalY + 6,
     head: head, body: body,
@@ -16652,7 +16660,9 @@ function dtGambarPdf() {
     columnStyles: { 0: { halign: 'left', fontStyle: 'bold', cellWidth: 40 } },
     margin: { left: 14, right: 14 },
     didParseCell: function (data) {
-      if (data.section === 'body' && data.table.body[data.row.index].cells[0].raw === 'ANGSURAN / BULAN') {
+      var lblDt = data.section === 'body' ? data.table.body[data.row.index].cells[0].raw : '';
+      if (lblDt === 'Pokok hutang' || lblDt === 'Total angsuran') data.cell.styles.fontStyle = 'bold';
+      if (data.section === 'body' && lblDt === 'ANGSURAN / BULAN') {
         data.cell.styles.fillColor = [234, 247, 239];
         data.cell.styles.fontStyle = 'bold';
         data.cell.styles.textColor = [20, 83, 45];
@@ -17140,7 +17150,7 @@ function mbUnduhPdf() {
       ['Tahun motor', String(u.tahun) + '  (usia ' + (new Date().getFullYear() - u.tahun) + ' tahun)'],
       ['OTR / MRP', ucRp(u.otr)],
       ['DP / panjar', ucRp(u.dp) + '  (' + ucPct(u.persenDp, 1) + ')'],
-    ],
+    ].concat(modeRingkas() ? [] : [['Adm + polis', ucRp(u.adm)]]),
     theme: 'grid',
     styles: { fontSize: 8.5, cellPadding: 1.8 },
     headStyles: { fillColor: [15, 37, 64], textColor: 255, fontSize: 8.5 },
@@ -17151,7 +17161,16 @@ function mbUnduhPdf() {
   doc.autoTable({
     startY: doc.lastAutoTable.finalY + 6,
     head: [['RINCIAN'].concat(b.map(function (x) { return x.tenor + ' BLN'; }))],
-    body: (modeRingkas() ? [] : [['Bunga flat / tahun'].concat(b.map(function (x) { return ucPct(x.flat, 2); }))]).concat([
+    body: (modeRingkas() ? [] : [
+      ['Pokok dibiayai (OTR - DP)'].concat(b.map(function () { return ucRp(u.sisa); })),
+      ['Rate asuransi'].concat(b.map(function (x) { return ucPct(x.rateAsr, 3); })),
+      ['Premi asuransi'].concat(b.map(function (x) { return ucRp(x.premi); })),
+      ['Adm + polis'].concat(b.map(function () { return ucRp(u.adm); })),
+      ['Pokok hutang'].concat(b.map(function (x) { return ucRp(x.hutang); })),
+      ['Bunga flat / tahun'].concat(b.map(function (x) { return ucPct(x.flat, 2); })),
+      ['Bunga efektif'].concat(b.map(function (x) { return x.eff ? ucPct(x.eff, 2) : '-'; })),
+      ['Total bunga'].concat(b.map(function (x) { return ucRp(x.bunga); }))
+    ]).concat([
       ['ANGSURAN / BULAN'].concat(b.map(function (x) { return ucRp(x.angsuran); }))
     ]).concat(modeRingkas() ? [] : [['Total angsuran'].concat(b.map(function (x) { return ucRp(x.angsuran * x.tenor); }))]).concat([
       ['Nominal pencairan'].concat(b.map(function (x) { return ucRp(x.pencairan); }))
