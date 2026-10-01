@@ -22479,6 +22479,8 @@ function tacUnduh() {
               atr: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>' }
   };
   var pakaiCadangan = false, leafletStatus = '', antre = [];
+  /* batas geser: Sumatera bagian utara + Kepri saja (tidak bisa ke seluruh dunia) */
+  var AREA_KERJA = [[-4.5, 92.5], [8.5, 109.5]];
 
   function temaGelap() { return document.body.classList.contains('dark') || document.body.classList.contains('cmd'); }
   function muatLeaflet(selesai) {
@@ -22520,7 +22522,7 @@ function tacUnduh() {
   function bangun(o) {
     var box = document.getElementById(o.boxId), wadah = document.getElementById(o.wadahId);
     if (!box || !wadah || o.peta || o.muat) return;
-    if (!wadah.offsetParent) return;   /* belum tampil di layar */
+    if (!wadah.offsetParent || !wadah.offsetWidth) return;   /* belum tampil di layar */
     o.muat = true;
     muatLeaflet(function () {
       o.muat = false;
@@ -22529,6 +22531,7 @@ function tacUnduh() {
         var aktif = o.interaktif && !L.Browser.mobile;
         o.peta = L.map(box, {
           zoomControl: aktif, attributionControl: true, scrollWheelZoom: false, dragging: aktif, zoomSnap: 0.25,
+          minZoom: 4.5, maxBounds: AREA_KERJA, maxBoundsViscosity: 1,
           doubleClickZoom: aktif, touchZoom: false, boxZoom: false, keyboard: false, tap: false
         });
         o.peta.attributionControl.setPrefix(false);
@@ -22540,16 +22543,26 @@ function tacUnduh() {
           L.marker([t.lat, t.lng], { icon: ikon, keyboard: false, interactive: false }).addTo(o.peta);
           batas.push([t.lat, t.lng]);
         });
-        o.peta.fitBounds(batas, { paddingTopLeft: o.pad[0], paddingBottomRight: o.pad[1] });
+        o.batas = batas;
+        pasPeta(o);
       } catch (e) {
         wadah.classList.remove(o.kelasAda);   /* kembali ke gambar lama */
       }
     });
   }
+  /* pusatkan ke 5 wilayah; diulang setiap peta tampil / ukuran berubah,
+     supaya tidak pernah tersangkut di tampilan seluruh dunia */
+  function pasPeta(o) {
+    if (!o.peta || !o.batas) return;
+    var box = o.peta.getContainer();
+    if (!box.offsetWidth || !box.offsetHeight) return;   /* masih tersembunyi: coba lagi nanti */
+    o.peta.invalidateSize(false);
+    o.peta.fitBounds(o.batas, { paddingTopLeft: o.pad[0], paddingBottomRight: o.pad[1], animate: false });
+  }
   function segarkan() {
     DAFTAR.forEach(function (o) {
       if (!o.peta) bangun(o);
-      else setTimeout(function () { o.peta.invalidateSize(); }, 60);
+      else setTimeout(function () { pasPeta(o); }, 60);
     });
   }
 
@@ -22562,7 +22575,12 @@ function tacUnduh() {
     var konten = document.getElementById('appContent');
     if (konten && window.MutationObserver) new MutationObserver(function () { setTimeout(segarkan, 120); })
       .observe(konten, { attributes: true, attributeFilter: ['style'] });
-    window.addEventListener('resize', function () { DAFTAR.forEach(function (o) { if (o.peta) o.peta.invalidateSize(); else bangun(o); }); });
+    window.addEventListener('resize', function () { DAFTAR.forEach(function (o) { if (o.peta) pasPeta(o); else bangun(o); }); });
+    /* jaga-jaga: peta yang dibuat saat masih tersembunyi dipaskan ulang begitu kelihatan */
+    if (window.ResizeObserver) DAFTAR.forEach(function (o) {
+      var box = document.getElementById(o.boxId);
+      if (box) new ResizeObserver(function () { if (o.peta) pasPeta(o); else bangun(o); }).observe(box);
+    });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mulai); else mulai();
 })();
