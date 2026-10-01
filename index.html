@@ -2773,6 +2773,18 @@ body.dark #tabSorumBekas .cmo-nav, body.dark #tabDanaTunai .cmo-nav, body.dark #
   background: linear-gradient(90deg, #E2432C, #F0B429); }
 .login-logo { background: #fff; padding: 5px; object-fit: contain !important; }
 .login-feat svg { stroke: #F0B429 !important; }
+/* ---------- kepala login: logo + judul sejajar, slogan di bawah ---------- */
+.login-brand .login-brand-top { gap: 14px; margin-bottom: 14px; }
+.login-brand .login-logo { width: 58px; height: 58px; flex: 0 0 58px; border-radius: 15px; }
+.lb-judul { min-width: 0; }
+.lb-judul span { display: block; font-size: 10.5px !important; font-weight: 800; letter-spacing: 2.2px !important; text-transform: uppercase;
+  color: #F0B429 !important; margin-bottom: 2px; }
+.login-brand .lb-judul h1 { margin: 0; font-size: 26px !important; line-height: 1.12; white-space: nowrap; }
+.login-brand .lb-judul h1::after { display: none; }
+.lb-slogan { display: flex; align-items: center; gap: 10px; margin: 0 0 6px 0; font-size: 13px; font-weight: 700;
+  font-style: italic; letter-spacing: .3px; color: rgba(234,241,251,.82); }
+.lb-slogan i { flex: 0 0 34px; height: 3px; border-radius: 3px; background: linear-gradient(90deg, #e2432c, #F0B429); }
+body.cmd .lb-slogan { color: rgba(251,243,234,.85); }
 /* ---------- daftar fitur login: kartu 2 kolom ---------- */
 .login-feat.lf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; }
 @media (max-height: 860px) { .login-peta svg { max-height: 150px; } .login-brand h1 { font-size: 24px !important; } .lf-item { padding: 8px 10px; } .lf-item i { flex-basis: 28px; width: 28px; height: 28px; } }
@@ -3025,12 +3037,12 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     <div class="login-brand">
       <div class="login-brand-top">
         <img src="https://lh3.googleusercontent.com/d/1fvC3s03Z2mtUzxJ05izFiacuoX8EX6Bt" alt="Logo CMD" class="login-logo logo-cmd">
-        <div>
-          <b>DASHBOARD</b>
+        <div class="lb-judul">
+          <span>Dashboard</span>
+          <h1>Capella Multidana</h1>
         </div>
       </div>
-
-      <h1>Capella Multidana</h1>
+      <p class="lb-slogan"><i></i>Bertumbuh dan Berkembang</p>
 
       <div class="login-peta" id="lgPetaBox" aria-hidden="true">
         <svg viewBox="0 0 600 470" xmlns="http://www.w3.org/2000/svg">
