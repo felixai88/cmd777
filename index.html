@@ -2352,6 +2352,21 @@ body.cmd.cmo .topbar::after { color: #f0b429; }
 .pr-pin .pr-nama.kiri { left: auto; right: 13px; }
 .pr-pin .pr-nama.atas { top: -50px; left: -14px; }
 .peta-gambar .peta-real svg { width: auto; height: auto; display: inline; }
+/* peta asli di halaman login */
+.lg-peta-real { display: none; width: 100%; height: 190px; border-radius: 14px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,.14); box-shadow: 0 8px 24px rgba(0,0,0,.35); background: #1a2333; }
+.login-peta.ada-peta { align-items: stretch; }
+.login-peta.ada-peta .lg-peta-real { display: block; }
+.login-peta.ada-peta .lg-peta-svg { display: none; }
+.login-peta.ada-peta .login-peta-ket { align-self: center; }
+.lg-peta-real .leaflet-control-attribution { font-size: 8px; background: rgba(15,23,42,.6) !important; color: rgba(255,255,255,.6) !important; }
+.lg-peta-real .leaflet-control-attribution a { color: rgba(255,255,255,.75); }
+.lg-peta-real .pr-titik { width: 15px; height: 15px; left: -7.5px; top: -20px; }
+.lg-peta-real .pr-titik::after { left: 3px; top: 3px; width: 4px; height: 4px; }
+.lg-peta-real .pr-nama { font-size: 9.5px; padding: 4px 7px; top: -23px; left: 11px; }
+.lg-peta-real .pr-nama.kiri { left: auto; right: 11px; }
+.lg-peta-real .pr-nama.atas { top: -44px; left: -12px; }
+@media (max-height: 860px) { .lg-peta-real { height: 160px; } }
 .pr-pin .pr-nama small { display: block; font-size: 9px; font-weight: 600; opacity: .72; margin-top: 2px; letter-spacing: .2px; }
 body.cmd .pr-pin .pr-nama { background: #e2432c; }
 body.dark .peta-real, body.cmd .peta-real { border-color: rgba(255,255,255,.12); background: #1a2333; }
@@ -3075,8 +3090,9 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       </div>
       <p class="lb-slogan"><i></i>Bertumbuh dan Berkembang</p>
 
-      <div class="login-peta" id="lgPetaBox" aria-hidden="true">
-        <svg viewBox="0 0 600 470" xmlns="http://www.w3.org/2000/svg">
+      <div class="login-peta" id="lgPetaBox">
+        <div class="lg-peta-real" id="lgPetaReal" aria-label="Peta wilayah kerja"></div>
+        <svg class="lg-peta-svg" aria-hidden="true" viewBox="0 0 600 470" xmlns="http://www.w3.org/2000/svg">
           <defs>
             <g id="lgPin">
               <path d="M0 0 C-9 -12 -14 -18 -14 -25 A14 14 0 0 1 14 -25 C14 -18 9 -12 0 0 Z"
@@ -22443,18 +22459,17 @@ function tacUnduh() {
 </script>
 
 <script>
-/* ==================== PETA ASLI WILAYAH KERJA (banner Dashboard) ====================
-   Leaflet + peta CARTO/OpenStreetMap (gratis, tanpa API key). Kalau gagal dimuat,
-   gambar peta lama (SVG) tetap tampil sebagai cadangan. */
+/* ==================== PETA ASLI WILAYAH KERJA (banner Dashboard + halaman login) ====================
+   Leaflet + peta Esri (gratis, tanpa API key), cadangan OpenStreetMap.
+   Kalau gagal dimuat, gambar peta lama (SVG) tetap tampil. */
 (function () {
   var TITIK = [
     { kode: 'ACEH',   lat: 5.5483,  lng: 95.3238 },
     { kode: 'SUMUT',  lat: 3.5952,  lng: 98.6722 },
     { kode: 'RIAU',   lat: 0.5071,  lng: 101.4478 },
-    { kode: 'KEPRI',  lat: 1.0456,  lng: 104.0305, kiri: false, atas: true },
+    { kode: 'KEPRI',  lat: 1.0456,  lng: 104.0305, atas: true },
     { kode: 'PADANG', lat: -0.9471, lng: 100.4172, kiri: true }
   ];
-  /* Esri: gratis tanpa API key, tampilan mirip Google Maps. Cadangan: OpenStreetMap. */
   var TILE = {
     terang: { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
               atr: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, OpenStreetMap' },
@@ -22463,77 +22478,91 @@ function tacUnduh() {
     cadangan: { url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
               atr: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>' }
   };
-  var pakaiCadangan = false;
-  var peta = null, lapisan = null, sedangMuat = false;
+  var pakaiCadangan = false, leafletStatus = '', antre = [];
 
   function temaGelap() { return document.body.classList.contains('dark') || document.body.classList.contains('cmd'); }
-  function muatLeaflet(selesai, gagal) {
+  function muatLeaflet(selesai) {
     if (window.L && L.map) return selesai();
+    antre.push(selesai);
+    if (leafletStatus) return;
+    leafletStatus = 'muat';
     var css = document.createElement('link');
     css.rel = 'stylesheet'; css.href = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';
     document.head.appendChild(css);
     var js = document.createElement('script');
     js.src = 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
-    js.onload = selesai; js.onerror = gagal;
+    js.onload = function () { leafletStatus = 'ok'; antre.splice(0).forEach(function (f) { f(); }); };
+    js.onerror = function () { leafletStatus = 'gagal'; antre = []; };
     document.head.appendChild(js);
   }
-  function pasangTile() {
-    if (!peta) return;
-    var t = pakaiCadangan ? TILE.cadangan : (temaGelap() ? TILE.gelap : TILE.terang);
-    if (lapisan && lapisan._url === t.url) return;
-    if (lapisan) peta.removeLayer(lapisan);
+
+  /* satu objek per peta: { boxId, wadahId, kelasAda, gelapSelalu, interaktif, pad } */
+  var DAFTAR = [
+    { boxId: 'petaReal',   wadahId: 'petaGambar', kelasAda: 'ada-peta', interaktif: true,
+      pad: [[40, 44], [70, 24]] },
+    { boxId: 'lgPetaReal', wadahId: 'lgPetaBox',  kelasAda: 'ada-peta', interaktif: false, gelapSelalu: true,
+      pad: [[16, 30], [46, 10]], tanpaAtas: true, kiri: ['RIAU'] }
+  ];
+
+  function pasangTile(o) {
+    if (!o.peta) return;
+    var t = pakaiCadangan ? TILE.cadangan : ((o.gelapSelalu || temaGelap()) ? TILE.gelap : TILE.terang);
+    if (o.lapisan && o.lapisan._url === t.url) return;
+    if (o.lapisan) o.peta.removeLayer(o.lapisan);
     var gagal = 0;
-    lapisan = L.tileLayer(t.url, { maxZoom: 12, attribution: t.atr });
-    lapisan.on('tileerror', function () {
-      if (pakaiCadangan || ++gagal < 3) return;   /* server utama gagal -> pindah ke OpenStreetMap */
-      pakaiCadangan = true; pasangTile();
+    o.lapisan = L.tileLayer(t.url, { maxZoom: 12, attribution: t.atr });
+    o.lapisan.on('tileerror', function () {
+      if (pakaiCadangan || ++gagal < 3) return;   /* server utama gagal -> semua peta pindah ke OpenStreetMap */
+      pakaiCadangan = true; DAFTAR.forEach(pasangTile);
     });
-    lapisan.addTo(peta);
+    o.lapisan.addTo(o.peta);
   }
-  function bangun() {
-    var box = document.getElementById('petaReal'), wadah = document.getElementById('petaGambar');
-    if (!box || peta || sedangMuat) return;
-    if (!box.offsetParent && !(wadah && wadah.offsetParent)) return;   /* tab belum tampil */
-    sedangMuat = true;
+  function bangun(o) {
+    var box = document.getElementById(o.boxId), wadah = document.getElementById(o.wadahId);
+    if (!box || !wadah || o.peta || o.muat) return;
+    if (!wadah.offsetParent) return;   /* belum tampil di layar */
+    o.muat = true;
     muatLeaflet(function () {
-      sedangMuat = false;
+      o.muat = false;
       try {
-        wadah.classList.add('ada-peta');
-        var hp = L.Browser.mobile;
-        peta = L.map(box, {
-          zoomControl: !hp, attributionControl: true, scrollWheelZoom: false, dragging: !hp,
-          doubleClickZoom: !hp, touchZoom: false, boxZoom: false, keyboard: false, tap: false
+        wadah.classList.add(o.kelasAda);
+        var aktif = o.interaktif && !L.Browser.mobile;
+        o.peta = L.map(box, {
+          zoomControl: aktif, attributionControl: true, scrollWheelZoom: false, dragging: aktif, zoomSnap: 0.25,
+          doubleClickZoom: aktif, touchZoom: false, boxZoom: false, keyboard: false, tap: false
         });
-        peta.attributionControl.setPrefix(false);
-        pasangTile();
+        o.peta.attributionControl.setPrefix(false);
+        pasangTile(o);
         var batas = [];
         TITIK.forEach(function (t) {
           var ikon = L.divIcon({ className: 'pr-pin', iconSize: [0, 0],
-            html: '<span class="pr-titik"></span><span class="pr-nama' + (t.kiri ? ' kiri' : '') + (t.atas ? ' atas' : '') + '">' + t.kode + '</span>' });
-          L.marker([t.lat, t.lng], { icon: ikon, keyboard: false }).addTo(peta);
+            html: '<span class="pr-titik"></span><span class="pr-nama' + ((t.kiri || (o.kiri || []).indexOf(t.kode) >= 0) ? ' kiri' : '') + (t.atas && !o.tanpaAtas ? ' atas' : '') + '">' + t.kode + '</span>' });
+          L.marker([t.lat, t.lng], { icon: ikon, keyboard: false, interactive: false }).addTo(o.peta);
           batas.push([t.lat, t.lng]);
         });
-        peta.fitBounds(batas, { paddingTopLeft: [40, 44], paddingBottomRight: [70, 24] });
+        o.peta.fitBounds(batas, { paddingTopLeft: o.pad[0], paddingBottomRight: o.pad[1] });
       } catch (e) {
-        wadah.classList.remove('ada-peta');   /* kembali ke gambar lama */
+        wadah.classList.remove(o.kelasAda);   /* kembali ke gambar lama */
       }
-    }, function () { sedangMuat = false; });
+    });
   }
   function segarkan() {
-    if (!peta) { bangun(); return; }
-    setTimeout(function () { peta.invalidateSize(); }, 60);
+    DAFTAR.forEach(function (o) {
+      if (!o.peta) bangun(o);
+      else setTimeout(function () { o.peta.invalidateSize(); }, 60);
+    });
   }
 
   function mulai() {
-    setTimeout(bangun, 300);
+    setTimeout(segarkan, 300);
     var asliTab = window.switchTab;
     if (typeof asliTab === 'function') window.switchTab = function (id) { asliTab.apply(this, arguments); if (id === 'tabDashboard') setTimeout(segarkan, 80); };
     var asliTema = window.setTema;
-    if (typeof asliTema === 'function') window.setTema = function () { asliTema.apply(this, arguments); pasangTile(); };
+    if (typeof asliTema === 'function') window.setTema = function () { asliTema.apply(this, arguments); DAFTAR.forEach(pasangTile); };
     var konten = document.getElementById('appContent');
     if (konten && window.MutationObserver) new MutationObserver(function () { setTimeout(segarkan, 120); })
       .observe(konten, { attributes: true, attributeFilter: ['style'] });
-    window.addEventListener('resize', function () { if (peta) peta.invalidateSize(); });
+    window.addEventListener('resize', function () { DAFTAR.forEach(function (o) { if (o.peta) o.peta.invalidateSize(); else bangun(o); }); });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mulai); else mulai();
 })();
