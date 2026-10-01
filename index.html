@@ -793,6 +793,7 @@ body.dark .login-card button.btn-login { background: linear-gradient(135deg, #25
 .topbar h1 { margin: 0; font-size: 18px; letter-spacing: -0.2px; }
 .topbar p { margin: 3px 0 0 0; font-size: 12px; color: #8b98a8; }
 .topbar .btn-refresh { margin-left: auto; }
+#pageSub:empty { display: none !important; }
 /* ---------- auto refresh tiap 1 menit (tombol "Muat Ulang Data" dihapus) ---------- */
 #haReloadBtn, #keReload, #pdReload, #dpReload { display: none !important; }
 .topbar .auto-segar { margin-left: auto; display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700;
@@ -20725,7 +20726,7 @@ function pbRender() {
 /* ---------- 6. Pasang ke dashboard ---------- */
 (function () {
   if (typeof JUDUL_TAB !== 'undefined') {
-    JUDUL_TAB.tabPembiayaan = ['Pembiayaan per Dealer', 'Unit, OS, reject & pending per dealer dan cabang — sheet PERDELEAR PEMBAYARAN MKT'];
+    JUDUL_TAB.tabPembiayaan = ['Pembiayaan per Dealer', ''];
   }
   var asli = window.switchTab;
   if (typeof asli === 'function') {
@@ -21416,7 +21417,7 @@ function pdUnduhExcel() {
 }
 
 (function () {
-  if (typeof JUDUL_TAB !== 'undefined') JUDUL_TAB.tabPembiayaan = ['Pembiayaan per Dealer', 'Unit, OS, reject & pending per dealer dan cabang — sheet PERDELEAR PEMBAYARAN MKT'];
+  if (typeof JUDUL_TAB !== 'undefined') JUDUL_TAB.tabPembiayaan = ['Pembiayaan per Dealer', ''];
   ['pdPeriode', 'pdUnit'].forEach(function (id) { var e = pdEl(id); if (e) e.addEventListener('change', pdRender); });
   var ec = pdEl('pdCabang'); if (ec) ec.addEventListener('change', function () { pdEl('pdDealer').value = ''; pdIsiFilter(); pdRender(); });
   var ed = pdEl('pdDealer'); if (ed) ed.addEventListener('change', pdRender);
@@ -21871,7 +21872,7 @@ function dpUnduhExcel() {
 }
 
 (function () {
-  if (typeof JUDUL_TAB !== 'undefined') JUDUL_TAB.tabPbDatun = ['Pembiayaan Dana Tunai', 'Unit & OS dana tunai R2/R4, bulan lalu vs bulan ini, OS per CMO vs target — sheet DANA TUNAI'];
+  if (typeof JUDUL_TAB !== 'undefined') JUDUL_TAB.tabPbDatun = ['Pembiayaan Dana Tunai', ''];
   var asli = window.switchTab;
   if (typeof asli === 'function') window.switchTab = function (id) { asli(id); if (id === 'tabPbDatun') dpMuat(false); };
   ['dpPeriode', 'dpUnit', 'dpCabang'].forEach(function (id) { var e = dpEl(id); if (e) e.addEventListener('change', dpRender); });
