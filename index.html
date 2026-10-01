@@ -4907,6 +4907,16 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         body.dark #tabPembiayaan .pd-delta.turun, body.cmd #tabPembiayaan .pd-delta.turun, body.dark #tabPembiayaan .pd-kpi-sub .turun, body.cmd #tabPembiayaan .pd-kpi-sub .turun, body.dark #tabPembiayaan .pd-rej, body.cmd #tabPembiayaan .pd-rej { color: #fca5a5; }
       </style>
 
+      <div class="dp-kepala" id="pdKepala">
+        <div class="dp-kepala-ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/></svg></div>
+        <div class="dp-kepala-teks">
+          <small>Pembiayaan Dealer</small>
+          <h2 id="pdKepalaJudul">ALL WILAYAH</h2>
+          <span id="pdKepalaTgl">Memuat data&hellip;</span>
+        </div>
+        <button type="button" class="dp-kepala-balik" id="pdKepalaBalik" hidden>&times; Semua cabang</button>
+      </div>
+
       <div class="card">
         <h2>Filter Pembiayaan</h2>
         <div class="controls">
@@ -4993,29 +5003,29 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     <div id="tabPbDatun" class="tab-content">
       <style>
         #tabPbDatun table { min-width: 0; }
-        #tabPbDatun .dp-kepala { position: relative; overflow: hidden; display: flex; align-items: center; gap: 14px;
+        :is(#tabPbDatun, #tabPembiayaan) .dp-kepala { position: relative; overflow: hidden; display: flex; align-items: center; gap: 14px;
           background: linear-gradient(105deg, #0f2540 0%, #1d3f6e 60%, #2563eb 100%); color: #fff;
           border-radius: 14px; padding: 18px 18px; margin-bottom: 16px; box-shadow: 0 10px 26px rgba(15,37,64,.18); }
-        #tabPbDatun .dp-kepala::after { content: ""; position: absolute; right: -60px; top: -80px; width: 220px; height: 220px; border-radius: 50%;
+        :is(#tabPbDatun, #tabPembiayaan) .dp-kepala::after { content: ""; position: absolute; right: -60px; top: -80px; width: 220px; height: 220px; border-radius: 50%;
           background: radial-gradient(circle, rgba(240,180,41,.35) 0%, rgba(240,180,41,0) 70%); pointer-events: none; }
-        #tabPbDatun .dp-kepala-ikon { flex: 0 0 46px; width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center;
+        :is(#tabPbDatun, #tabPembiayaan) .dp-kepala-ikon { flex: 0 0 46px; width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center;
           background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.2); position: relative; z-index: 1; }
-        #tabPbDatun .dp-kepala-ikon svg { width: 24px; height: 24px; color: #F0B429; }
-        #tabPbDatun .dp-kepala-teks { position: relative; z-index: 1; min-width: 0; flex: 1; }
-        #tabPbDatun .dp-kepala-teks small { display: block; font-size: 10.5px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255,255,255,.7); }
-        #tabPbDatun .dp-kepala-teks h2 { margin: 3px 0 4px 0; padding: 0; border: 0; font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -.1px; line-height: 1.25; display: block; }
-        #tabPbDatun .dp-kepala-teks h2::before { display: none; }
-        #tabPbDatun .dp-kepala-teks span { display: inline-block; font-size: 12px; font-weight: 700; color: #fff; background: rgba(255,255,255,.14); border-radius: 20px; padding: 3px 10px; }
-        #tabPbDatun .dp-kepala-balik { position: relative; z-index: 1; flex: none; background: rgba(255,255,255,.16); color: #fff; border: 1px solid rgba(255,255,255,.25);
+        :is(#tabPbDatun, #tabPembiayaan) .dp-kepala-ikon svg { width: 24px; height: 24px; color: #F0B429; }
+        :is(#tabPbDatun, #tabPembiayaan) .dp-kepala-teks { position: relative; z-index: 1; min-width: 0; flex: 1; }
+        :is(#tabPbDatun, #tabPembiayaan) .dp-kepala-teks small { display: block; font-size: 10.5px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255,255,255,.7); }
+        :is(#tabPbDatun, #tabPembiayaan) .dp-kepala-teks h2 { margin: 3px 0 4px 0; padding: 0; border: 0; font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -.1px; line-height: 1.25; display: block; }
+        :is(#tabPbDatun, #tabPembiayaan) .dp-kepala-teks h2::before { display: none; }
+        :is(#tabPbDatun, #tabPembiayaan) .dp-kepala-teks span { display: inline-block; font-size: 12px; font-weight: 700; color: #fff; background: rgba(255,255,255,.14); border-radius: 20px; padding: 3px 10px; }
+        :is(#tabPbDatun, #tabPembiayaan) .dp-kepala-balik { position: relative; z-index: 1; flex: none; background: rgba(255,255,255,.16); color: #fff; border: 1px solid rgba(255,255,255,.25);
           border-radius: 9px; padding: 8px 12px; font-size: 12px; font-weight: 800; cursor: pointer; }
-        #tabPbDatun .dp-kepala-balik[hidden] { display: none; }
-        body.cmd #tabPbDatun .dp-kepala { background: linear-gradient(105deg, #7f1d1d 0%, #b91c1c 55%, #e2432c 100%); }
-        body.dark #tabPbDatun .dp-kepala { background: linear-gradient(105deg, #0b1220 0%, #13254a 60%, #1d4ed8 100%); }
+        :is(#tabPbDatun, #tabPembiayaan) .dp-kepala-balik[hidden] { display: none; }
+        body.cmd :is(#tabPbDatun, #tabPembiayaan) .dp-kepala { background: linear-gradient(105deg, #7f1d1d 0%, #b91c1c 55%, #e2432c 100%); }
+        body.dark :is(#tabPbDatun, #tabPembiayaan) .dp-kepala { background: linear-gradient(105deg, #0b1220 0%, #13254a 60%, #1d4ed8 100%); }
         @media (max-width: 600px) {
-          #tabPbDatun .dp-kepala { padding: 15px 14px; gap: 11px; }
-          #tabPbDatun .dp-kepala-ikon { flex-basis: 40px; width: 40px; height: 40px; }
-          #tabPbDatun .dp-kepala-teks h2 { font-size: 17px; }
-          #tabPbDatun .dp-kepala-teks span { font-size: 11px; }
+          :is(#tabPbDatun, #tabPembiayaan) .dp-kepala { padding: 15px 14px; gap: 11px; }
+          :is(#tabPbDatun, #tabPembiayaan) .dp-kepala-ikon { flex-basis: 40px; width: 40px; height: 40px; }
+          :is(#tabPbDatun, #tabPembiayaan) .dp-kepala-teks h2 { font-size: 17px; }
+          :is(#tabPbDatun, #tabPembiayaan) .dp-kepala-teks span { font-size: 11px; }
         }
         #tabPbDatun .dk-kpi { display: block; }
         @media (max-width: 700px) {
@@ -15662,7 +15672,7 @@ function ucRenderTabelTenor(inp, umur) {
       if (!hh || hh.error || tolakUmur || !hh[kode] || !hh[kode].rate) return null;
       return hh[kode];
     }
-    return { th: th, bulan: th * 12, addb: ambil('addb'), addm: ambil('addm') };
+    return { th: th, bulan: th * 12, addb: ambil('addb'), addm: ambil('addm'), h: (hh && !hh.error && !tolakUmur) ? hh : null };
   });
   var ada = data.some(function (d) { return d.addb || d.addm; });
   ucTenorData = ada ? { data: data, inp: inp, umur: umur } : null;
@@ -15736,6 +15746,8 @@ function ucUnduhPdfTenor() {
   var jsPDF = window.jspdf.jsPDF;
   var doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   var lebar = doc.internal.pageSize.getWidth();
+  var rapat = !modeRingkas();   /* versi lengkap: huruf & jarak sedikit dirapatkan supaya muat 1 halaman */
+  var gaya = rapat ? { fontSize: 7.6, cellPadding: 1.15 } : { fontSize: 8.5, cellPadding: 1.8 };
   var tahun = +document.getElementById('ucTahun').value, otr = T.inp.otr, dp = T.inp.dp;
   var nama = ucTeksInput('ucNama'), nopol = ucTeksInput('ucNopol');
   ucGambarLogo(doc, 14, 11, 13);
@@ -15757,25 +15769,74 @@ function ucUnduhPdfTenor() {
       ['Tahun mobil', String(tahun) + '  (usia ' + T.umur + ' tahun)'],
       ['OTR / MRP', ucRp(otr)],
       ['DP', ucRp(dp) + '  (' + ucPct(dp / otr, 1) + ')']
-    ],
-    theme: 'grid', styles: { fontSize: 8.5, cellPadding: 1.8 },
+    ].concat(modeRingkas() ? [] : [
+      ['Pokok dibiayai (OTR - DP)', ucRp(otr - dp)],
+      ['Pemakaian / wilayah', (T.inp.pemakaian || '-') + ' / ' + (T.inp.wilayah || '-')],
+      ['Adm + polis', ucRp(T.inp.adm)]
+    ]),
+    theme: 'grid', styles: { fontSize: gaya.fontSize, cellPadding: gaya.cellPadding },
     headStyles: { fillColor: [15, 37, 64], textColor: 255, fontSize: 8.5 },
     columnStyles: { 0: { cellWidth: 55, fontStyle: 'bold' } }, margin: { left: 14, right: 14 }
   });
   var d = T.data, v = function (a, f) { return a ? ucRp(f(a)) : '-'; };
+  /* ---- HO / Area / Cabang / CMC: rincian lengkap asuransi, adm + polis, pokok hutang, rate & bunga ---- */
+  var lengkap = !modeRingkas();
+  var hv = function (x, f, fmt) { return x.h ? (fmt || ucRp)(f(x.h)) : '-'; };
+  var pct3 = function (n) { return ucPct(n, 3); }, pct2 = function (n) { return ucPct(n, 2); };
+  if (lengkap) {
+    var adaNol = function (f) { return d.some(function (x) { return x.h && f(x.h) > 0; }); };
+    var bAss = [
+      ['Rate asuransi'].concat(d.map(function (x) { return hv(x, function (h) { return h.rateAss; }, pct3); })),
+      ['Total premi asuransi'].concat(d.map(function (x) { return hv(x, function (h) { return h.totalAss; }); })),
+      ['Asuransi dibayar cash'].concat(d.map(function (x) { return hv(x, function (h) { return h.assCash; }); })),
+      ['Asuransi dikredit'].concat(d.map(function (x) { return hv(x, function (h) { return h.pinjamanAss; }); })),
+      ['Asuransi jiwa'].concat(d.map(function (x) { return hv(x, function (h) { return h.assJiwa; }); }))
+    ];
+    if (adaNol(function (h) { return h.tjh; })) bAss.push(['TJH'].concat(d.map(function (x) { return hv(x, function (h) { return h.tjh; }); })));
+    if (adaNol(function (h) { return h.paSupir; })) bAss.push(['PA supir'].concat(d.map(function (x) { return hv(x, function (h) { return h.paSupir; }); })));
+    if (adaNol(function (h) { return h.paPnp; })) bAss.push(['PA penumpang'].concat(d.map(function (x) { return hv(x, function (h) { return h.paPnp; }); })));
+    bAss.push(['Adm + polis'].concat(d.map(function (x) { return hv(x, function (h) { return h.adm; }); })));
+    bAss.push(['POKOK HUTANG'].concat(d.map(function (x) { return hv(x, function (h) { return h.totalHutang; }); })));
+    bAss.push(['% refund'].concat(d.map(function (x) { return hv(x, function (h) { return h.pctRefund; }, function (n) { return ucPct(n, 1); }); })));
+    doc.autoTable({
+      startY: doc.lastAutoTable.finalY + (rapat ? 4 : 6),
+      head: [['ASURANSI & BIAYA'].concat(d.map(function (x) { return x.bulan + ' BLN'; }))],
+      body: bAss, theme: 'grid',
+      styles: { fontSize: gaya.fontSize, cellPadding: gaya.cellPadding, halign: 'right' },
+      headStyles: { fillColor: [15, 37, 64], textColor: 255, halign: 'center', fontSize: 8.2 },
+      columnStyles: { 0: { halign: 'left', fontStyle: 'bold', cellWidth: 40 } }, margin: { left: 14, right: 14 },
+      didParseCell: function (data) {
+        if (data.section === 'body' && data.row.raw && data.row.raw[0] === 'POKOK HUTANG') { data.cell.styles.fontStyle = 'bold'; data.cell.styles.fillColor = [238, 243, 250]; }
+      }
+    });
+  }
   var body = [];
   [['addb', 'ADDB \u2014 ANGSURAN DI BELAKANG'], ['addm', 'ADDM \u2014 ANGSURAN DI MUKA']].forEach(function (m) {
     body.push([{ content: m[1], colSpan: d.length + 1, styles: { fillColor: [15, 37, 64], textColor: 255, fontStyle: 'bold', halign: 'left' } }]);
+    var p = function (f) { return d.map(function (x) { return x[m[0]] ? f(x[m[0]]) : '-'; }); };
+    if (lengkap) {
+      body.push(['Rate bunga flat / th'].concat(p(function (a) { return pct2(a.rate); })));
+      body.push(['Rate efektif / th'].concat(p(function (a) { return a.rateEff == null ? '-' : pct2(a.rateEff); })));
+      body.push(['Total bunga'].concat(p(function (a) { return ucRp(a.bunga); })));
+    }
     body.push(['ANGSURAN / BULAN'].concat(d.map(function (x) { return v(x[m[0]], function (a) { return a.angsuran; }); })));
+    if (lengkap) {
+      body.push(['Total angsuran'].concat(d.map(function (x) { return x[m[0]] ? ucRp(x[m[0]].angsuran * x.bulan) : '-'; })));
+      body.push(['Total bayar pertama'].concat(p(function (a) { return ucRp(a.totalBayar); })));
+    }
     body.push(['Nominal pencairan'].concat(d.map(function (x) { return v(x[m[0]], function (a) { return a.pencairan; }); })));
+    if (lengkap) {
+      body.push(['Refund (sebelum PPh)'].concat(p(function (a) { return ucRp(a.refund); })));
+      body.push(['PPh refund 2,5%'].concat(p(function (a) { return ucRp(a.pph); })));
+    }
     body.push(['Refund bersih'].concat(d.map(function (x) { return v(x[m[0]], function (a) { return a.refundBersih; }); })));
     body.push(['ALL IN'].concat(d.map(function (x) { return v(x[m[0]], function (a) { return a.allIn; }); })));
   });
   doc.autoTable({
-    startY: doc.lastAutoTable.finalY + 6,
+    startY: doc.lastAutoTable.finalY + (rapat ? 4 : 6),
     head: [['RINCIAN'].concat(d.map(function (x) { return x.bulan + ' BLN'; }))],
     body: body, theme: 'grid',
-    styles: { fontSize: 8.5, cellPadding: 1.8, halign: 'right' },
+    styles: { fontSize: gaya.fontSize, cellPadding: gaya.cellPadding, halign: 'right' },
     headStyles: { fillColor: [30, 64, 175], textColor: 255, halign: 'center', fontSize: 8.5 },
     columnStyles: { 0: { halign: 'left', fontStyle: 'bold', cellWidth: 40 } }, margin: { left: 14, right: 14 },
     didParseCell: function (data) {
@@ -15786,6 +15847,7 @@ function ucUnduhPdfTenor() {
     }
   });
   var y = doc.lastAutoTable.finalY + 6;
+  if (y > doc.internal.pageSize.getHeight() - 10) { doc.addPage(); y = 16; }
   doc.setFontSize(7.5); doc.setTextColor(110);
   doc.text('Simulasi ini perkiraan; nilai akhir mengikuti persetujuan kredit. Dicetak ' + new Date().toLocaleString('id-ID') +
     (typeof namaPencetak === 'function' && namaPencetak() ? ' oleh ' + namaPencetak() : ''), 14, y);
@@ -20995,6 +21057,7 @@ function pdRender() {
     var a = pdAmbil(r, f.per, f.unit); a.target = pdTarget(r, f.unit);
     return { cabang: r.cabang, dealer: r.dealer, a: a, b: f.perLalu ? pdAmbil(r, f.perLalu, f.unit) : null };
   });
+  pdIsiKepala(f);
   pdRenderKpi(baris, f);
   pdRenderChip(f);
   pdRenderChart(baris, f);
@@ -21002,6 +21065,18 @@ function pdRender() {
   pdRenderDiag();
   if (!baris.length && pdLingkup() !== null) pdStatus('error', 'Cabang/area akun Anda (' + escapeHtml(String((currentUser && currentUser.cabang) || '-')) +
     ') belum ditemukan di sheet PERDELEAR. Minta HO menambahkan nama cabangnya di daftar PD_ALIAS_CABANG.');
+}
+
+/* judul atas: cakupan sesuai login (ALL WILAYAH / WILAYAH x / CABANG x) + periode & tanggal data */
+function pdIsiKepala(f) {
+  var j = pdEl('pdKepalaJudul'), t = pdEl('pdKepalaTgl'), b = pdEl('pdKepalaBalik');
+  var cak = (typeof dpCakupan === 'function') ? dpCakupan({ cabang: f.cabang }) : (f.cabang ? 'CABANG ' + f.cabang : 'ALL WILAYAH');
+  if (j) j.innerText = cak + (f.dealer ? ' \u00b7 ' + f.dealer : '') + (f.unit ? ' \u00b7 ' + f.unit : '');
+  var sp = pdEl('pdPeriode'), lbl = sp && sp.selectedIndex >= 0 ? sp.options[sp.selectedIndex].text : (f.per || '');
+  var d = new Date(), BLN = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+  if (t) t.innerText = (lbl ? 'Periode ' + lbl + ' \u00b7 ' : '') + 'Per ' + d.getDate() + ' ' + BLN[d.getMonth()] + ' ' + d.getFullYear();
+  var sc = pdEl('pdCabang');
+  if (b) b.hidden = !(f.cabang && sc && !sc.disabled);
 }
 
 function pdRenderDiag() {
@@ -21353,6 +21428,7 @@ function pdUnduhExcel() {
     pdIsiFilter(); pdRender();
   });
   var ex = pdEl('pdExcel'); if (ex) ex.addEventListener('click', pdUnduhExcel);
+  var kbp = pdEl('pdKepalaBalik'); if (kbp) kbp.addEventListener('click', function () { pdEl('pdCabang').value = ''; pdRender(); });
   var tm = pdEl('pdTabelMode');
   if (tm) tm.querySelectorAll('button').forEach(function (b) {
     b.addEventListener('click', function () { pdTabelMode = b.dataset.m; tm.querySelectorAll('button').forEach(function (x) { x.classList.toggle('aktif', x === b); }); pdRender(); });
