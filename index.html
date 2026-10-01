@@ -2497,7 +2497,9 @@ body.cmd .uc-hero-pill { background: #1c1512; color: #f0b429; }
   background: radial-gradient(circle at 40% 60%, rgba(var(--hero-aksen),.55) 0%, rgba(var(--hero-aksen),.18) 45%, rgba(var(--hero-aksen),0) 70%);
 }
 .m123-eyebrow { border-radius: 20px; padding: 4px 10px; font-size: 9.5px; letter-spacing: 1.2px; }
-.m123-hero h3 { margin: 12px 0 12px 0; font-size: 24px; padding-right: 64px; }
+.m123-hero h3 { margin: 4px 0 14px 0; font-size: 23px; padding-right: 70px; }
+.m123-hero h3 .m123-h-kecil { display: block; font-size: 12px; font-weight: 700; letter-spacing: 1.4px; text-transform: uppercase;
+  color: #F0B429; margin-bottom: 4px; }
 .m123-hero-merek {
   position: absolute; top: 14px; right: 14px; z-index: 3;
   border-radius: 10px; padding: 6px 8px; gap: 0;
@@ -2771,6 +2773,23 @@ body.dark #tabSorumBekas .cmo-nav, body.dark #tabDanaTunai .cmo-nav, body.dark #
   background: linear-gradient(90deg, #E2432C, #F0B429); }
 .login-logo { background: #fff; padding: 5px; object-fit: contain !important; }
 .login-feat svg { stroke: #F0B429 !important; }
+/* ---------- daftar fitur login: kartu 2 kolom ---------- */
+.login-feat.lf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: auto; }
+@media (max-height: 860px) { .login-peta svg { max-height: 150px; } .login-brand h1 { font-size: 24px !important; } .lf-item { padding: 8px 10px; } .lf-item i { flex-basis: 28px; width: 28px; height: 28px; } }
+.lf-item { display: flex !important; align-items: center !important; gap: 10px !important; padding: 10px 11px;
+  border-radius: 12px; background: rgba(255,255,255,.055); border: 1px solid rgba(255,255,255,.09);
+  transition: background .2s ease, border-color .2s ease, transform .2s ease; }
+.lf-item:hover { background: rgba(255,255,255,.09); border-color: rgba(var(--lf),.45); transform: translateY(-1px); }
+.lf-item.lf-lebar { grid-column: span 2; }
+.lf-item i { flex: 0 0 32px; width: 32px; height: 32px; border-radius: 9px; display: grid; place-items: center;
+  background: rgba(var(--lf),.16); box-shadow: inset 0 0 0 1px rgba(var(--lf),.28); }
+.lf-item i svg { width: 16px !important; height: 16px !important; flex: none !important; margin: 0 !important; stroke: rgb(var(--lf)) !important; }
+.lf-item p { margin: 0; min-width: 0; line-height: 1.25; }
+.lf-item b { display: block; font-size: 11.5px; font-weight: 800; color: #fff; letter-spacing: .1px; }
+.lf-item b, .lf-item span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lf-item span { display: block; font-size: 10.5px; color: rgba(234,241,251,.62); margin-top: 2px; }
+body.cmd .lf-item b { color: #fbf3ea; }
+
 .login-card { padding: 40px 38px !important; }
 .login-card h2 { font-size: 24px !important; }
 .lg-kepala-hp { display: none; }
@@ -3012,8 +3031,8 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         </div>
       </div>
 
-      <h1>Monitoring Tarikan &amp;<br>Monitoring Stock AYDA</h1>
-      <p class="lg-tag">Stock AYDA R2 &amp; R4, tarikan, dan kalkulator kredit dalam satu tempat.</p>
+      <h1>Dashboard<br>Capella Multidana</h1>
+      <p class="lg-tag">Stock AYDA R2 &amp; R4, tarikan, pembiayaan, dan simulasi angsuran dalam satu tempat.</p>
 
       <div class="login-peta" id="lgPetaBox" aria-hidden="true">
         <svg viewBox="0 0 600 470" xmlns="http://www.w3.org/2000/svg">
@@ -3066,30 +3085,36 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <div class="login-peta-ket">Wilayah kerja &middot; Aceh &middot; Sumut &middot; Riau &middot; Kepri &middot; Padang</div>
       </div>
 
-      <div class="login-feat">
-        <div>
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg>
-          <span>Grafik stock, mutasi, dan tarikan vs jualan per periode</span>
+      <div class="login-feat lf-grid">
+        <div class="lf-item" style="--lf:96,165,250;">
+          <i><svg viewBox="0 0 24 24" fill="none" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg></i>
+          <p><b>Grafik &amp; Mutasi</b><span>Tarikan vs jualan</span></p>
         </div>
-        <div>
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
-          <span>Aging stock: deteksi unit menua sebelum jadi rugi</span>
+        <div class="lf-item" style="--lf:251,146,60;">
+          <i><svg viewBox="0 0 24 24" fill="none" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg></i>
+          <p><b>Aging Stock</b><span>Umur unit di stock</span></p>
         </div>
-        <div>
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
-          <span>LOR per cabang, tipe, dan jenis pembiayaan</span>
+        <div class="lf-item" style="--lf:244,114,182;">
+          <i><svg viewBox="0 0 24 24" fill="none" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg></i>
+          <p><b>LOR</b><span>Per cabang &amp; tipe</span></p>
         </div>
-        <div>
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg>
-          <span>Export Excel &amp; PDF siap dibawa ke meeting</span>
+        <div class="lf-item" style="--lf:52,211,153;">
+          <i><svg viewBox="0 0 24 24" fill="none" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V8l7-5 7 5v13"/><path d="M9 21v-6h6v6"/></svg></i>
+          <p><b>Pembiayaan Dealer</b><span>Unit, OS &amp; reject</span></p>
         </div>
-        <div>
-          <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2.5"/><path d="M8 6h8M8 11h2M8 15h2M14 11h2M14 15h2M11 18h2"/></svg>
-          <span>Kalkulator Used Car, Dana Tunai &amp; Motor Bekas</span>
+        <div class="lf-item" style="--lf:240,180,41;">
+          <i><svg viewBox="0 0 24 24" fill="none" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></svg></i>
+          <p><b>Pembiayaan Datun</b><span>OS &amp; target CMO</span></p>
+        </div>
+        <div class="lf-item" style="--lf:167,139,250;">
+          <i><svg viewBox="0 0 24 24" fill="none" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2.5"/><path d="M8 6h8M8 11h2M8 15h2M14 11h2M14 15h2M11 18h2"/></svg></i>
+          <p><b>Simulasi Angsuran</b><span>Mobil, datun &amp; motor</span></p>
+        </div>
+        <div class="lf-item lf-lebar" style="--lf:45,212,191;">
+          <i><svg viewBox="0 0 24 24" fill="none" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M12 11v6M9 14l3 3 3-3"/></svg></i>
+          <p><b>Export Excel &amp; PDF</b><span>Laporan siap dibawa ke meeting</span></p>
         </div>
       </div>
-
-      <small class="lg-ver">Internal use only &middot; Capella Multidana</small>
     </div>
 
     <!-- Sisi form -->
@@ -3135,7 +3160,6 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <button type="button" data-tema="gelap" title="Gelap" onclick="pilihTemaLogin('gelap')"></button>
         <button type="button" data-tema="cmd" title="Mode CMD" onclick="pilihTemaLogin('cmd')"></button>
       </div>
-      <div class="lg-kaki">&copy; Capella Multidana &middot; Internal use only</div>
     </div>
 
   </div>
@@ -5297,8 +5321,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       </div>
 
       <div class="m123-hero" id="ucHero">
-        <span class="m123-eyebrow">SIMULASI ANGSURAN</span>
-        <h3>Kalkulator Used Car</h3>
+        <h3><span class="m123-h-kecil">Simulasi Angsuran</span> Used Car</h3>
         <div class="m123-periode" id="ucPeriode" hidden>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>
@@ -5618,8 +5641,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       </div>
 
       <div class="m123-hero" id="dtHero">
-        <span class="m123-eyebrow">KALKULATOR PINJAMAN</span>
-        <h3>Dana Tunai</h3>
+        <h3><span class="m123-h-kecil">Simulasi Angsuran</span> Dana Tunai</h3>
         <div class="m123-periode" id="dtPeriode" hidden>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>
@@ -5804,8 +5826,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       </div>
 
       <div class="m123-hero" id="mbHero">
-        <span class="m123-eyebrow">SIMULASI ANGSURAN</span>
-        <h3>Kalkulator Motor Bekas</h3>
+        <h3><span class="m123-h-kecil">Simulasi Angsuran</span> Motor Bekas</h3>
         <div class="m123-periode" id="mbPeriode" hidden>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>
@@ -6448,7 +6469,7 @@ const JUDUL_TAB = {
   tabTipeTahun:      ["Tipe dan Tahun Tarikan", "Rekap unit per tipe kendaraan x tahun tarik x status mutasi"],
   tabLapMeeting:     ["Auto Create Lap Meeting", "Pergerakan stock dan grafik laporan meeting"],
   tabStockAyda:      ["Stock AYDA (Format Meeting)", "Laporan cetak per cabang, satu halaman"],
-  tabSorumBekas:     ["TOOLS USED CAR", "Simulasi Used Car capella multidana"]
+  tabSorumBekas:     ["SIMULASI ANGSURAN USED CAR", "Simulasi Used Car capella multidana"]
 };
 
 function toggleSidebar() {
@@ -16767,7 +16788,7 @@ function ucUnduhPdf(mode) {
 /* ---------- 7. Pasang ke dashboard ---------- */
 (function () {
   if (typeof JUDUL_TAB !== 'undefined' && !JUDUL_TAB.tabSorumBekas) {
-    JUDUL_TAB.tabSorumBekas = ['TOOLS USED CAR', 'MRP USED CAR'];
+    JUDUL_TAB.tabSorumBekas = ['SIMULASI ANGSURAN USED CAR', 'MRP USED CAR'];
   }
   var asli = window.switchTab;
   if (typeof asli === 'function') {
@@ -17549,7 +17570,7 @@ function dtUnduhPdf() {
 /* ---------- 6. Pasang ke dashboard ---------- */
 (function () {
   if (typeof JUDUL_TAB !== 'undefined' && !JUDUL_TAB.tabDanaTunai) {
-    JUDUL_TAB.tabDanaTunai = ['KALKULATOR DANA TUNAI', 'Simulasi pinjaman dana tunai (datun)'];
+    JUDUL_TAB.tabDanaTunai = ['SIMULASI ANGSURAN DANA TUNAI', 'Simulasi pinjaman dana tunai (datun)'];
   }
   var asli = window.switchTab;
   if (typeof asli === 'function') {
@@ -18374,7 +18395,7 @@ function rkFile(k, f) {
 /* ---------- 6. Pasang ke dashboard ---------- */
 (function () {
   if (typeof JUDUL_TAB !== 'undefined' && !JUDUL_TAB.tabMotorBekas) {
-    JUDUL_TAB.tabMotorBekas = ['KALKULATOR MOTOR BEKAS', 'Simulasi angsuran & refund motor bekas'];
+    JUDUL_TAB.tabMotorBekas = ['SIMULASI ANGSURAN MOTOR BEKAS', 'Simulasi angsuran & refund motor bekas'];
   }
   var asli = window.switchTab;
   if (typeof asli === 'function') {
