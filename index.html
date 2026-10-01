@@ -5220,7 +5220,6 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       <div class="m123-hero" id="ucHero">
         <span class="m123-eyebrow">SIMULASI ANGSURAN</span>
         <h3>Kalkulator Used Car</h3>
-        <p>Harga MRP langsung dari database, ikut berubah tiap kali data diupdate.</p>
         <div class="m123-periode" id="ucPeriode" hidden>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>
@@ -5542,7 +5541,6 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       <div class="m123-hero" id="dtHero">
         <span class="m123-eyebrow">KALKULATOR PINJAMAN</span>
         <h3>Dana Tunai</h3>
-        <p>Hitung plafon, angsuran, dan komisi agen dalam hitungan detik.</p>
         <div class="m123-periode" id="dtPeriode" hidden>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>
@@ -5729,7 +5727,6 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       <div class="m123-hero" id="mbHero">
         <span class="m123-eyebrow">SIMULASI ANGSURAN</span>
         <h3>Kalkulator Motor Bekas</h3>
-        <p>Angsuran dan refund motor bekas, MRP langsung dari database.</p>
         <div class="m123-periode" id="mbPeriode" hidden>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <rect x="3" y="4.5" width="18" height="16" rx="2"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>
@@ -15604,7 +15601,7 @@ function khTabelHtml(info, bagian) {
              : '<td colspan="4" class="kh-na">tidak tersedia</td>') + '</tr>';
     });
   });
-  return h + '</tbody><tfoot><tr><td colspan="' + nSpan + '">' + (info.kaki || 'Nilai dalam Rupiah &middot; angsuran per bulan &middot; refund = refund bersih &middot; Capella Multidana') + '</td></tr></tfoot>';
+  return h + '</tbody>';
 }
 var ucTenorData = null;
 function ucUnduhPdfTenor() {
