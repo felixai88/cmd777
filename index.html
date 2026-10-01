@@ -1796,6 +1796,12 @@ body.dark .uc-dp-tabel tr.aktif td { background: #10203f; color: #60a5fa; }
 
 /* --- pengalih halaman khusus mode CMO (menu samping & bar bawah disembunyikan) --- */
 .cmo-nav { display: none; }
+.cmo-nav .cmc-saja { display: none; }
+body.cmc .cmo-nav .cmc-saja { display: block; }
+body.cmo #tabPbDatun { max-width: 760px; margin: 0 auto; }
+#tabPbDatun { --m1-merah: #DA0000; --m1-abu: #6B7480; --m1-garis: #E3E6EA; }
+body.dark #tabPbDatun, body.cmd #tabPbDatun { --m1-abu: #97a3b2; --m1-garis: #2b3645; }
+body.dark #tabPbDatun .cmo-nav, body.cmd #tabPbDatun .cmo-nav { background: #131f36 !important; }
 body.cmo .cmo-nav { display: flex; gap: 8px; margin-bottom: 14px; }
 body.cmo .cmo-nav button { flex: 1; padding: 12px 8px; border-radius: 10px; border: 1px solid #dfe4ea; background: #fff; color: #4a5a70; font-size: 12.5px; font-weight: 800; letter-spacing: .2px; }
 body.cmo .cmo-nav button.aktif { background: linear-gradient(135deg, #3b82f6, #2563eb); color: #fff; border-color: transparent; box-shadow: 0 6px 14px rgba(37,99,235,.28); }
@@ -2484,20 +2490,23 @@ body.cmd .uc-hero-pill { background: #1c1512; color: #f0b429; }
 /* ---------- SUB-NAV KALKULATOR (ala tab "Cari Mobil / Cek Harga") ---------- */
 #tabSorumBekas .cmo-nav,
 #tabDanaTunai  .cmo-nav,
-#tabMotorBekas .cmo-nav {
+#tabMotorBekas .cmo-nav,
+#tabPbDatun    .cmo-nav {
   background: #fff; border: 1px solid var(--m1-garis); border-radius: 6px 6px 0 0;
   border-bottom: 0; padding: 0; gap: 0; overflow: hidden;
 }
 #tabSorumBekas .cmo-nav button,
 #tabDanaTunai  .cmo-nav button,
-#tabMotorBekas .cmo-nav button {
+#tabMotorBekas .cmo-nav button,
+#tabPbDatun    .cmo-nav button {
   flex: 1 1 0; background: none; border: 0; border-bottom: 3px solid transparent;
   border-radius: 0; padding: 12px 6px 10px 6px;
   font-size: 12.5px; font-weight: 700; color: var(--m1-abu); box-shadow: none;
 }
 #tabSorumBekas .cmo-nav button.aktif,
 #tabDanaTunai  .cmo-nav button.aktif,
-#tabMotorBekas .cmo-nav button.aktif {
+#tabMotorBekas .cmo-nav button.aktif,
+#tabPbDatun    .cmo-nav button.aktif {
   color: var(--m1-merah); border-bottom-color: var(--m1-merah); background: none;
 }
 
@@ -4986,6 +4995,12 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         body.dark #tabPbDatun .dp-str-badge, body.cmd #tabPbDatun .dp-str-badge { background: rgba(239,68,68,.15); color: #fca5a5; }
         body.dark #tabPbDatun .dp-str-kosong, body.cmd #tabPbDatun .dp-str-kosong { background: rgba(34,197,94,.12); color: #4ade80; }
       </style>
+      <div class="cmo-nav">
+        <button type="button" onclick="switchTab('tabSorumBekas')">Used Car</button>
+        <button type="button" onclick="switchTab('tabDanaTunai')">Dana Tunai</button>
+        <button type="button" onclick="switchTab('tabMotorBekas')">Motor Bekas</button>
+        <button type="button" class="cmc-saja aktif" onclick="switchTab('tabPbDatun')">Pembiayaan Datun</button>
+      </div>
 
       <div class="card">
         <h2>Filter Pembiayaan Dana Tunai</h2>
@@ -5179,6 +5194,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <button type="button" class="aktif" onclick="switchTab('tabSorumBekas')">Used Car</button>
         <button type="button" onclick="switchTab('tabDanaTunai')">Dana Tunai</button>
         <button type="button" onclick="switchTab('tabMotorBekas')">Motor Bekas</button>
+        <button type="button" class="cmc-saja" onclick="switchTab('tabPbDatun')">Pembiayaan Datun</button>
       </div>
 
       <div class="m123-hero" id="ucHero">
@@ -5500,6 +5516,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <button type="button" onclick="switchTab('tabSorumBekas')">Used Car</button>
         <button type="button" class="aktif" onclick="switchTab('tabDanaTunai')">Dana Tunai</button>
         <button type="button" onclick="switchTab('tabMotorBekas')">Motor Bekas</button>
+        <button type="button" class="cmc-saja" onclick="switchTab('tabPbDatun')">Pembiayaan Datun</button>
       </div>
 
       <div class="m123-hero" id="dtHero">
@@ -5686,6 +5703,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <button type="button" onclick="switchTab('tabSorumBekas')">Used Car</button>
         <button type="button" onclick="switchTab('tabDanaTunai')">Dana Tunai</button>
         <button type="button" class="aktif" onclick="switchTab('tabMotorBekas')">Motor Bekas</button>
+        <button type="button" class="cmc-saja" onclick="switchTab('tabPbDatun')">Pembiayaan Datun</button>
       </div>
 
       <div class="m123-hero" id="mbHero">
@@ -6035,8 +6053,12 @@ function masukAplikasi(u) {
   /* CMO: hanya kalkulator used car, tampilan diringkas untuk HP */
   if (modeCmo) {
     document.body.classList.add("cmo");
+    /* CMC: kalkulator + menu Pembiayaan Dana Tunai (data cabangnya sendiri) */
+    const modeCmc = currentLoginRole === "CMC";
+    if (modeCmc) document.body.classList.add("cmc");
+    const menuCmo = ["btnTabSorum", "btnTabDatun", "btnTabMotor"].concat(modeCmc ? ["btnTabPbDatun"] : []);
     document.querySelectorAll(".side-nav .tab-btn").forEach(el => {
-      if (el.id !== "btnTabSorum" && el.id !== "btnTabDatun" && el.id !== "btnTabMotor") el.style.display = "none";
+      if (menuCmo.indexOf(el.id) < 0) el.style.display = "none";
     });
   }
 
@@ -6139,7 +6161,7 @@ function kuRun(nama, args, ok, gagal) {
    CABANG -> boleh membuat CMO di cabangnya sendiri
    Akses menu AREA sama dengan CABANG; CMO tetap kalkulator saja. */
 const KU_BOLEH_BUAT = { HO: ["AREA", "CABANG", "CMO", "CMC", "GUDANG"], AREA: ["CABANG", "CMO", "CMC", "GUDANG"], CABANG: ["CMO", "CMC", "GUDANG"], CMO: [], CMC: [], GUDANG: [] };
-const KU_LABEL_OPSI = { AREA: "AREA (wilayah)", CABANG: "CABANG", CMO: "CMO (kalkulator saja)", CMC: "CMC (kalkulator + PDF lengkap untuk PO)", GUDANG: "GUDANG (BAST & kelengkapan)" };
+const KU_LABEL_OPSI = { AREA: "AREA (wilayah)", CABANG: "CABANG", CMO: "CMO (kalkulator saja)", CMC: "CMC (kalkulator + PDF lengkap + Pembiayaan Dana Tunai)", GUDANG: "GUDANG (BAST & kelengkapan)" };
 function kuKodeRole(r) { r = String(r || "").toUpperCase().trim(); return r === "CBG" ? "CABANG" : r; }
 function kuPeranSaya() { return kuKodeRole(currentUser && currentUser.role); }
 function kuBolehBuatApa() { return KU_BOLEH_BUAT[kuPeranSaya()] || []; }
