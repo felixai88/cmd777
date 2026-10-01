@@ -22454,11 +22454,16 @@ function tacUnduh() {
     { kode: 'KEPRI',  lat: 1.0456,  lng: 104.0305, kiri: false, atas: true },
     { kode: 'PADANG', lat: -0.9471, lng: 100.4172, kiri: true }
   ];
+  /* Esri: gratis tanpa API key, tampilan mirip Google Maps. Cadangan: OpenStreetMap. */
   var TILE = {
-    terang: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
-    gelap:  'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+    terang: { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+              atr: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin, OpenStreetMap' },
+    gelap:  { url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+              atr: 'Tiles &copy; Esri &mdash; Esri, HERE, Garmin' },
+    cadangan: { url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              atr: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>' }
   };
-  var ATRIBUSI = '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>';
+  var pakaiCadangan = false;
   var peta = null, lapisan = null, sedangMuat = false;
 
   function temaGelap() { return document.body.classList.contains('dark') || document.body.classList.contains('cmd'); }
@@ -22474,10 +22479,15 @@ function tacUnduh() {
   }
   function pasangTile() {
     if (!peta) return;
-    var url = temaGelap() ? TILE.gelap : TILE.terang;
-    if (lapisan && lapisan._url === url) return;
+    var t = pakaiCadangan ? TILE.cadangan : (temaGelap() ? TILE.gelap : TILE.terang);
+    if (lapisan && lapisan._url === t.url) return;
     if (lapisan) peta.removeLayer(lapisan);
-    lapisan = L.tileLayer(url, { subdomains: 'abcd', maxZoom: 12, attribution: ATRIBUSI });
+    var gagal = 0;
+    lapisan = L.tileLayer(t.url, { maxZoom: 12, attribution: t.atr });
+    lapisan.on('tileerror', function () {
+      if (pakaiCadangan || ++gagal < 3) return;   /* server utama gagal -> pindah ke OpenStreetMap */
+      pakaiCadangan = true; pasangTile();
+    });
     lapisan.addTo(peta);
   }
   function bangun() {
