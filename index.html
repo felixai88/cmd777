@@ -2477,6 +2477,50 @@ body.cmd .uc-hero-pill { background: #1c1512; color: #f0b429; }
 .m123-periode span { display: block; font-size: 10px; font-weight: 700; color: rgba(255,255,255,.66); line-height: 1.2; }
 .m123-periode b { display: block; font-size: 13px; font-weight: 800; color: #fff; line-height: 1.3; }
 
+/* ---------- HERO v2: lebih rapi (logo di kanan atas, chip periode, aksen lembut) ---------- */
+#tabSorumBekas .m123-hero, #tabDanaTunai .m123-hero, #tabMotorBekas .m123-hero {
+  border-radius: 14px; padding: 18px 18px 46px 18px;
+  box-shadow: 0 10px 28px rgba(15,23,42,.18);
+  --hero-aksen: 218,0,0;
+}
+#tabDanaTunai  .m123-hero { --hero-aksen: 22,163,74; }
+#tabMotorBekas .m123-hero { --hero-aksen: 37,99,235; }
+.m123-hero::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 1;
+  background-image: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1.2px);
+  background-size: 14px 14px;
+  -webkit-mask-image: linear-gradient(100deg, transparent 35%, #000 100%);
+          mask-image: linear-gradient(100deg, transparent 35%, #000 100%);
+}
+.m123-hero::after {
+  right: -70px; top: -90px; width: 260px; height: 260px;
+  background: radial-gradient(circle at 40% 60%, rgba(var(--hero-aksen),.55) 0%, rgba(var(--hero-aksen),.18) 45%, rgba(var(--hero-aksen),0) 70%);
+}
+.m123-eyebrow { border-radius: 20px; padding: 4px 10px; font-size: 9.5px; letter-spacing: 1.2px; }
+.m123-hero h3 { margin: 12px 0 12px 0; font-size: 24px; padding-right: 64px; }
+.m123-hero-merek {
+  position: absolute; top: 14px; right: 14px; z-index: 3;
+  border-radius: 10px; padding: 6px 8px; gap: 0;
+  box-shadow: 0 4px 14px rgba(0,0,0,.22);
+}
+.m123-hero-merek img { width: 40px; height: 24px; flex: 0 0 40px; }
+.m123-hero-merek b { display: none; }
+.m123-periode {
+  border-radius: 12px; padding: 8px 14px 8px 8px; gap: 10px; margin: 0;
+  background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+}
+.m123-periode svg {
+  width: 30px; height: 30px; padding: 7px; box-sizing: border-box; border-radius: 9px;
+  background: rgba(240,180,41,.16); color: #F0B429;
+}
+.m123-periode span { font-size: 9.5px; text-transform: uppercase; letter-spacing: .8px; color: rgba(255,255,255,.6); }
+.m123-periode b { font-size: 14px; letter-spacing: .1px; }
+@media (max-width: 600px) {
+  .m123-hero h3 { font-size: 21px; }
+  .m123-periode b { font-size: 13px; }
+}
+
 /* ---------- KARTU ---------- */
 #tabSorumBekas .card,
 #tabDanaTunai  .card,
@@ -4902,6 +4946,30 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     <div id="tabPbDatun" class="tab-content">
       <style>
         #tabPbDatun table { min-width: 0; }
+        #tabPbDatun .dp-kepala { position: relative; overflow: hidden; display: flex; align-items: center; gap: 14px;
+          background: linear-gradient(105deg, #0f2540 0%, #1d3f6e 60%, #2563eb 100%); color: #fff;
+          border-radius: 14px; padding: 18px 18px; margin-bottom: 16px; box-shadow: 0 10px 26px rgba(15,37,64,.18); }
+        #tabPbDatun .dp-kepala::after { content: ""; position: absolute; right: -60px; top: -80px; width: 220px; height: 220px; border-radius: 50%;
+          background: radial-gradient(circle, rgba(240,180,41,.35) 0%, rgba(240,180,41,0) 70%); pointer-events: none; }
+        #tabPbDatun .dp-kepala-ikon { flex: 0 0 46px; width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center;
+          background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.2); position: relative; z-index: 1; }
+        #tabPbDatun .dp-kepala-ikon svg { width: 24px; height: 24px; color: #F0B429; }
+        #tabPbDatun .dp-kepala-teks { position: relative; z-index: 1; min-width: 0; flex: 1; }
+        #tabPbDatun .dp-kepala-teks small { display: block; font-size: 10.5px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: rgba(255,255,255,.7); }
+        #tabPbDatun .dp-kepala-teks h2 { margin: 3px 0 4px 0; padding: 0; border: 0; font-size: 20px; font-weight: 800; color: #fff; letter-spacing: -.1px; line-height: 1.25; display: block; }
+        #tabPbDatun .dp-kepala-teks h2::before { display: none; }
+        #tabPbDatun .dp-kepala-teks span { display: inline-block; font-size: 12px; font-weight: 700; color: #fff; background: rgba(255,255,255,.14); border-radius: 20px; padding: 3px 10px; }
+        #tabPbDatun .dp-kepala-balik { position: relative; z-index: 1; flex: none; background: rgba(255,255,255,.16); color: #fff; border: 1px solid rgba(255,255,255,.25);
+          border-radius: 9px; padding: 8px 12px; font-size: 12px; font-weight: 800; cursor: pointer; }
+        #tabPbDatun .dp-kepala-balik[hidden] { display: none; }
+        body.cmd #tabPbDatun .dp-kepala { background: linear-gradient(105deg, #7f1d1d 0%, #b91c1c 55%, #e2432c 100%); }
+        body.dark #tabPbDatun .dp-kepala { background: linear-gradient(105deg, #0b1220 0%, #13254a 60%, #1d4ed8 100%); }
+        @media (max-width: 600px) {
+          #tabPbDatun .dp-kepala { padding: 15px 14px; gap: 11px; }
+          #tabPbDatun .dp-kepala-ikon { flex-basis: 40px; width: 40px; height: 40px; }
+          #tabPbDatun .dp-kepala-teks h2 { font-size: 17px; }
+          #tabPbDatun .dp-kepala-teks span { font-size: 11px; }
+        }
         #tabPbDatun .dk-kpi { display: block; }
         @media (max-width: 700px) {
           #tabPbDatun .controls { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -5022,14 +5090,25 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <button type="button" class="cmc-saja aktif" onclick="switchTab('tabPbDatun')">Pembiayaan Datun</button>
       </div>
 
+      <div class="dp-kepala" id="dpKepala">
+        <div class="dp-kepala-ikon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6" rx="1"/><rect x="12" y="8" width="3" height="10" rx="1"/><rect x="17" y="5" width="3" height="13" rx="1"/></svg></div>
+        <div class="dp-kepala-teks">
+          <small>Pembiayaan Dana Tunai</small>
+          <h2 id="dpKepalaJudul">ALL WILAYAH</h2>
+          <span id="dpKepalaTgl">Memuat data&hellip;</span>
+        </div>
+        <button type="button" class="dp-kepala-balik" id="dpKepalaBalik" hidden>&times; Kembali</button>
+      </div>
+
       <div class="card">
         <h2>Filter Pembiayaan Dana Tunai</h2>
         <div class="controls">
           <div class="field"><label>Periode</label><select id="dpPeriode"></select></div>
           <div class="field"><label>Unit</label>
             <select id="dpUnit"><option value="">R2 &amp; R4</option><option value="R2">R2 (Motor)</option><option value="R4">R4 (Mobil)</option></select></div>
-          <div class="field"><label>Cabang</label><select id="dpCabang"><option value="">Semua Cabang</option></select></div>
-          <div class="field"><label>Cari CMO</label><input type="text" id="dpCari" placeholder="Ketik nama CMO..."></div>
+          <!-- cabang & cari CMO tidak ditampilkan; cabang tetap dipakai saat klik grafik/tabel (lihat judul) -->
+          <select id="dpCabang" hidden><option value="">Semua Cabang</option></select>
+          <input type="hidden" id="dpCari" value="">
         </div>
         <div class="actions">
           <button type="button" id="dpReload" class="btn-excel">Muat Ulang Data</button>
@@ -21282,7 +21361,7 @@ function dpMuat(paksa) {
       var u = String(iUnit >= 0 ? sel(row, iUnit) : '').toUpperCase().replace(/\s/g, '');
       hasil.push({
         cabang: cab, unit: /R4/.test(u) ? 'R4' : 'R2', os: pdAngka(sel(row, iOs)),
-        nominal: iNom >= 0 ? pdAngka(sel(row, iNom)) : 0, bulan: dpKunciBulan(tgl),
+        nominal: iNom >= 0 ? pdAngka(sel(row, iNom)) : 0, bulan: dpKunciBulan(tgl), tgl: tgl,
         cmo: String(sel(row, iCmo) || '').toUpperCase().replace(/\s+/g, ' ').trim() || '(TANPA NAMA CMO)',
         nama: iNama >= 0 ? String(sel(row, iNama) || '') : ''
       });
@@ -21333,6 +21412,37 @@ function dpSaring(f, bulan, abaikanUnit) {
     return true;
   });
 }
+/* ---- judul atas: cakupan sesuai login + "per tanggal" ---- */
+var DP_NAMA_BULAN_PANJANG = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+function dpNamaCabang(kode) {
+  var k = String(kode || '').toUpperCase().trim(), best = '';
+  if (typeof PD_ALIAS_CABANG !== 'undefined') {
+    if (PD_ALIAS_CABANG[k]) return k;                        /* sudah nama lengkap */
+    Object.keys(PD_ALIAS_CABANG).forEach(function (n) { if (PD_ALIAS_CABANG[n] === k && !best) best = n; });
+  }
+  return best || k;
+}
+function dpCakupan(f) {
+  if (f.cabang) return 'CABANG ' + dpNamaCabang(f.cabang);
+  var L = typeof lingkupInfo === 'function' ? lingkupInfo() : null;
+  if (!L) return 'ALL WILAYAH';
+  if (L.role === 'AREA') {
+    var u = (typeof currentUser !== 'undefined' && currentUser) ? currentUser : {};
+    return 'WILAYAH ' + String(u.cabang || (L.wilayah || []).join(' - ')).toUpperCase();
+  }
+  return 'CABANG ' + dpNamaCabang(L.cabang[0] || '');
+}
+function dpIsiKepala(f, rows) {
+  var j = dpEl('dpKepalaJudul'), t = dpEl('dpKepalaTgl'), b = dpEl('dpKepalaBalik');
+  if (j) j.innerText = dpCakupan(f) + (f.unit ? ' \u00b7 ' + f.unit : '');
+  var maks = null;
+  rows.forEach(function (r) { if (r.tgl && (!maks || r.tgl > maks)) maks = r.tgl; });
+  if (t) t.innerText = maks ? 'Per ' + maks.getDate() + ' ' + DP_NAMA_BULAN_PANJANG[maks.getMonth()] + ' ' + maks.getFullYear()
+                            : 'Periode ' + dpLabelBulan(f.per) + ' \u00b7 belum ada data';
+  /* tombol kembali hanya saat HO / AREA sedang melihat satu cabang hasil klik grafik/tabel */
+  var sc = dpEl('dpCabang');
+  if (b) b.hidden = !(f.cabang && sc && !sc.disabled);
+}
 function dpJumlah(rows) { var o = { unit: 0, os: 0, R2: { unit: 0, os: 0 }, R4: { unit: 0, os: 0 } }; rows.forEach(function (r) { o.unit++; o.os += r.os; o[r.unit].unit++; o[r.unit].os += r.os; }); return o; }
 
 function dpRender() {
@@ -21340,6 +21450,7 @@ function dpRender() {
   var f = dpPilihan();
   if (!f.per) { dpStatus('error', 'Belum ada data dengan TGL TERIMA BERKAS yang terbaca.'); return; }
   var A = dpSaring(f, f.per), B = f.perLalu ? dpSaring(f, f.perLalu) : [];
+  dpIsiKepala(f, A);
   var jb = dpEl('dpJudulBanding');
   if (jb) jb.innerText = f.perLalu ? 'Perbandingan ' + dpLabelBulan(f.perLalu) + ' vs ' + dpLabelBulan(f.per) : 'Ringkasan ' + dpLabelBulan(f.per);
   dpRenderKpi(A, B, f);
@@ -21652,6 +21763,7 @@ function dpUnduhExcel() {
     dpRender();
   });
   var ex = dpEl('dpExcel'); if (ex) ex.addEventListener('click', dpUnduhExcel);
+  var kb = dpEl('dpKepalaBalik'); if (kb) kb.addEventListener('click', function () { dpEl('dpCabang').value = ''; dpRender(); });
   var asliTema = window.gambarUlangTabAktif;
   if (typeof asliTema === 'function') window.gambarUlangTabAktif = function () {
     var t = dpEl('tabPbDatun');
