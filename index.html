@@ -2035,8 +2035,28 @@ body.cmd .geser-hint svg { stroke: #dcc7b5; }
   .msheet-tema button { flex: 1 1 0; background: #f5f8fb; color: #43556d; border-radius: 12px; font-size: 12px; min-height: 44px; }
   .msheet-tema button.active { background: #0f2540; color: #fff; }
 
-  body.cmo .mnav, body.cmo .msheet, body.cmo .msheet-bd { display: none !important; }
+  body.cmo .msheet, body.cmo .msheet-bd { display: none !important; }
 }
+
+/* --- CMO / CMC: pindah kalkulator lewat menu bawah (ala aplikasi), di HP maupun laptop --- */
+body.cmo .cmo-nav { display: none !important; }
+body.cmo .container { padding-bottom: 104px !important; }
+body.cmo .mnav {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 400; display: flex; justify-content: center;
+  background: #fff; border-top: 1px solid #e9eef4; box-shadow: 0 -6px 22px rgba(15,37,64,.10);
+  padding: 7px 6px; padding-bottom: calc(7px + env(safe-area-inset-bottom, 0px));
+}
+body.cmo .mnav button {
+  flex: 1 1 0; min-width: 0; max-width: 150px; background: transparent; border: 0; padding: 4px 2px; min-height: 0; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  color: #93a1b3; font-size: 11px; font-weight: 700; letter-spacing: .1px; box-shadow: none;
+}
+body.cmo .mnav-ikon { width: 52px; height: 30px; border-radius: 15px; display: flex; align-items: center; justify-content: center; transition: background .18s ease; }
+body.cmo .mnav svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
+body.cmo .mnav-lbl { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+body.cmo .mnav button.aktif { color: #1d4ed8; }
+body.cmo .mnav button.aktif .mnav-ikon { background: #e8efff; }
+body.cmo .mnav button:active .mnav-ikon { transform: scale(.94); }
 
 /* --- mode gelap & CMD untuk komponen HP --- */
 body.dark .mnav { background: #0d1729; border-top-color: #22334f; }
@@ -3122,7 +3142,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <button class="tab-btn" data-tab="tabAging" id="btnTabAging" onclick="switchTab('tabAging')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg><span>Aging Stock</span></button>
         <button class="tab-btn" data-tab="tabTipeTahun" id="btnTabTipe" onclick="switchTab('tabTipeTahun')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11M3 14h18"/></svg><span>Tipe &amp; Tahun Tarikan</span></button>
         <button class="tab-btn" data-tab="tabPembiayaan" id="btnTabPembiayaan" onclick="switchTab('tabPembiayaan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="4" width="3" height="14"/></svg><span>Pembiayaan Dealer</span></button>
-        <button class="tab-btn" data-tab="tabPbDatun" id="btnTabPbDatun" onclick="switchTab('tabPbDatun')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 12h.01M18 12h.01"/></svg><span>Pembiayaan Dana Tunai</span></button>
+        <button class="tab-btn" data-tab="tabPbDatun" id="btnTabPbDatun" onclick="switchTab('tabPbDatun')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6" rx="1"/><rect x="12" y="8" width="3" height="10" rx="1"/><rect x="17" y="5" width="3" height="13" rx="1"/></svg><span>Pembiayaan Dana Tunai</span></button>
         <button class="tab-btn" data-tab="tabTac" id="btnTabTac" onclick="switchTab('tabTac')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h4"/><path d="M13.5 16.5l1.8 1.8 3.2-3.6"/></svg><span>Perhitungan TAC Dealer</span></button>
         <button class="tab-btn" data-tab="tabLapMeeting" id="btnTab5" onclick="switchTab('tabLapMeeting')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg><span>Auto Lap Meeting</span></button>
         <button class="tab-btn" data-tab="tabStockAyda" id="btnTab6" onclick="switchTab('tabStockAyda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg><span>Stock AYDA (Meeting)</span></button>
@@ -16513,6 +16533,8 @@ function ucUnduhPdf(mode) {
     tabBastGudang: 'BAST', tabKelengkapan: 'Kelengkapan', tabHargaAyda: 'Harga AYDA', tabTipeTahun: 'Tipe', tabKelolaUser: 'Pengguna'
   };
   var UTAMA = ['tabDashboard', 'tabSorumBekas', 'tabDanaTunai', 'tabLapMeeting'];
+  /* label menu bawah untuk akun CMO / CMC */
+  var LABEL_CMO = { tabSorumBekas: 'Used Car', tabDanaTunai: 'Dana Tunai', tabMotorBekas: 'Motor Bekas', tabPbDatun: 'Pembiayaan' };
   var IKON_LAIN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
     '<circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>';
   var nav, sheet, latar, daftarBar = [];
@@ -16576,7 +16598,8 @@ function ucUnduhPdf(mode) {
 
     /* --- isi bar bawah: menu utama yang tersedia, sisanya masuk "Lainnya" --- */
     var bar = [];
-    UTAMA.forEach(function (id) {
+    var urutan = document.body.classList.contains('cmo') ? ['tabSorumBekas', 'tabDanaTunai', 'tabMotorBekas', 'tabPbDatun'] : UTAMA;
+    urutan.forEach(function (id) {
       for (var i = 0; i < tombol.length; i++) {
         if (tombol[i].getAttribute('data-tab') === id) { bar.push(tombol[i]); break; }
       }
@@ -16593,7 +16616,7 @@ function ucUnduhPdf(mode) {
       t.type = 'button';
       t.setAttribute('data-tab', id);
       t.innerHTML = '<span class="mnav-ikon">' + (b.querySelector('svg') ? b.querySelector('svg').outerHTML : '') +
-        '</span><span class="mnav-lbl">' + (LABEL_PENDEK[id] || id) + '</span>';
+        '</span><span class="mnav-lbl">' + ((document.body.classList.contains('cmo') && LABEL_CMO[id]) || LABEL_PENDEK[id] || id) + '</span>';
       t.addEventListener('click', function () { pilihTab(id); });
       nav.appendChild(t);
       daftarBar.push(id);
