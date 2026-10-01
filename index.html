@@ -793,6 +793,20 @@ body.dark .login-card button.btn-login { background: linear-gradient(135deg, #25
 .topbar h1 { margin: 0; font-size: 18px; letter-spacing: -0.2px; }
 .topbar p { margin: 3px 0 0 0; font-size: 12px; color: #8b98a8; }
 .topbar .btn-refresh { margin-left: auto; }
+/* ---------- auto refresh tiap 1 menit (tombol "Muat Ulang Data" dihapus) ---------- */
+#haReloadBtn, #keReload, #pdReload, #dpReload { display: none !important; }
+.topbar .auto-segar { margin-left: auto; display: inline-flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 700;
+  color: #64748b; background: rgba(15,37,64,.05); border: 1px solid rgba(15,37,64,.08); padding: 6px 11px; border-radius: 20px; white-space: nowrap; }
+.auto-segar i { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; box-shadow: 0 0 0 0 rgba(34,197,94,.6); animation: autoSegarDenyut 2s infinite; }
+.auto-segar.jalan i { background: #f59e0b; }
+@keyframes autoSegarDenyut { 0% { box-shadow: 0 0 0 0 rgba(34,197,94,.55); } 70% { box-shadow: 0 0 0 7px rgba(34,197,94,0); } 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); } }
+body.dark .topbar .auto-segar, body.cmd .topbar .auto-segar { color: #cbd5e1; background: rgba(255,255,255,.06); border-color: rgba(255,255,255,.1); }
+body.cmo .topbar .auto-segar, body.gudang .topbar .auto-segar { display: none; }
+@media (max-width: 820px) {
+  .topbar .auto-segar { color: rgba(255,255,255,.85); background: rgba(255,255,255,.14); border-color: transparent; padding: 6px 9px; }
+  .topbar .auto-segar #autoSegarTeks { display: none; }
+}
+
 .burger { display: none; background: #eef2f7; color: #43556d; font-size: 16px; padding: 8px 12px; border-radius: 9px; }
 .container { max-width: none; margin: 0; padding: 22px 26px 40px 26px; }
 /* layar lebar: isi selalu penuh selebar layar (kecuali mode CMO di HP) */
@@ -3288,7 +3302,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
           <h1 id="pageTitle">Dashboard</h1>
           <p id="pageSub">Ringkasan stock langsung dari Database</p>
         </div>
-        <button class="btn-refresh" onclick="loadData()">Muat Ulang Data</button>
+        <span class="auto-segar" id="autoSegar" title="Data diperbarui otomatis setiap 1 menit"><i></i><span id="autoSegarTeks">Auto refresh 1 menit</span></span>
         <div class="user-chip" id="userChip" style="display:none;">
           <button type="button" class="user-chip-btn" onclick="toggleMenuUser(event)" aria-label="Menu akun">
             <span class="user-ava" id="userAva">?</span>
@@ -6562,6 +6576,7 @@ const PALETTE = ["#0f2540", "#1f7a4d", "#c9781f", "#a32222", "#3b82f6", "#8b5cf6
 
 function setStatus(message, type) {
   const status = document.getElementById("status");
+  if (window.cmdAutoSenyap && (type === "loading" || type === "success")) return;   /* auto refresh: tanpa banner */
   status.innerText = message;
   status.className = "status " + type;
   status.style.display = type === "success" ? "none" : "";   /* pesan "Berhasil mengambil ..." tidak perlu tampil */
@@ -8336,7 +8351,7 @@ function ttBlokPdf(doc, dataArr, grup, urut, kategori, scopeLabel, mulaiY) {
 function ttDownloadPdf() {
   try {
     if (!allData || !allData.length) {
-      alert("Data belum dimuat. Klik \"Muat Ulang Data\" dulu.");
+      alert("Data belum dimuat. Tunggu sebentar, data diperbarui otomatis tiap 1 menit.");
       return;
     }
 
@@ -20531,7 +20546,7 @@ function pbRenderMatrix(rows) {
   if (pbCharts[id]) { pbCharts[id].destroy(); delete pbCharts[id]; }
   function tampilKosong(teks) { box.style.display = 'none'; kosong.style.display = ''; kosong.innerHTML = teks; }
   if (!pbKolomTenor) {
-    tampilKosong('Kolom <b>TENOR</b> tidak ditemukan di sheet DATA. Beri judul TENOR di baris 1 kolom tenornya, lalu tekan Muat Ulang Data.');
+    tampilKosong('Kolom <b>TENOR</b> tidak ditemukan di sheet DATA. Beri judul TENOR di baris 1 kolom tenornya, lalu tunggu pembaruan otomatis (maks. 1 menit).');
     return;
   }
   if (!rows.length) { tampilKosong('Tidak ada data.'); return; }
@@ -20635,7 +20650,7 @@ function pbRender() {
   } else {
     if (pbCharts.pbChartTenor) { pbCharts.pbChartTenor.destroy(); delete pbCharts.pbChartTenor; }
     boxTenor.style.display = 'none'; kosong.style.display = '';
-    kosong.innerHTML = 'Kolom <b>TENOR</b> tidak ditemukan di sheet DATA.<br>Beri judul TENOR di baris 1 kolom tenornya, lalu tekan Muat Ulang Data.';
+    kosong.innerHTML = 'Kolom <b>TENOR</b> tidak ditemukan di sheet DATA.<br>Beri judul TENOR di baris 1 kolom tenornya, lalu tunggu pembaruan otomatis (maks. 1 menit).';
   }
 
   var dlr = pbNilai('pbDealer');
@@ -22523,6 +22538,65 @@ var PETA_DATA = {"prov":{"riau":[[[-0.921,101.914],[-0.9826,101.8453],[-0.9341,1
     if (box && window.ResizeObserver) new ResizeObserver(function () { if (peta) peta.invalidateSize(); else bangun(); }).observe(box);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mulai); else mulai();
+})();
+</script>
+
+<script>
+/* ==================== AUTO REFRESH TIAP 1 MENIT ====================
+   Pengganti tombol "Muat Ulang Data". Hanya jalan saat halaman sedang dibuka (tidak di tab browser lain),
+   dan dilewati kalau user sedang mengetik, ada jendela/popup terbuka, atau sedang mencentang unit. */
+(function () {
+  var INTERVAL = 60 * 1000;
+  var TOMBOL_TAB = { tabHargaAyda: 'haReloadBtn', tabKelengkapan: 'keReload', tabPembiayaan: 'pdReload', tabPbDatun: 'dpReload' };
+  var terakhir = null;
+
+  function jam(d) { return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
+  function tandai(jalan) {
+    var el = document.getElementById('autoSegar'), t = document.getElementById('autoSegarTeks');
+    if (el) el.classList.toggle('jalan', !!jalan);
+    if (t) t.innerText = jalan ? 'Memperbarui\u2026' : ('Auto refresh 1 menit' + (terakhir ? ' \u00b7 ' + jam(terakhir) : ''));
+  }
+  function bolehSekarang() {
+    if (document.hidden) return false;
+    var app = document.getElementById('appContent');
+    if (!app || app.style.display === 'none') return false;                  /* belum login */
+    var role = String(typeof currentLoginRole !== 'undefined' ? currentLoginRole : '').toUpperCase();
+    if (role === 'CMO' || role === 'CMC' || role === 'GUDANG') return false;  /* kalkulator / gudang tidak perlu */
+    var a = document.activeElement;
+    if (a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName)) return false;      /* sedang mengisi */
+    if (typeof selectedData !== 'undefined' && selectedData.size) return false;
+    if (typeof selectedData2 !== 'undefined' && selectedData2.size) return false;
+    var popup = Array.prototype.some.call(document.querySelectorAll('[id$="Modal"], .modal, .ag-rinci-bg'), function (m) {
+      return m.offsetParent !== null && getComputedStyle(m).display !== 'none';
+    });
+    if (popup || document.body.classList.contains('msheet-buka')) return false;
+    var aktif = document.querySelector('.tab-content.active');
+    if (aktif && aktif.id === 'tabKelengkapan') {                             /* jangan ganggu upload yang belum dikirim */
+      var adaFile = Array.prototype.some.call(aktif.querySelectorAll('input[type=file]'), function (f) { return f.files && f.files.length; });
+      if (adaFile) return false;
+    }
+    return true;
+  }
+  function segarkan() {
+    if (!bolehSekarang()) return;
+    var aktif = document.querySelector('.tab-content.active'), id = aktif ? aktif.id : '';
+    tandai(true);
+    window.cmdAutoSenyap = true;
+    try {
+      var btn = TOMBOL_TAB[id] && document.getElementById(TOMBOL_TAB[id]);
+      if (btn) btn.click();
+      else if (typeof loadData === 'function') loadData();
+    } catch (e) {}
+    setTimeout(function () { window.cmdAutoSenyap = false; terakhir = new Date(); tandai(false); }, 4000);
+  }
+  setInterval(segarkan, INTERVAL);
+  /* kembali ke halaman setelah lama di tab lain -> langsung perbarui */
+  var tinggal = 0;
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) tinggal = Date.now();
+    else if (tinggal && Date.now() - tinggal > INTERVAL) segarkan();
+  });
+  setTimeout(function () { terakhir = new Date(); tandai(false); }, 1500);
 })();
 </script>
 </body>
