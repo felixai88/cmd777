@@ -20,7 +20,7 @@
   if (window.google && google.script && google.script.run) return;   /* sedang jalan di Apps Script */
 
   /* Link Web App Apps Script (deploy yang ujungnya /exec) */
-  var API_URL = "https://script.google.com/macros/s/AKfycby5X5Z9BrCchOjOIujVZwhKX0EdPVmyEZKMWIvSQujGnTAbic2_StmQj-5nnVSau4STGA/exec";
+  var API_URL = "https://script.google.com/macros/s/AKfycbwoRWfMDsuqZ4PwQY6qMv7cZtf_lTTW1Zr0V1dymM9EE5bLkj2GyrP6Xzj4_Jo_OaxuVw/exec";
 
   /* fungsi server yang boleh dipanggil — harus sama dengan daftar di Api.gs */
   var FUNGSI = ["loginUser", "cekSesi", "logoutUser", "gantiPassword", "daftarUser", "tambahUser", "resetPasswordUser", "ubahStatusUser", "fetchSheetCSV", "fetchJualanCSV", "fetchTarikanCSV", "fetchLapMeetingCSV", "fetchTarikanAllCSV", "fetchStockTahunan", "getPeriodeMrp", "getPeriodeMrpSorum", "getMrpSorumBekas", "getMatriksRangka", "bacaStnk", "fetchHargaAyda", "getDataPembiayaan", "bacaTacDealer", "ajukanPengajuanHarga", "ambilBerkasDrive", "fetchKelengkapanEstimasi", "fetchPengajuanHarga", "simpanBastLengkap", "simpanGabunganEstimasi", "simpanKeteranganEstimasi", "simpanMemoHarga", "simpanMemoMassal", "unggahBerkasEstimasi", "getDaftarCabang"];
@@ -1490,6 +1490,10 @@ body.cmd .kh-harga input { color: #fbf3ea; }
 .lipat-btn { flex: none; border: 1px solid #cfd6e0; background: #f7f9fb; color: #0f2540; border-radius: 8px; padding: 6px 12px; font-size: 11.5px; font-weight: 800; cursor: pointer; }
 .lipat-kepala.buka .lipat-btn { background: #0f2540; color: #fff; border-color: #0f2540; }
 .lipat-isi.tertutup { display: none; }
+#btnProyeksi.aktif { background: #0f2540; color: #fff; border-color: #0f2540; }
+body.dark #btnProyeksi.aktif { background: #2563eb; border-color: #2563eb; }
+body.cmd #btnProyeksi.aktif { background: #e2432c; border-color: #e2432c; }
+@media (max-width: 760px) { .tj-jualan-stats, .tj-jualan-charts { grid-template-columns: 1fr !important; } }
 body.dark .lipat-kepala, body.cmd .lipat-kepala { background: #101a2c; border-color: #22334f; }
 body.cmd .lipat-kepala { background: #241a16; border-color: #45291f; }
 body.dark .lipat-kepala b, body.cmd .lipat-kepala b { color: #e2e8f0; }
@@ -3305,7 +3309,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <button class="tab-btn" data-tab="tabKelengkapan" id="btnTabKelengkapan" onclick="switchTab('tabKelengkapan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg><span>Kelengkapan Estimasi</span></button>
         <button class="tab-btn" data-tab="tabBastGudang" id="btnTabBast" onclick="switchTab('tabBastGudang')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-6 9 6v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 21v-7h6v7"/></svg><span>Form BAST Gudang</span></button>
         <button class="tab-btn" data-tab="tabGrafik" id="btnTab3" onclick="switchTab('tabGrafik')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg><span>Grafik &amp; Analisis</span></button>
-        <button class="tab-btn" data-tab="tabTarikanJualan" id="btnTab4" onclick="switchTab('tabTarikanJualan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="6" height="12" rx="1"/><rect x="15" y="4" width="6" height="17" rx="1"/></svg><span>Tarikan vs Jualan</span></button>
+        <button class="tab-btn" data-tab="tabTarikanJualan" id="btnTab4" onclick="switchTab('tabTarikanJualan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="6" height="12" rx="1"/><rect x="15" y="4" width="6" height="17" rx="1"/></svg><span>Tarikan</span></button>
         <button class="tab-btn" data-tab="tabLor" id="btnTabLor" onclick="switchTab('tabLor')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg><span>LOR</span></button>
         <button class="tab-btn" data-tab="tabAging" id="btnTabAging" onclick="switchTab('tabAging')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg><span>Aging Stock</span></button>
         <button class="tab-btn" data-tab="tabTipeTahun" id="btnTabTipe" onclick="switchTab('tabTipeTahun')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11M3 14h18"/></svg><span>Tipe &amp; Tahun Tarikan</span></button>
@@ -4081,8 +4085,12 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     <!-- ==================== TAB 4: TARIKAN VS JUALAN (R2/R4) ==================== -->
     <div id="tabTarikanJualan" class="tab-content">
 
+      <!-- Bagian JUALAN disembunyikan (sudah ada di tab LOR); elemen tetap ada supaya kode lama tidak error -->
+      <div id="tjBagianJualan" style="display:none;">
+      <div class="dk-sec" style="margin-top:0;"><span>Jualan</span><hr></div>
+
       <div class="card">
-        <h2>Filter Periode, Wilayah &amp; Cabang</h2>
+        <h2>Filter Jualan: Periode, Wilayah &amp; Cabang</h2>
         <div class="controls">
           <div class="field">
             <label>Bulan</label>
@@ -4097,23 +4105,22 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
             <select id="cabangFilterTarikanTJ"><option value="">Semua Cabang</option></select>
           </div>
           <div class="field">
-            <label>Kategori (Grafik Jualan)</label>
+            <label>Kategori</label>
             <select id="kategoriFilterJualanTJ">
               <option value="">Semua Kategori</option>
               <option value="R2">R2</option>
               <option value="R4">R4</option>
             </select>
           </div>
-          <div class="summary" id="tjLoadStatus"></div>
         </div>
       </div>
 
-      <div class="dashboard-stats" style="grid-template-columns: repeat(5, 1fr);">
-        <div class="stat-card">
+      <div class="dashboard-stats tj-jualan-stats" style="grid-template-columns: repeat(3, 1fr);">
+        <div class="stat-card" style="display:none;">
           <h3>Total Unit Tarikan</h3>
           <p class="value" id="tjStatUnitTarik">0</p>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" style="display:none;">
           <h3>Total OS Tarikan</h3>
           <p class="value" id="tjStatOsTarik">Rp 0</p>
         </div>
@@ -4131,8 +4138,8 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         </div>
       </div>
 
-      <div class="chart-grid-3">
-        <div class="chart-card">
+      <div class="chart-grid-3 tj-jualan-charts" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+        <div class="chart-card" style="display:none;">
           <h3>OS Tarikan R2 vs R4</h3>
           <div class="chart-box"><canvas id="chartTarikanCabang"></canvas></div>
         </div>
@@ -4146,7 +4153,9 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         </div>
       </div>
 
-      <div class="dk-sec"><span>Tren Tarikan per Kuartal (Khusus Tarikan)</span><hr></div>
+      </div>
+
+      <div class="dk-sec" style="margin-top:0;"><span>Tarikan per Kuartal</span><hr></div>
 
       <div class="card">
         <div class="controls">
@@ -4174,7 +4183,14 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
             <label>Cabang</label>
             <select id="cabangFilterTarikQ"><option value="">Semua Cabang</option></select>
           </div>
-          <div class="summary" id="tarikQStatus" style="font-style: italic;"></div>
+          <div class="field">
+            <label>Proyeksi</label>
+            <button type="button" class="lipat-btn" id="btnProyeksi" onclick="toggleProyeksi()" style="height:38px;">Tampilkan &#9662;</button>
+          </div>
+          <div class="summary" style="margin-left:auto; text-align:right;">
+            <div id="tarikQStatus" style="font-style: italic;"></div>
+            <div id="tjLoadStatus" style="font-size:11px; margin-top:2px;"></div>
+          </div>
         </div>
       </div>
 
@@ -4182,16 +4198,16 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <div class="chart-card">
           <h3>Tarikan Motor (R2) - Unit per Bulan</h3>
           <div class="chart-box"><canvas id="chartTarikQR2"></canvas></div>
-          <div class="qi-proj-note"><span class="qi-proj-dot"></span>Batang putus-putus abu-abu = proyeksi bulan depan, garis ungu putus-putus = tahun lalu</div>
-          <div class="qi-grid" id="qiGridR2"></div>
+          <div class="qi-proj-note"><span class="qi-proj-dot"></span><span class="proy-teks">Batang putus-putus abu-abu = proyeksi bulan depan, </span>garis ungu putus-putus = tahun lalu</div>
+          <div class="qi-grid proy-isi" id="qiGridR2"></div>
           <div class="qi-section-title">Top 5 Cabang Tarikan Terbanyak</div>
           <div class="qt-top5" id="qtTop5R2"></div>
         </div>
         <div class="chart-card">
           <h3>Tarikan Mobil (R4) - Unit per Bulan</h3>
           <div class="chart-box"><canvas id="chartTarikQR4"></canvas></div>
-          <div class="qi-proj-note"><span class="qi-proj-dot"></span>Batang putus-putus abu-abu = proyeksi bulan depan, garis ungu putus-putus = tahun lalu</div>
-          <div class="qi-grid" id="qiGridR4"></div>
+          <div class="qi-proj-note"><span class="qi-proj-dot"></span><span class="proy-teks">Batang putus-putus abu-abu = proyeksi bulan depan, </span>garis ungu putus-putus = tahun lalu</div>
+          <div class="qi-grid proy-isi" id="qiGridR4"></div>
           <div class="qi-section-title">Top 5 Cabang Tarikan Terbanyak</div>
           <div class="qt-top5" id="qtTop5R4"></div>
         </div>
@@ -4200,13 +4216,19 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         Grafik ini murni jumlah unit TARIKAN per bulan dalam kuartal terpilih (tidak menghitung jualan). Persentase pada garis Trend menunjukkan perubahan dari bulan sebelumnya.
       </p>
 
-      <div class="qi-section-title">Heatmap Tarikan per Cabang &times; Bulan (Sepanjang Tahun) &mdash; R2</div>
-      <div class="qh-wrap" id="qhHeatmapR2"></div>
-      <div class="qi-section-title">Heatmap Tarikan per Cabang &times; Bulan (Sepanjang Tahun) &mdash; R4</div>
-      <div class="qh-wrap" id="qhHeatmapR4"></div>
+      <div class="lipat-kepala" data-lipat="lipatHmTarikR2" onclick="lorLipat('lipatHmTarikR2')">
+        <div><b>Heatmap Tarikan per Cabang &times; Bulan &mdash; R2</b><small>Jumlah unit tarikan motor tiap cabang sepanjang tahun</small></div>
+        <button type="button" class="lipat-btn">Tampilkan &#9662;</button>
+      </div>
+      <div class="lipat-isi tertutup" id="lipatHmTarikR2"><div class="qh-wrap" id="qhHeatmapR2"></div></div>
+      <div class="lipat-kepala" data-lipat="lipatHmTarikR4" onclick="lorLipat('lipatHmTarikR4')">
+        <div><b>Heatmap Tarikan per Cabang &times; Bulan &mdash; R4</b><small>Jumlah unit tarikan mobil tiap cabang sepanjang tahun</small></div>
+        <button type="button" class="lipat-btn">Tampilkan &#9662;</button>
+      </div>
+      <div class="lipat-isi tertutup" id="lipatHmTarikR4"><div class="qh-wrap" id="qhHeatmapR4"></div></div>
 
       <!-- ==================== TOTAL STOCK PER BULAN (SHEET TARIKAN ALL) ==================== -->
-      <div class="dk-sec"><span>Total Stock per Bulan (Sheet TARIKAN ALL)</span><hr></div>
+      <div class="dk-sec"><span>Total Stock per Bulan</span><hr></div>
 
       <div class="sm-wrap" id="saWrapR2">
         <div class="sm-head">
@@ -4215,10 +4237,13 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         </div>
         <div class="sm-flow" id="saFlowR2"></div>
         <div class="chart-box"><canvas id="chartStockAkhirR2"></canvas></div>
-        <div class="qi-proj-note"><span class="qi-proj-dot"></span>Batang putus-putus abu-abu = proyeksi bulan depan, garis ungu putus-putus = tahun lalu</div>
-        <div class="qi-grid" id="qiGridStockR2"></div>
-        <div class="qi-section-title">Heatmap Stock per Cabang &times; Bulan (Sepanjang Tahun)</div>
-        <div class="qh-wrap" id="qhHeatmapStockR2"></div>
+        <div class="qi-proj-note"><span class="qi-proj-dot"></span><span class="proy-teks">Batang putus-putus abu-abu = proyeksi bulan depan, </span>garis ungu putus-putus = tahun lalu</div>
+        <div class="qi-grid proy-isi" id="qiGridStockR2"></div>
+        <div class="lipat-kepala" data-lipat="lipatHmStockR2" onclick="lorLipat('lipatHmStockR2')" style="margin-top:14px;">
+          <div><b>Heatmap Stock per Cabang &times; Bulan &mdash; R2</b><small>Total stock motor tiap cabang sepanjang tahun</small></div>
+          <button type="button" class="lipat-btn">Tampilkan &#9662;</button>
+        </div>
+        <div class="lipat-isi tertutup" id="lipatHmStockR2"><div class="qh-wrap" id="qhHeatmapStockR2"></div></div>
         <div class="sm-table-wrap" style="margin-top:14px;"><table class="sm-table" id="tableStockAkhirR2"></table></div>
       </div>
 
@@ -4229,10 +4254,13 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         </div>
         <div class="sm-flow" id="saFlowR4"></div>
         <div class="chart-box"><canvas id="chartStockAkhirR4"></canvas></div>
-        <div class="qi-proj-note"><span class="qi-proj-dot"></span>Batang putus-putus abu-abu = proyeksi bulan depan, garis ungu putus-putus = tahun lalu</div>
-        <div class="qi-grid" id="qiGridStockR4"></div>
-        <div class="qi-section-title">Heatmap Stock per Cabang &times; Bulan (Sepanjang Tahun)</div>
-        <div class="qh-wrap" id="qhHeatmapStockR4"></div>
+        <div class="qi-proj-note"><span class="qi-proj-dot"></span><span class="proy-teks">Batang putus-putus abu-abu = proyeksi bulan depan, </span>garis ungu putus-putus = tahun lalu</div>
+        <div class="qi-grid proy-isi" id="qiGridStockR4"></div>
+        <div class="lipat-kepala" data-lipat="lipatHmStockR4" onclick="lorLipat('lipatHmStockR4')" style="margin-top:14px;">
+          <div><b>Heatmap Stock per Cabang &times; Bulan &mdash; R4</b><small>Total stock mobil tiap cabang sepanjang tahun</small></div>
+          <button type="button" class="lipat-btn">Tampilkan &#9662;</button>
+        </div>
+        <div class="lipat-isi tertutup" id="lipatHmStockR4"><div class="qh-wrap" id="qhHeatmapStockR4"></div></div>
         <div class="sm-table-wrap" style="margin-top:14px;"><table class="sm-table" id="tableStockAkhirR4"></table></div>
       </div>
 
@@ -4240,9 +4268,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <button class="btn-excel" id="saExcelBtn">Download Excel (Stock per Bulan)</button>
         <span class="summary" id="saStatus" style="font-style:italic;"></span>
       </div>
-      <p style="font-size:11.5px; color:#8b98a8; margin:10px 0 18px 2px;">
-        Angka dibaca langsung dari sheet <strong>TARIKAN ALL</strong>: satu baris = satu unit stock pada PERIODE tersebut, jadi total stock sebuah bulan = jumlah baris dengan periode bulan itu. Persentase pada grafik menunjukkan perubahan dari bulan sebelumnya.
-      </p>
+      
 
     </div>
     <!-- ==================== AKHIR TAB 4 ==================== -->
@@ -6574,7 +6600,7 @@ const JUDUL_TAB = {
   tabBastGudang:     ["Form BAST Gudang", "Serah terima unit ke gudang"],
   tabKelengkapan:    ["Kelengkapan Estimasi", "Estimasi, SP 1, dan SP 2 digabung dengan BAST gudang"],
   tabGrafik:         ["Grafik & Analisis Mutasi", "Analisis cabang, mutasi, dan kategori R2/R4"],
-  tabTarikanJualan:  ["Tarikan vs Jualan", "Perbandingan tarikan dan penjualan per periode"],
+  tabTarikanJualan:  ["Tarikan", "Tarikan per bulan & kuartal (sheet TARIKAN + DATABASE STOCK)"],
   tabLor:            ["LOR (Loss on Realization)", "Analisis LOR berdasarkan data sheet Jualan"],
   tabAging:          ["Aging Stock", "Umur unit yang masih di stock — deteksi risiko sebelum jadi rugi"],
   tabTipeTahun:      ["Tipe dan Tahun Tarikan", "Rekap unit per tipe kendaraan x tahun tarik x status mutasi"],
@@ -8702,12 +8728,12 @@ function afterTJPartLoaded() {
     if (statusEl) {
       let infoStock = "";
       if (stockTarikanError) {
-        infoStock = " ⚠ Sheet STOCK tidak terbaca: " + stockTarikanError;
+        infoStock = " ⚠ DATABASE STOCK tidak terbaca: " + stockTarikanError;
       } else if (stockTarikanData.length) {
         infoStock = " Tarikan ditambah " + gab.tambah.toLocaleString("id-ID") + " unit dari sheet " +
-          (stockTarikanInfo.map(x => x.nama).join(", ") || "STOCK") + ".";
+          (stockTarikanInfo.map(x => x.nama).join(", ") || "DATABASE STOCK") + ".";
       } else if (!stockTarikanInfo.length) {
-        infoStock = " ⚠ Tidak ada sheet bernama \"STOCK 2025\" (atau STOCK <tahun>) yang terbaca.";
+        infoStock = " ⚠ Sheet \"DATABASE STOCK\" tidak ditemukan.";
       } else {
         infoStock = " ⚠ Sheet " + stockTarikanInfo.map(x => x.nama + " (" + x.baris + " baris, " +
           (x.kolomKetemu === false ? "judul kolom CABANG/TGL TARIK tidak ketemu" : x.unit + " unit") + ")").join(", ") + ".";
@@ -9193,7 +9219,28 @@ function populateCabangFilterTarikQ() {
   select.value = current;
 }
 
+/* ===== Proyeksi bulan depan + ringkasan tren: bisa disembunyikan / ditampilkan (default: sembunyi) ===== */
+let tampilProyeksi = false;
+try { tampilProyeksi = localStorage.getItem("cmdTampilProyeksi") === "1"; } catch (e) {}
+
+function terapkanTampilProyeksi() {
+  document.querySelectorAll(".proy-isi, .proy-teks").forEach(el => { el.style.display = tampilProyeksi ? "" : "none"; });
+  const b = document.getElementById("btnProyeksi");
+  if (b) {
+    b.innerHTML = tampilProyeksi ? "Sembunyikan &#9652;" : "Tampilkan &#9662;";
+    b.classList.toggle("aktif", tampilProyeksi);
+  }
+}
+
+function toggleProyeksi() {
+  tampilProyeksi = !tampilProyeksi;
+  try { localStorage.setItem("cmdTampilProyeksi", tampilProyeksi ? "1" : "0"); } catch (e) {}
+  terapkanTampilProyeksi();
+  renderTarikanKuartal();   // ikut menggambar ulang grafik Total Stock (saRender)
+}
+
 function renderTarikanKuartal() {
+  terapkanTampilProyeksi();
   const elCek = document.getElementById("chartTarikQR2");
   if (!elCek) return;
 
@@ -9238,10 +9285,12 @@ function renderTarikanKuartal() {
 
     const proyeksi = qiProyeksiBulanDepan(unitPerBulan);
     const bulanDepanIdx = (bulanIdx[bulanIdx.length - 1] + 1) % 12;
-    const labelDenganProyeksi = labelBulan.concat([BULAN_NAMA_ID[bulanDepanIdx] + " (Proy.)"]);
-    const unitDenganProyeksiBar = unitPerBulan.concat([null]);
+    const P = tampilProyeksi;
+    const labelDenganProyeksi = P ? labelBulan.concat([BULAN_NAMA_ID[bulanDepanIdx] + " (Proy.)"]) : labelBulan.slice();
+    const unitDenganProyeksiBar = P ? unitPerBulan.concat([null]) : unitPerBulan.slice();
     const proyeksiData = labelBulan.map(() => null).concat([proyeksi]);
-    const trendDenganProyeksi = unitPerBulan.concat([proyeksi]);
+    const trendDenganProyeksi = P ? unitPerBulan.concat([proyeksi]) : unitPerBulan.slice();
+    const idxProy = P ? trendDenganProyeksi.length - 1 : -1;
 
     const canvas = document.getElementById("chartTarikQ" + kat);
     if (canvas) {
@@ -9255,10 +9304,10 @@ function renderTarikanKuartal() {
           borderColor: "#f59e0b",
           backgroundColor: "#f59e0b",
           borderWidth: 3,
-          pointRadius: (c) => c.dataIndex === trendDenganProyeksi.length - 1 ? 6 : 5,
-          pointStyle: (c) => c.dataIndex === trendDenganProyeksi.length - 1 ? "rectRot" : "circle",
-          pointBackgroundColor: (c) => c.dataIndex === trendDenganProyeksi.length - 1 ? "#94a3b8" : "#f59e0b",
-          segment: { borderDash: (c) => c.p1DataIndex === trendDenganProyeksi.length - 1 ? [6, 4] : undefined },
+          pointRadius: (c) => c.dataIndex === idxProy ? 6 : 5,
+          pointStyle: (c) => c.dataIndex === idxProy ? "rectRot" : "circle",
+          pointBackgroundColor: (c) => c.dataIndex === idxProy ? "#94a3b8" : "#f59e0b",
+          segment: { borderDash: (c) => c.p1DataIndex === idxProy ? [6, 4] : undefined },
           tension: 0
         },
         {
@@ -9280,11 +9329,13 @@ function renderTarikanKuartal() {
         }
       ];
 
+      if (!P) datasets.splice(2, 1);
+
       if (unitPerBulanLalu.some(v => v > 0)) {
         datasets.push({
           type: "line",
           label: "Tahun Lalu",
-          data: unitPerBulanLalu.concat([null]),
+          data: P ? unitPerBulanLalu.concat([null]) : unitPerBulanLalu,
           borderColor: "#8b5cf6",
           backgroundColor: "#8b5cf6",
           borderWidth: 2,
@@ -14687,8 +14738,6 @@ function saRenderFlow(containerId, m, bulanIdx, tahun) {
     '<div class="sm-box"><div class="sm-label">' + BULAN_NAMA_ID[i] + ' ' + tahun + '</div><div class="sm-value">' + smAngka(m.stock[i]) + '</div></div>'
   ).join("");
 
-  html += '<div class="sm-box akhir"><div class="sm-label">Perubahan vs ' + (b0 === 0 ? "Des Tahun Lalu" : BULAN_NAMA_ID[b0 - 1]) + '</div>' +
-          '<div class="sm-value">' + (delta === null ? "-" : (delta > 0 ? "+" : "") + smAngka(delta)) + '</div></div>';
 
   el.innerHTML = html;
 }
@@ -14737,10 +14786,12 @@ function saRender() {
 
     const proyeksi = qiProyeksiBulanDepan(nilai);
     const bulanDepanIdx = (bulanIdx[bulanIdx.length - 1] + 1) % 12;
-    const labelDenganProyeksi = label.concat([BULAN_NAMA_ID[bulanDepanIdx] + " (Proy.)"]);
-    const nilaiDenganProyeksiBar = nilai.concat([null]);
+    const P = tampilProyeksi;
+    const labelDenganProyeksi = P ? label.concat([BULAN_NAMA_ID[bulanDepanIdx] + " (Proy.)"]) : label.slice();
+    const nilaiDenganProyeksiBar = P ? nilai.concat([null]) : nilai.slice();
     const proyeksiData = label.map(() => null).concat([proyeksi]);
-    const trendDenganProyeksi = nilai.concat([proyeksi]);
+    const trendDenganProyeksi = P ? nilai.concat([proyeksi]) : nilai.slice();
+    const idxProy = P ? trendDenganProyeksi.length - 1 : -1;
 
     const canvas = document.getElementById("chartStockAkhir" + kat);
     if (canvas) {
@@ -14754,10 +14805,10 @@ function saRender() {
           borderColor: "#10b981",
           backgroundColor: "#10b981",
           borderWidth: 3,
-          pointRadius: (c) => c.dataIndex === trendDenganProyeksi.length - 1 ? 6 : 5,
-          pointStyle: (c) => c.dataIndex === trendDenganProyeksi.length - 1 ? "rectRot" : "circle",
-          pointBackgroundColor: (c) => c.dataIndex === trendDenganProyeksi.length - 1 ? "#94a3b8" : "#10b981",
-          segment: { borderDash: (c) => c.p1DataIndex === trendDenganProyeksi.length - 1 ? [6, 4] : undefined },
+          pointRadius: (c) => c.dataIndex === idxProy ? 6 : 5,
+          pointStyle: (c) => c.dataIndex === idxProy ? "rectRot" : "circle",
+          pointBackgroundColor: (c) => c.dataIndex === idxProy ? "#94a3b8" : "#10b981",
+          segment: { borderDash: (c) => c.p1DataIndex === idxProy ? [6, 4] : undefined },
           tension: 0
         },
         {
@@ -14779,11 +14830,13 @@ function saRender() {
         }
       ];
 
+      if (!P) datasets.splice(2, 1);
+
       if (nilaiLalu.some(v => v > 0)) {
         datasets.push({
           type: "line",
           label: "Tahun Lalu",
-          data: nilaiLalu.concat([null]),
+          data: P ? nilaiLalu.concat([null]) : nilaiLalu,
           borderColor: "#8b5cf6",
           backgroundColor: "#8b5cf6",
           borderWidth: 2,
@@ -17018,7 +17071,7 @@ function ucUnduhPdf(mode) {
 (function () {
   var LABEL_PENDEK = {
     tabDashboard: 'Beranda', tabDataTarikan: 'Tarikan', tabListHarga: 'Harga',
-    tabGrafik: 'Grafik', tabTarikanJualan: 'Jualan', tabLor: 'LOR',
+    tabGrafik: 'Grafik', tabTarikanJualan: 'Tren Tarik', tabLor: 'LOR',
     tabAging: 'Aging', tabLapMeeting: 'Meeting', tabStockAyda: 'AYDA', tabPembiayaan: 'Dealer', tabPbDatun: 'Datun', tabTac: 'TAC',
     tabSorumBekas: 'Kalkulator', tabDanaTunai: 'Dana Tunai', tabMotorBekas: 'Motor',
     tabBastGudang: 'BAST', tabKelengkapan: 'Kelengkapan', tabHargaAyda: 'Harga AYDA', tabTipeTahun: 'Tipe', tabKelolaUser: 'Pengguna'
