@@ -8613,11 +8613,13 @@ function loadTarikanJualanData() {
     .withSuccessHandler(function(res) {
       stockTarikanData = lingkupSaring(parseStockTahunan(res));
       stockTarikanInfo = res && res.sheets ? res.sheets : [];
+      stockTarikanError = "";
       afterTJPartLoaded();
     })
     .withFailureHandler(function(err) {
       /* fungsi belum dipasang di Api.gs -> dashboard tetap jalan pakai sheet TARIKAN saja */
       console.warn("STOCK tahunan tidak terbaca:", err && err.message ? err.message : err);
+      stockTarikanError = (err && err.message) ? err.message : String(err);
       stockTarikanData = [];
       stockTarikanInfo = [];
       afterTJPartLoaded();
@@ -8628,6 +8630,7 @@ function loadTarikanJualanData() {
 /* ==================== TARIKAN DARI SHEET CLOSING STOCK (STOCK 2025, STOCK 2026, ...) ==================== */
 let stockTarikanData = [];
 let stockTarikanInfo = [];
+let stockTarikanError = "";
 let tarikanDataAsli = [];   // isi sheet TARIKAN saja, sebelum digabung
 
 function stockKategori(v) {
@@ -8697,10 +8700,20 @@ function afterTJPartLoaded() {
     renderLorPage();
     const statusEl = document.getElementById("tjLoadStatus");
     if (statusEl) {
-      statusEl.innerText = "Data siap." + (stockTarikanData.length
-        ? " Tarikan ditambah " + gab.tambah.toLocaleString("id-ID") + " unit dari sheet " +
-          (stockTarikanInfo.map(x => x.nama).join(", ") || "STOCK") + "."
-        : "");
+      let infoStock = "";
+      if (stockTarikanError) {
+        infoStock = " ⚠ Sheet STOCK tidak terbaca: " + stockTarikanError;
+      } else if (stockTarikanData.length) {
+        infoStock = " Tarikan ditambah " + gab.tambah.toLocaleString("id-ID") + " unit dari sheet " +
+          (stockTarikanInfo.map(x => x.nama).join(", ") || "STOCK") + ".";
+      } else if (!stockTarikanInfo.length) {
+        infoStock = " ⚠ Tidak ada sheet bernama \"STOCK 2025\" (atau STOCK <tahun>) yang terbaca.";
+      } else {
+        infoStock = " ⚠ Sheet " + stockTarikanInfo.map(x => x.nama + " (" + x.baris + " baris, " +
+          (x.kolomKetemu === false ? "judul kolom CABANG/TGL TARIK tidak ketemu" : x.unit + " unit") + ")").join(", ") + ".";
+      }
+      statusEl.innerText = "Data siap." + infoStock;
+      statusEl.title = infoStock;
     }
   }
 }
