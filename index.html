@@ -4013,6 +4013,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
 
       <div class="card">
         <h2>Filter Analisis Wilayah, Cabang, Mutasi &amp; Kategori (R2/R4)</h2>
+        <div id="gSumberInfo" style="font-size:11.5px; color:#64748b; margin:-4px 0 10px 0;">Memuat closing terakhir dari DATABASE STOCK&hellip;</div>
         <div class="controls">
           <div class="field">
             <label>Pilih Wilayah</label>
@@ -6816,7 +6817,7 @@ function onWilayahChange(suffix) {
   cabSel.innerHTML = '<option value="">Semua Cabang</option>';
 
   let cabangSet = new Set();
-  allData.forEach(r => { if (r.CABANG) cabangSet.add(r.CABANG); });
+  (suffix === "Grafik" ? grafikSumber() : allData).forEach(r => { if (r.CABANG) cabangSet.add(r.CABANG); });
   if (suffix === "Lor" || suffix === "TarikanTJ" || suffix === "LM") {
     jualanData.forEach(r => { if (r.CABANG) cabangSet.add(r.CABANG); });
   }
@@ -7656,7 +7657,7 @@ function populateGrafikFilter() {
   const wilayah = document.getElementById("wilayahFilterGrafik").value;
   const allowed = getCabangListByWilayah(wilayah);
   const cabangSet = new Set();
-  allData.forEach(row => { if (row.CABANG) cabangSet.add(row.CABANG); });
+  grafikSumber().forEach(row => { if (row.CABANG) cabangSet.add(row.CABANG); });
 
   Array.from(cabangSet).sort().forEach(cabang => {
     if (!allowed || allowed.includes(cabang)) {
@@ -7677,14 +7678,14 @@ const kFG = document.getElementById("kategoriFilterGrafik");
 if(kFG) kFG.addEventListener("change", renderCharts);
 
 function renderCharts() {
-  if (!allData || allData.length === 0) return;
+  const sumberGrafik = grafikSumber();
   const wilayahTerpilih = document.getElementById("wilayahFilterGrafik").value;
   const cabangTerpilih = document.getElementById("cabangFilterGrafik").value;
   const mutasiTerpilih = document.getElementById("mutasiFilterGrafik").value;
   const kategoriTerpilih = document.getElementById("kategoriFilterGrafik").value;
   const allowed = getCabangListByWilayah(wilayahTerpilih);
 
-  const dataWilayah = allData.filter(r => {
+  const dataWilayah = sumberGrafik.filter(r => {
     if (wilayahTerpilih && allowed && !allowed.includes(r.CABANG)) return false;
     return true;
   });
@@ -8667,12 +8668,14 @@ function loadTarikanJualanData() {
       stockTarikanData = lingkupSaring(parseStockTahunan(res));
       stockTarikanInfo = res && res.sheets ? res.sheets : [];
       stockTarikanError = "";
+      setGrafikDariStock(res && res.terakhir, "");
       afterTJPartLoaded();
     })
     .withFailureHandler(function(err) {
       /* fungsi belum dipasang di Api.gs -> dashboard tetap jalan pakai sheet TARIKAN saja */
       console.warn("STOCK tahunan tidak terbaca:", err && err.message ? err.message : err);
       stockTarikanError = (err && err.message) ? err.message : String(err);
+      setGrafikDariStock(null, stockTarikanError);
       stockTarikanData = [];
       stockTarikanInfo = [];
       afterTJPartLoaded();
@@ -8685,6 +8688,40 @@ let stockTarikanData = [];
 let stockTarikanInfo = [];
 let stockTarikanError = "";
 let tarikanDataAsli = [];   // isi sheet TARIKAN saja, sebelum digabung
+
+/* ===== Tab Grafik & Analisis: sumber = closing TERAKHIR di sheet DATABASE STOCK ===== */
+let grafikData = null;        // null = belum dimuat
+let grafikLabel = "";
+
+/* baris dari server: [cabang, kontrak, nopol, os, tglTarik, tipe, kategori, mutasi, thnUnit, jenis] */
+function setGrafikDariStock(terakhir, galat) {
+  const info = document.getElementById("gSumberInfo");
+  if (galat || !terakhir || !terakhir.rows || !terakhir.rows.length) {
+    grafikData = [];
+    grafikLabel = "";
+    if (info) info.innerHTML = "&#9888; Closing terakhir DATABASE STOCK tidak terbaca" + (galat ? ": " + escapeHtml(galat) : ".");
+  } else {
+    grafikData = lingkupSaring(terakhir.rows.map(r => ({
+      CABANG: String(r[0] || "").trim().toUpperCase(),
+      NO_KONTRAK: String(r[1] || "").trim(),
+      NO_POL: String(r[2] || "").trim(),
+      RAW_OS: parseNumber(r[3]),
+      TANGGAL_TARIK: r[4] || "",
+      TYPE: String(r[5] || "").trim(),
+      KATEGORI: stockKategori(r[6]),
+      MUTASI: String(r[7] || "").trim().toUpperCase(),
+      TAHUN_UNIT: String(r[8] || "").trim(),
+      JENIS: String(r[9] || "").trim().toUpperCase()
+    })).filter(r => r.CABANG));
+    grafikLabel = terakhir.label || "";
+    if (info) info.innerHTML = "Sumber: <b>DATABASE STOCK</b> &middot; closing <b>" + escapeHtml(grafikLabel || "terakhir") + "</b> &middot; " +
+      grafikData.length.toLocaleString("id-ID") + " unit";
+  }
+  if (typeof populateGrafikFilter === "function") populateGrafikFilter();
+  const tab = document.getElementById("tabGrafik");
+  if (tab && tab.classList.contains("active")) renderCharts();
+}
+function grafikSumber() { return grafikData || []; }
 
 function stockKategori(v) {
   const k = String(v || "").toUpperCase().trim();
