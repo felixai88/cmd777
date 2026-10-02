@@ -20,7 +20,7 @@
   if (window.google && google.script && google.script.run) return;   /* sedang jalan di Apps Script */
 
   /* Link Web App Apps Script (deploy yang ujungnya /exec) */
-  var API_URL = "https://script.google.com/macros/s/AKfycbx2A5tEf4n_qO2D9AMljbp8MCZzd2jFg1Y66gy4MsqXPlJmO64rXaAqQEF5oOxlg4wnNA/exec";
+  var API_URL = "https://script.google.com/macros/s/AKfycby5X5Z9BrCchOjOIujVZwhKX0EdPVmyEZKMWIvSQujGnTAbic2_StmQj-5nnVSau4STGA/exec";
 
   /* fungsi server yang boleh dipanggil — harus sama dengan daftar di Api.gs */
   var FUNGSI = ["loginUser", "cekSesi", "logoutUser", "gantiPassword", "daftarUser", "tambahUser", "resetPasswordUser", "ubahStatusUser", "fetchSheetCSV", "fetchJualanCSV", "fetchTarikanCSV", "fetchLapMeetingCSV", "fetchTarikanAllCSV", "fetchStockTahunan", "getPeriodeMrp", "getPeriodeMrpSorum", "getMrpSorumBekas", "getMatriksRangka", "bacaStnk", "fetchHargaAyda", "getDataPembiayaan", "bacaTacDealer", "ajukanPengajuanHarga", "ambilBerkasDrive", "fetchKelengkapanEstimasi", "fetchPengajuanHarga", "simpanBastLengkap", "simpanGabunganEstimasi", "simpanKeteranganEstimasi", "simpanMemoHarga", "simpanMemoMassal", "unggahBerkasEstimasi", "getDaftarCabang"];
