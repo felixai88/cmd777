@@ -20,16 +20,16 @@
   if (window.google && google.script && google.script.run) return;   /* sedang jalan di Apps Script */
 
   /* Link Web App Apps Script (deploy yang ujungnya /exec) */
-  var API_URL = "https://script.google.com/macros/s/AKfycbwoRWfMDsuqZ4PwQY6qMv7cZtf_lTTW1Zr0V1dymM9EE5bLkj2GyrP6Xzj4_Jo_OaxuVw/exec";
+  var API_URL = "https://script.google.com/macros/s/AKfycbzhwFjxQ6WszXdNcm-ThTIk4_W0CAOA51qYF6h_ym27OZP5YZ0PGxUCfsC06E0dSLYkoA/exec";
 
   /* fungsi server yang boleh dipanggil — harus sama dengan daftar di Api.gs */
-  var FUNGSI = ["loginUser", "cekSesi", "logoutUser", "gantiPassword", "daftarUser", "tambahUser", "resetPasswordUser", "ubahStatusUser", "fetchSheetCSV", "fetchJualanCSV", "fetchTarikanCSV", "fetchLapMeetingCSV", "fetchTarikanAllCSV", "fetchStockTahunan", "getPeriodeMrp", "getPeriodeMrpSorum", "getMrpSorumBekas", "getMatriksRangka", "bacaStnk", "fetchHargaAyda", "getDataPembiayaan", "bacaTacDealer", "ajukanPengajuanHarga", "ambilBerkasDrive", "fetchKelengkapanEstimasi", "fetchPengajuanHarga", "simpanBastLengkap", "simpanGabunganEstimasi", "simpanKeteranganEstimasi", "simpanMemoHarga", "simpanMemoMassal", "unggahBerkasEstimasi", "getDaftarCabang"];
+  var FUNGSI = ["loginUser", "cekSesi", "logoutUser", "gantiPassword", "daftarUser", "tambahUser", "resetPasswordUser", "ubahStatusUser", "fetchSheetCSV", "fetchJualanCSV", "fetchTarikanCSV", "fetchLapMeetingCSV", "fetchTarikanAllCSV", "fetchStockTahunan", "bacaSheetAman", "getPeriodeMrp", "getPeriodeMrpSorum", "getMrpSorumBekas", "getMatriksRangka", "bacaStnk", "fetchHargaAyda", "getDataPembiayaan", "bacaTacDealer", "ajukanPengajuanHarga", "ambilBerkasDrive", "fetchKelengkapanEstimasi", "fetchPengajuanHarga", "simpanBastLengkap", "simpanGabunganEstimasi", "simpanKeteranganEstimasi", "simpanMemoHarga", "simpanMemoMassal", "unggahBerkasEstimasi", "getDaftarCabang"];
 
   function panggil(nama, args, ok, gagal, obj) {
     fetch(API_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },   /* text/plain: tanpa preflight CORS */
-      body: JSON.stringify({ fn: nama, args: args }),
+      body: JSON.stringify({ fn: nama, args: args, token: (function () { try { return localStorage.getItem("cmdSesiToken") || ""; } catch (e) { return ""; } })() }),
       redirect: "follow"
     })
       .then(function (r) {
@@ -41,7 +41,17 @@
         try { res = JSON.parse(t); }
         catch (e) { throw new Error("Jawaban server tidak terbaca. Pastikan Api.gs sudah dipasang & deploy ulang."); }
         if (res && res.ok) { if (ok) ok(res.data, obj); }
-        else throw new Error((res && res.error) || "Terjadi kesalahan di server.");
+        else {
+          var pesan = (res && res.error) || "Terjadi kesalahan di server.";
+          if (/^SESI_HABIS/.test(pesan)) {
+            /* token tidak berlaku lagi -> hapus & muat ulang supaya halaman login muncul */
+            var adaToken = false;
+            try { adaToken = !!localStorage.getItem("cmdSesiToken"); localStorage.removeItem("cmdSesiToken"); } catch (e) {}
+            if (adaToken && !window.__cmdReloadSesi) { window.__cmdReloadSesi = true; setTimeout(function () { location.reload(); }, 300); }
+            pesan = pesan.replace(/^SESI_HABIS:\s*/, "");
+          }
+          throw new Error(pesan);
+        }
       })
       .catch(function (e) {
         var err = e instanceof Error ? e : new Error(String(e));
@@ -74,6 +84,23 @@
     window.addEventListener("load", function () { navigator.serviceWorker.register("sw.js").catch(function () {}); });
   }
 })();
+</script>
+<script>
+/* Baca Google Sheets LEWAT Apps Script (bacaSheetAman), bukan langsung dari browser.
+   Spreadsheet jadi bisa di-set "Restricted"; ID asli tidak ada di halaman ini. */
+window.fetchSheetAman = function (url) {
+  return new Promise(function (resolve, reject) {
+    try {
+      google.script.run
+        .withSuccessHandler(function (t) {
+          var teks = String(t == null ? "" : t);
+          resolve({ ok: true, status: 200, text: function () { return Promise.resolve(teks); } });
+        })
+        .withFailureHandler(function (e) { reject(e instanceof Error ? e : new Error(String(e))); })
+        .bacaSheetAman(url);
+    } catch (e) { reject(e); }
+  });
+};
 </script>
 <!-- ================= /VERSI GITHUB ================= -->
 
@@ -10005,7 +10032,7 @@ function lmPopulateFilters() {
    PICA sengaja tidak diautomasi sesuai arahan (diedit manual).
    ================================================================== */
 
-const LM_PPT_SHEET_ID = '10DpX9MZKaD875icTMBIrWB1zBr0P-_1VPFdhFlJoM64';
+const LM_PPT_SHEET_ID = 'LM';   /* kode samaran, ID asli ada di Api.gs */
 
 const LM_PPT_BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
 
@@ -10055,7 +10082,7 @@ const LM_PPT_STYLE = {
 function lmPptFetchSheet(sheetName) {
   const url = 'https://docs.google.com/spreadsheets/d/' + LM_PPT_SHEET_ID +
     '/gviz/tq?sheet=' + encodeURIComponent(sheetName) + '&headers=0&tqx=out:json';
-  return fetch(url, { cache: 'no-store' })
+  return fetchSheetAman(url)
     .then(function (r) {
       if (!r.ok) throw new Error('HTTP ' + r.status + ' saat mengambil sheet "' + sheetName + '"');
       return r.text();
@@ -15090,7 +15117,7 @@ var UC_MESIN = (function () {
 })();
 
 /* ---------- 2. Data MRP ---------- */
-var UC_SHEET_ID = '1rzI5TtWN38vkxV4JlNmYy-GWcwjma6zH4J5FZi6mqBs';
+var UC_SHEET_ID = 'UC';   /* kode samaran, ID asli ada di Api.gs */
 var UC_SHEET_GID = '82871421';
 var UC_SNAP = {"brands":[],"models":[],"types":[],"cats":[],"years":[],"rows":[]};   /* versi GitHub: salinan harga tidak disertakan (repo publik) */
 
@@ -15338,7 +15365,7 @@ function mrpLengkapiPeriode(namaSheet, tampil) {
   } catch (e) {}
   var url = 'https://docs.google.com/spreadsheets/d/' + UC_SHEET_ID + '/gviz/tq?sheet=' +
             encodeURIComponent(namaSheet) + '&headers=0&range=A1:Z4&tqx=out:json';
-  fetch(url, { cache: 'no-store' })
+  fetchSheetAman(url)
     .then(function (r) { return r.text(); })
     .then(function (t) {
       var a = t.indexOf('{'), b = t.lastIndexOf('}');
@@ -15410,7 +15437,7 @@ function ucMuatMrp(paksa) {
 
 function ucCobaGviz(pakai, gagal) {
   var url = 'https://docs.google.com/spreadsheets/d/' + UC_SHEET_ID + '/gviz/tq?gid=' + UC_SHEET_GID + '&headers=1&tqx=out:json';
-  fetch(url, { cache: 'no-store' })
+  fetchSheetAman(url)
     .then(function (r) { return r.text(); })
     .then(function (t) {
       var a = t.indexOf('{'), b = t.lastIndexOf('}');
@@ -15429,7 +15456,7 @@ function ucCobaGviz(pakai, gagal) {
 
 function ucCobaCsv(pakai, gagal) {
   var url = 'https://docs.google.com/spreadsheets/d/' + UC_SHEET_ID + '/export?format=csv&gid=' + UC_SHEET_GID;
-  fetch(url, { cache: 'no-store' })
+  fetchSheetAman(url)
     .then(function (r) { return r.text(); })
     .then(function (t) {
       var matriks = t.split(/\r?\n/).map(function (baris) {
@@ -18227,7 +18254,7 @@ function mbMuatMrp(paksa) {
   var url = 'https://docs.google.com/spreadsheets/d/' + UC_SHEET_ID +
     '/gviz/tq?sheet=' + encodeURIComponent(MB_SHEET_NAMA) + '&headers=1&tqx=out:json';
   try {
-    fetch(url, { cache: 'no-store' })
+    fetchSheetAman(url)
       .then(function (r) { return r.text(); })
       .then(function (t) {
         var a = t.indexOf('{'), b = t.lastIndexOf('}');
@@ -20441,7 +20468,7 @@ function rkFile(k, f) {
      bagian di sheet ("PHU AUG"); wilayah dari baris judul ("SUMUT") / peta cabang.
    - Periode dibaca dari nomor PO (…/PO/VIII/26/S = Agustus 2026).
    ========================================================================== */
-var PB_SHEET_ID = '1Gcqadb60b3gyntU2G_yk1wx8lzcT1sXQupqfJf2kW-k';
+var PB_SHEET_ID = 'PB';   /* kode samaran, ID asli ada di Api.gs */
 var PB_GID = '1688084249';
 var PB_TOP = 12;                     /* batang terbanyak di grafik dealer & tipe */
 
@@ -20542,7 +20569,7 @@ function pbMuat(paksa) {
 
 function pbGviz(selesai, gagal) {
   var url = 'https://docs.google.com/spreadsheets/d/' + PB_SHEET_ID + '/gviz/tq?gid=' + PB_GID + '&headers=1&tqx=out:json';
-  fetch(url, { cache: 'no-store' })
+  fetchSheetAman(url)
     .then(function (r) { return r.text(); })
     .then(function (t) {
       var a = t.indexOf('{'), b = t.lastIndexOf('}');
@@ -20563,7 +20590,7 @@ function pbGviz(selesai, gagal) {
 
 function pbCsv(selesai, gagal) {
   var url = 'https://docs.google.com/spreadsheets/d/' + PB_SHEET_ID + '/export?format=csv&gid=' + PB_GID;
-  fetch(url, { cache: 'no-store' })
+  fetchSheetAman(url)
     .then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
     .then(function (t) { selesai(pbUraiCsv(t)); })
     .catch(function () { gagal(); });
@@ -21151,7 +21178,7 @@ function pdKolomKeIndex(id) { var n = 0; for (var i = 0; i < id.length; i++) n =
 function pdGviz(nama, range) {
   var url = 'https://docs.google.com/spreadsheets/d/' + PB_SHEET_ID + '/gviz/tq?tqx=out:json&headers=0&sheet=' +
     encodeURIComponent(nama) + '&range=' + encodeURIComponent(range);
-  return fetch(url, { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
+  return fetchSheetAman(url).then(function (r) { return r.text(); }).then(function (t) {
     var a = t.indexOf('{'), b = t.lastIndexOf('}');
     var j = JSON.parse(t.slice(a, b + 1));
     if (j.status === 'error' || !j.table) throw new Error((j.errors && j.errors[0] && j.errors[0].detailed_message) || 'gviz error');
@@ -21823,7 +21850,7 @@ function dpMuat(paksa) {
   dpSedangMuat = true;
   dpStatus('loading', 'Memuat sheet DANA TUNAI&hellip;');
   var url = 'https://docs.google.com/spreadsheets/d/' + PB_SHEET_ID + '/gviz/tq?tqx=out:json&headers=1&sheet=' + encodeURIComponent(DP_SHEET);
-  fetch(url, { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) {
+  fetchSheetAman(url).then(function (r) { return r.text(); }).then(function (t) {
     var a = t.indexOf('{'), b = t.lastIndexOf('}');
     var j = JSON.parse(t.slice(a, b + 1));
     if (!j.table) throw new Error('sheet kosong');
