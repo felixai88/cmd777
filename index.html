@@ -20,10 +20,10 @@
   if (window.google && google.script && google.script.run) return;   /* sedang jalan di Apps Script */
 
   /* Link Web App Apps Script (deploy yang ujungnya /exec) */
-  var API_URL = "https://script.google.com/macros/s/AKfycbwxXSa-96P_nS9BL_QH8OXChZQFlT3rrKTXNY7nPZiBs616kXO_FduIuTJ64L9cLua_FQ/exec";
+  var API_URL = "https://script.google.com/macros/s/AKfycbx2A5tEf4n_qO2D9AMljbp8MCZzd2jFg1Y66gy4MsqXPlJmO64rXaAqQEF5oOxlg4wnNA/exec";
 
   /* fungsi server yang boleh dipanggil — harus sama dengan daftar di Api.gs */
-  var FUNGSI = ["loginUser", "cekSesi", "logoutUser", "gantiPassword", "daftarUser", "tambahUser", "resetPasswordUser", "ubahStatusUser", "fetchSheetCSV", "fetchJualanCSV", "fetchTarikanCSV", "fetchLapMeetingCSV", "fetchTarikanAllCSV", "getPeriodeMrp", "getPeriodeMrpSorum", "getMrpSorumBekas", "getMatriksRangka", "bacaStnk", "fetchHargaAyda", "getDataPembiayaan", "bacaTacDealer", "ajukanPengajuanHarga", "ambilBerkasDrive", "fetchKelengkapanEstimasi", "fetchPengajuanHarga", "simpanBastLengkap", "simpanGabunganEstimasi", "simpanKeteranganEstimasi", "simpanMemoHarga", "simpanMemoMassal", "unggahBerkasEstimasi", "getDaftarCabang"];
+  var FUNGSI = ["loginUser", "cekSesi", "logoutUser", "gantiPassword", "daftarUser", "tambahUser", "resetPasswordUser", "ubahStatusUser", "fetchSheetCSV", "fetchJualanCSV", "fetchTarikanCSV", "fetchLapMeetingCSV", "fetchTarikanAllCSV", "fetchStockTahunan", "getPeriodeMrp", "getPeriodeMrpSorum", "getMrpSorumBekas", "getMatriksRangka", "bacaStnk", "fetchHargaAyda", "getDataPembiayaan", "bacaTacDealer", "ajukanPengajuanHarga", "ambilBerkasDrive", "fetchKelengkapanEstimasi", "fetchPengajuanHarga", "simpanBastLengkap", "simpanGabunganEstimasi", "simpanKeteranganEstimasi", "simpanMemoHarga", "simpanMemoMassal", "unggahBerkasEstimasi", "getDaftarCabang"];
 
   function panggil(nama, args, ok, gagal, obj) {
     fetch(API_URL, {
@@ -8607,11 +8607,86 @@ function loadTarikanJualanData() {
       if (statusEl) statusEl.innerText = "Gagal memuat TARIKAN: " + err.message;
     })
     .fetchTarikanCSV();
+
+  /* Tarikan dari sheet closing "STOCK 2025" (dst) — dibaca per TGL TARIK, 1 unit dihitung sekali */
+  google.script.run
+    .withSuccessHandler(function(res) {
+      stockTarikanData = lingkupSaring(parseStockTahunan(res));
+      stockTarikanInfo = res && res.sheets ? res.sheets : [];
+      afterTJPartLoaded();
+    })
+    .withFailureHandler(function(err) {
+      /* fungsi belum dipasang di Api.gs -> dashboard tetap jalan pakai sheet TARIKAN saja */
+      console.warn("STOCK tahunan tidak terbaca:", err && err.message ? err.message : err);
+      stockTarikanData = [];
+      stockTarikanInfo = [];
+      afterTJPartLoaded();
+    })
+    .fetchStockTahunan();
+}
+
+/* ==================== TARIKAN DARI SHEET CLOSING STOCK (STOCK 2025, STOCK 2026, ...) ==================== */
+let stockTarikanData = [];
+let stockTarikanInfo = [];
+let tarikanDataAsli = [];   // isi sheet TARIKAN saja, sebelum digabung
+
+function stockKategori(v) {
+  const k = String(v || "").toUpperCase().trim();
+  if (k === "R2" || k.indexOf("MOTOR") >= 0 || k.indexOf("R2") >= 0) return "R2";
+  if (k === "R4" || k.indexOf("MOBIL") >= 0 || k.indexOf("R4") >= 0) return "R4";
+  return k;
+}
+
+/* res.rows dari server: [cabang, kontrak, nopol, os, tglTarik(yyyy-MM-dd), tipe, kategori, mutasi, tahunUnit, rangka, mesin] */
+function parseStockTahunan(res) {
+  const rows = (res && res.rows) || [];
+  return rows.map(r => ({
+    CABANG: String(r[0] || "").trim(),
+    NO_KONTRAK: String(r[1] || "").trim(),
+    NO_POL: String(r[2] || "").trim(),
+    RAW_OS: parseNumber(r[3]),
+    TANGGAL_TARIK: r[4],
+    TYPE: String(r[5] || "").trim(),
+    KATEGORI: stockKategori(r[6]),
+    MUTASI: String(r[7] || "").trim(),
+    TAHUN_UNIT: String(r[8] || "").trim(),
+    RANGKA: String(r[9] || "").trim(),
+    MESIN: String(r[10] || "").trim(),
+    SUMBER: "STOCK"
+  })).filter(r => r.CABANG || r.NO_KONTRAK);
+}
+
+function tarikanKunci(r) {
+  const t = lmParseDate(r.TANGGAL_TARIK);
+  const tgl = t ? (t.year + "-" + t.month + "-" + t.day) : String(r.TANGGAL_TARIK || "");
+  const id = String(r.NO_KONTRAK || "").replace(/\s+/g, "").toUpperCase() ||
+             String(r.NO_POL || "").replace(/\s+/g, "").toUpperCase();
+  return id ? id + "|" + tgl : "";
+}
+
+/* Gabung: sheet TARIKAN didahulukan, lalu unit dari STOCK yang belum ada (kontrak + tgl tarik sama = unit sama) */
+function gabungTarikan(tarikan, stock) {
+  const ada = new Set();
+  const hasil = [];
+  tarikan.forEach(r => { const k = tarikanKunci(r); if (k) ada.add(k); hasil.push(r); });
+  let tambah = 0;
+  stock.forEach(r => {
+    const k = tarikanKunci(r);
+    if (k && ada.has(k)) return;
+    if (k) ada.add(k);
+    hasil.push(r);
+    tambah++;
+  });
+  return { rows: hasil, tambah: tambah };
 }
 
 function afterTJPartLoaded() {
   tjLoadedCount++;
-  if (tjLoadedCount >= 2) {
+  if (tjLoadedCount >= 3) {
+    tarikanDataAsli = tarikanData.filter(r => r.SUMBER !== "STOCK");
+    const gab = gabungTarikan(tarikanDataAsli, stockTarikanData);
+    tarikanData = gab.rows;
+    lmIsiTahunTarikQ();
     populateBulanFilterTJ();
     populateCabangFilterTarikanTJ();
     renderTarikanJualanCharts();
@@ -8621,8 +8696,25 @@ function afterTJPartLoaded() {
     lorPopulatePembiayaan();
     renderLorPage();
     const statusEl = document.getElementById("tjLoadStatus");
-    if (statusEl) statusEl.innerText = "Data siap.";
+    if (statusEl) {
+      statusEl.innerText = "Data siap." + (stockTarikanData.length
+        ? " Tarikan ditambah " + gab.tambah.toLocaleString("id-ID") + " unit dari sheet " +
+          (stockTarikanInfo.map(x => x.nama).join(", ") || "STOCK") + "."
+        : "");
+    }
   }
+}
+
+/* Dropdown tahun grafik tarikan per kuartal: isi otomatis dari tahun TGL TARIK yang ada */
+function lmIsiTahunTarikQ() {
+  const sel = document.getElementById("tahunFilterTarikQ");
+  if (!sel) return;
+  const pilih = sel.value;
+  const set = new Set([new Date().getFullYear()]);
+  tarikanData.forEach(r => { const t = lmParseDate(r.TANGGAL_TARIK); if (t && t.year > 2000) set.add(t.year); });
+  const daftar = Array.from(set).sort((x, y) => y - x);
+  sel.innerHTML = daftar.map(y => '<option value="' + y + '">' + y + '</option>').join("");
+  sel.value = daftar.indexOf(parseInt(pilih)) >= 0 ? pilih : String(daftar[0]);
 }
 
 function populateCabangFilterTarikanTJ() {
