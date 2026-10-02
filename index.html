@@ -4226,7 +4226,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <div class="chart-card">
           <h3>Tarikan Motor (R2) - Unit per Bulan</h3>
           <div class="chart-box"><canvas id="chartTarikQR2"></canvas></div>
-          <div class="qi-proj-note"><span class="qi-proj-dot"></span><span class="proy-teks">Batang putus-putus abu-abu = proyeksi bulan depan, </span>garis ungu putus-putus = tahun lalu</div>
+          <div class="qi-proj-note proy-isi"><span class="qi-proj-dot"></span>Batang putus-putus abu-abu = proyeksi bulan depan</div>
           <div class="qi-grid proy-isi" id="qiGridR2"></div>
           <div class="qi-section-title">Top 5 Cabang Tarikan Terbanyak</div>
           <div class="qt-top5" id="qtTop5R2"></div>
@@ -4234,7 +4234,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <div class="chart-card">
           <h3>Tarikan Mobil (R4) - Unit per Bulan</h3>
           <div class="chart-box"><canvas id="chartTarikQR4"></canvas></div>
-          <div class="qi-proj-note"><span class="qi-proj-dot"></span><span class="proy-teks">Batang putus-putus abu-abu = proyeksi bulan depan, </span>garis ungu putus-putus = tahun lalu</div>
+          <div class="qi-proj-note proy-isi"><span class="qi-proj-dot"></span>Batang putus-putus abu-abu = proyeksi bulan depan</div>
           <div class="qi-grid proy-isi" id="qiGridR4"></div>
           <div class="qi-section-title">Top 5 Cabang Tarikan Terbanyak</div>
           <div class="qt-top5" id="qtTop5R4"></div>
@@ -4265,7 +4265,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         </div>
         <div class="sm-flow" id="saFlowR2"></div>
         <div class="chart-box"><canvas id="chartStockAkhirR2"></canvas></div>
-        <div class="qi-proj-note"><span class="qi-proj-dot"></span><span class="proy-teks">Batang putus-putus abu-abu = proyeksi bulan depan, </span>garis ungu putus-putus = tahun lalu</div>
+        <div class="qi-proj-note proy-isi"><span class="qi-proj-dot"></span>Batang putus-putus abu-abu = proyeksi bulan depan</div>
         <div class="qi-grid proy-isi" id="qiGridStockR2"></div>
         <div class="lipat-kepala" data-lipat="lipatHmStockR2" onclick="lorLipat('lipatHmStockR2')" style="margin-top:14px;">
           <div><b>Heatmap Stock per Cabang &times; Bulan &mdash; R2</b><small>Total stock motor tiap cabang sepanjang tahun</small></div>
@@ -4282,7 +4282,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         </div>
         <div class="sm-flow" id="saFlowR4"></div>
         <div class="chart-box"><canvas id="chartStockAkhirR4"></canvas></div>
-        <div class="qi-proj-note"><span class="qi-proj-dot"></span><span class="proy-teks">Batang putus-putus abu-abu = proyeksi bulan depan, </span>garis ungu putus-putus = tahun lalu</div>
+        <div class="qi-proj-note proy-isi"><span class="qi-proj-dot"></span>Batang putus-putus abu-abu = proyeksi bulan depan</div>
         <div class="qi-grid proy-isi" id="qiGridStockR4"></div>
         <div class="lipat-kepala" data-lipat="lipatHmStockR4" onclick="lorLipat('lipatHmStockR4')" style="margin-top:14px;">
           <div><b>Heatmap Stock per Cabang &times; Bulan &mdash; R4</b><small>Total stock mobil tiap cabang sepanjang tahun</small></div>
@@ -9395,7 +9395,7 @@ function renderTarikanKuartal() {
 
       if (!P) datasets.splice(2, 1);
 
-      if (unitPerBulanLalu.some(v => v > 0)) {
+      if (false && unitPerBulanLalu.some(v => v > 0)) {   /* garis "Tahun Lalu" dimatikan atas permintaan */
         datasets.push({
           type: "line",
           label: "Tahun Lalu",
@@ -14896,7 +14896,7 @@ function saRender() {
 
       if (!P) datasets.splice(2, 1);
 
-      if (nilaiLalu.some(v => v > 0)) {
+      if (false && nilaiLalu.some(v => v > 0)) {   /* garis "Tahun Lalu" dimatikan atas permintaan */
         datasets.push({
           type: "line",
           label: "Tahun Lalu",
