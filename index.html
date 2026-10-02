@@ -1496,6 +1496,40 @@ body.dark .lipat-kepala b, body.cmd .lipat-kepala b { color: #e2e8f0; }
 body.dark .lipat-btn, body.cmd .lipat-btn { background: transparent; color: #e2e8f0; border-color: #2a3b57; }
 body.dark .lipat-kepala.buka .lipat-btn { background: #2563eb; border-color: #2563eb; }
 body.cmd .lipat-kepala.buka .lipat-btn { background: #e2432c; border-color: #e2432c; }
+/* ==================== LOR: 3 BULAN TERAKHIR & PER KUARTAL ==================== */
+.lor-tren-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-bottom: 14px; }
+.lor-tren-grid.q4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 1000px) { .lor-tren-grid.q4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .lor-tren-grid, .lor-tren-grid.q4 { grid-template-columns: 1fr; } }
+.lor-tren-card { background: #fff; border: 1px solid #dfe4ea; border-radius: 14px; padding: 14px 16px; box-shadow: 0 2px 6px rgba(15,37,64,0.03); position: relative; }
+.lor-tren-card.terakhir { border-color: #93c5fd; box-shadow: 0 0 0 2px rgba(59,130,246,.12); }
+.lor-tren-card.kosong { opacity: .55; }
+.lor-tren-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+.lor-tren-nama { font-size: 12px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; color: #43556d; }
+.lor-tren-tag { font-size: 10px; font-weight: 800; color: #2563eb; background: #eff6ff; border-radius: 6px; padding: 2px 6px; }
+.lor-tren-pct { font-size: 24px; font-weight: 900; line-height: 1.15; margin: 2px 0 2px; }
+.lor-tren-pct.rugi { color: #ef4444; } .lor-tren-pct.untung { color: #1f7a4d; } .lor-tren-pct.nol { color: #64748b; }
+.lor-tren-delta { font-size: 11px; font-weight: 700; margin-bottom: 10px; color: #64748b; }
+.lor-tren-delta .naik { color: #1f7a4d; } .lor-tren-delta .turun { color: #ef4444; }
+.lor-tren-bar { margin-bottom: 6px; }
+.lor-tren-bar .lbl { display: flex; justify-content: space-between; font-size: 10.5px; color: #64748b; margin-bottom: 3px; gap: 6px; }
+.lor-tren-bar .lbl b { color: #0f2540; font-weight: 800; white-space: nowrap; }
+.lor-tren-bar .trk { height: 7px; background: #eef2f6; border-radius: 6px; overflow: hidden; }
+.lor-tren-bar .isi { height: 100%; border-radius: 6px; }
+.lor-tren-unit { margin-top: 10px; padding-top: 8px; border-top: 1px dashed #e1e5ea; font-size: 11px; color: #64748b; display: flex; justify-content: space-between; }
+.lor-tren-unit b { color: #0f2540; }
+.lor-tren-info { font-size: 11px; color: #8b98a8; font-style: italic; margin: -4px 0 14px 2px; }
+body.dark .lor-tren-card { background: #131f36; border-color: #22334f; box-shadow: none; }
+body.cmd .lor-tren-card { background: #241a16; border-color: #45291f; box-shadow: none; }
+body.dark .lor-tren-card.terakhir { border-color: #2563eb; }
+body.cmd .lor-tren-card.terakhir { border-color: #e2432c; box-shadow: 0 0 0 2px rgba(226,67,44,.15); }
+body.dark .lor-tren-nama, body.cmd .lor-tren-nama { color: #94a3b8; }
+body.dark .lor-tren-bar b, body.cmd .lor-tren-bar b, body.dark .lor-tren-unit b, body.cmd .lor-tren-unit b { color: #e2e8f0; }
+body.dark .lor-tren-bar .trk { background: #22334f; } body.cmd .lor-tren-bar .trk { background: #45291f; }
+body.dark .lor-tren-unit { border-top-color: #22334f; } body.cmd .lor-tren-unit { border-top-color: #45291f; }
+body.dark .lor-tren-tag { background: #1e3a8a; color: #bfdbfe; } body.cmd .lor-tren-tag { background: #45291f; color: #f0b429; }
+body.dark .lor-tren-pct.untung, body.cmd .lor-tren-pct.untung { color: #34d399; }
+body.dark .lor-tren-delta .naik, body.cmd .lor-tren-delta .naik { color: #34d399; }
 .lor-cmp-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
 .lor-cmp-grid { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.5fr); gap: 18px; align-items: start; }
 .lor-cmp-grid > .dk-box { height: 340px; }
@@ -4273,6 +4307,18 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
           </div>
         </div>
       </div>
+
+      <div class="dk-sec"><span>LOR 3 Bulan Terakhir</span><hr></div>
+      <div class="lor-tren-grid" id="lorTigaBulan"></div>
+      <div class="lor-tren-info" id="lorTigaBulanInfo"></div>
+
+      <div class="lipat-kepala" data-lipat="lipatLorKuartal" onclick="lorLipat('lipatLorKuartal')">
+        <div><b>LOR per Kuartal</b><small>Q1 &ndash; Q4 tahun terpilih: OS, harga jual, unit &amp; perubahan dari kuartal sebelumnya</small></div>
+        <button type="button" class="lipat-btn">Tampilkan &#9662;</button>
+      </div>
+      <div class="lipat-isi tertutup" id="lipatLorKuartal">
+        <div class="lor-tren-grid q4" id="lorKuartal"></div>
+      </div><!-- /lipatLorKuartal -->
 
       <div class="dk-sec"><span>LOR per Cabang</span><hr></div>
 
@@ -9438,6 +9484,19 @@ function renderLorPage() {
     });
   }
 
+  // LOR 3 bulan terakhir + per kuartal: ikut semua filter KECUALI filter Bulan & Tahun
+  // (bulan dipakai sebagai titik akhir; tahun dipakai untuk kuartal)
+  try {
+    const jualanTren = jualanData.filter(r => {
+      if (selectedWilayah && allowed && !allowed.includes(r.CABANG)) return false;
+      if (selectedKategori && r.KATEGORI !== selectedKategori) return false;
+      if (selectedCabang && r.CABANG !== selectedCabang) return false;
+      if (selectedPembiayaan && r.JENIS_PEMBIAYAAN !== selectedPembiayaan) return false;
+      return !lorAdalahTebus(r);
+    });
+    renderLorTrenPeriode(jualanTren, targetYear, selectedBulan);
+  } catch (e) { console.error("LOR tren periode:", e); }
+
   // Dataset khusus daftar per cabang: SENGAJA tidak ikut filter Cabang,
   // supaya semua cabang dalam wilayah terpilih tetap kelihatan untuk dibandingkan.
   const jualanPerCabang = jualanData.filter(r => {
@@ -13570,6 +13629,118 @@ function renderLorMetode(rows) {
 }
 
 /* ==================== LIPAT / BUKA BAGIAN ==================== */
+/* ==================== LOR 3 BULAN TERAKHIR & PER KUARTAL ==================== */
+function lorRekapPeriode(rows) {
+  let os = 0, hj = 0;
+  rows.forEach(r => { os += (r.RAW_OS || 0); hj += (r.RAW_JUAL || 0); });
+  return { os: os, hj: hj, unit: rows.length, pct: os > 0 ? ((hj - os) / os) * 100 : null };
+}
+
+function lorKartuPeriode(nama, rek, rekSebelum, opsi) {
+  opsi = opsi || {};
+  const kosong = !rek || rek.unit === 0 || rek.pct === null;
+  let pctHtml, deltaHtml = "&nbsp;";
+  if (kosong) {
+    pctHtml = '<div class="lor-tren-pct nol">&ndash;</div>';
+    deltaHtml = "Belum ada penjualan";
+  } else {
+    const kls = rek.pct < 0 ? "rugi" : (rek.pct > 0 ? "untung" : "nol");
+    pctHtml = '<div class="lor-tren-pct ' + kls + '">' + (rek.pct > 0 ? "+" : "") + rek.pct.toFixed(2) + '%</div>';
+    if (rekSebelum && rekSebelum.pct !== null && rekSebelum.unit > 0) {
+      const d = rek.pct - rekSebelum.pct;
+      const arah = d > 0 ? "naik" : (d < 0 ? "turun" : "");
+      const panah = d > 0 ? "&#9650;" : (d < 0 ? "&#9660;" : "&#9644;");
+      deltaHtml = '<span class="' + arah + '">' + panah + ' ' + (d > 0 ? "+" : "") + d.toFixed(2) + ' poin</span> vs ' + (opsi.labelSebelum || "sebelumnya");
+    } else if (opsi.labelSebelum) {
+      deltaHtml = "Tidak ada data " + opsi.labelSebelum;
+    }
+  }
+  const maks = kosong ? 1 : Math.max(rek.os, rek.hj, 1);
+  const bar = (lbl, val, warna) =>
+    '<div class="lor-tren-bar"><div class="lbl"><span>' + lbl + '</span><b>' + (kosong ? "-" : rupiah(val)) + '</b></div>' +
+    '<div class="trk"><div class="isi" style="width:' + (kosong ? 0 : Math.max(2, (val / maks) * 100)).toFixed(1) + '%; background:' + warna + ';"></div></div></div>';
+  return '<div class="lor-tren-card' + (kosong ? ' kosong' : '') + (opsi.sorot ? ' terakhir' : '') + '">' +
+    '<div class="lor-tren-head"><span class="lor-tren-nama">' + nama + '</span>' + (opsi.tag ? '<span class="lor-tren-tag">' + opsi.tag + '</span>' : '') + '</div>' +
+    pctHtml +
+    '<div class="lor-tren-delta">' + deltaHtml + '</div>' +
+    bar("Total OS", kosong ? 0 : rek.os, "#3b82f6") +
+    bar("Total Harga Jual", kosong ? 0 : rek.hj, "#1f7a4d") +
+    '<div class="lor-tren-unit"><span>Unit terjual</span><b>' + (kosong ? 0 : rek.unit).toLocaleString("id-ID") + ' unit</b></div>' +
+  '</div>';
+}
+
+function renderLorTrenPeriode(rows, targetYear, selectedBulan) {
+  const wadahBulan = document.getElementById("lorTigaBulan");
+  const wadahQ = document.getElementById("lorKuartal");
+  const info = document.getElementById("lorTigaBulanInfo");
+  if (!wadahBulan && !wadahQ) return;
+
+  // Kelompokkan per (tahun*12 + bulan)
+  const perKunci = {};
+  rows.forEach(r => {
+    const t = lmParseDate(r.TGL_JUAL);
+    if (!t) return;
+    const k = t.year * 12 + t.month;
+    (perKunci[k] = perKunci[k] || []).push(r);
+  });
+  const rekKunci = k => lorRekapPeriode(perKunci[k] || []);
+  const namaKunci = k => BULAN_NAMA_ID[k % 12] + " " + Math.floor(k / 12);
+
+  /* ---------- 3 bulan terakhir ---------- */
+  if (wadahBulan) {
+    let akhir = null;
+    if (selectedBulan !== "" && selectedBulan !== null && selectedBulan !== undefined) {
+      akhir = targetYear * 12 + parseInt(selectedBulan);
+    } else {
+      // bulan terakhir yang ada penjualannya di tahun terpilih
+      Object.keys(perKunci).map(Number).forEach(k => {
+        if (Math.floor(k / 12) === targetYear && (akhir === null || k > akhir)) akhir = k;
+      });
+    }
+    if (akhir === null) {
+      wadahBulan.innerHTML = '<div class="lor-tren-info" style="grid-column:1/-1;margin:0;">Belum ada data penjualan di tahun ' + targetYear + '.</div>';
+      if (info) info.innerText = "";
+    } else {
+      const kunci = [akhir - 2, akhir - 1, akhir];
+      wadahBulan.innerHTML = kunci.map((k, i) => {
+        const sebelum = rekKunci(k - 1);
+        return lorKartuPeriode(namaKunci(k), rekKunci(k), sebelum, {
+          labelSebelum: BULAN_NAMA_ID[(k - 1) % 12],
+          sorot: i === 2,
+          tag: i === 2 ? "Terakhir" : ""
+        });
+      }).join("");
+      const gab = lorRekapPeriode([].concat(perKunci[kunci[0]] || [], perKunci[kunci[1]] || [], perKunci[kunci[2]] || []));
+      if (info) {
+        info.innerText = gab.pct === null ? "" :
+          "Gabungan 3 bulan (" + namaKunci(kunci[0]) + " – " + namaKunci(kunci[2]) + "): LOR " +
+          (gab.pct > 0 ? "+" : "") + gab.pct.toFixed(2) + "% dari " + gab.unit.toLocaleString("id-ID") + " unit" +
+          (selectedBulan === "" ? " · titik akhir = bulan terakhir yang ada penjualan" : " · titik akhir = bulan yang dipilih di filter");
+      }
+    }
+  }
+
+  /* ---------- Per kuartal (tahun terpilih) ---------- */
+  if (wadahQ) {
+    const rekQ = (tahun, q) => {
+      let gab = [];
+      for (let m = q * 3; m < q * 3 + 3; m++) gab = gab.concat(perKunci[tahun * 12 + m] || []);
+      return lorRekapPeriode(gab);
+    };
+    const NAMA_Q = ["Jan – Mar", "Apr – Jun", "Jul – Sep", "Okt – Des"];
+    let qTerakhir = -1;
+    for (let q = 0; q < 4; q++) if (rekQ(targetYear, q).unit > 0) qTerakhir = q;
+    wadahQ.innerHTML = [0, 1, 2, 3].map(q => {
+      const sebelum = q === 0 ? rekQ(targetYear - 1, 3) : rekQ(targetYear, q - 1);
+      return lorKartuPeriode("Q" + (q + 1) + " " + targetYear, rekQ(targetYear, q), sebelum, {
+        labelSebelum: q === 0 ? "Q4 " + (targetYear - 1) : "Q" + q,
+        tag: NAMA_Q[q],
+        sorot: q === qTerakhir
+      });
+    }).join("");
+  }
+}
+
 function lorLipat(id, buka) {
   const el = document.getElementById(id);
   if (!el) return;
