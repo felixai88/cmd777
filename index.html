@@ -23,7 +23,7 @@
   var API_URL = "https://script.google.com/macros/s/AKfycbzhwFjxQ6WszXdNcm-ThTIk4_W0CAOA51qYF6h_ym27OZP5YZ0PGxUCfsC06E0dSLYkoA/exec";
 
   /* fungsi server yang boleh dipanggil — harus sama dengan daftar di Api.gs */
-  var FUNGSI = ["loginUser", "cekSesi", "logoutUser", "gantiPassword", "daftarUser", "tambahUser", "resetPasswordUser", "ubahStatusUser", "fetchSheetCSV", "fetchJualanCSV", "fetchTarikanCSV", "fetchLapMeetingCSV", "fetchTarikanAllCSV", "fetchStockTahunan", "bacaSheetAman", "getPeriodeMrp", "getPeriodeMrpSorum", "getMrpSorumBekas", "getMatriksRangka", "bacaStnk", "fetchHargaAyda", "getDataPembiayaan", "bacaTacDealer", "ajukanPengajuanHarga", "ambilBerkasDrive", "fetchKelengkapanEstimasi", "fetchPengajuanHarga", "simpanBastLengkap", "simpanGabunganEstimasi", "simpanKeteranganEstimasi", "simpanMemoHarga", "simpanMemoMassal", "unggahBerkasEstimasi", "getDaftarCabang"];
+  var FUNGSI = ["loginUser", "cekSesi", "logoutUser", "gantiPassword", "daftarUser", "tambahUser", "resetPasswordUser", "ubahStatusUser", "fetchSheetCSV", "fetchJualanCSV", "fetchTarikanCSV", "fetchLapMeetingCSV", "fetchTarikanAllCSV", "fetchStockTahunan", "bacaSheetAman", "getPeriodeMrp", "getPeriodeMrpSorum", "getMrpSorumBekas", "getMatriksRangka", "bacaStnk", "bacaAppraisal", "catatVerifikasi", "fetchHargaAyda", "getDataPembiayaan", "bacaTacDealer", "ajukanPengajuanHarga", "ambilBerkasDrive", "fetchKelengkapanEstimasi", "fetchPengajuanHarga", "simpanBastLengkap", "simpanGabunganEstimasi", "simpanKeteranganEstimasi", "simpanMemoHarga", "simpanMemoMassal", "unggahBerkasEstimasi", "getDaftarCabang"];
 
   function panggil(nama, args, ok, gagal, obj) {
     fetch(API_URL, {
@@ -140,7 +140,7 @@ window.fetchSheetAman = function (url) {
    Peringatan (merah/kuning), angka hitungan, status & tombol tetap tampil. ===== */
 .tab-content span.hint:not([id]), .tab-content .uc-hint:not([id]), .rk-hint,
 #ucKetKunci, #dtKetKunci, #mbKetKunci, #ucHintOtr, #mbHintOtr,
-#ucKetAr, #dtKetAr, #ucHintAdm, #mbHintAdm, #dtHintAdm,
+#dtKetAr, #ucHintAdm, #mbHintAdm, #dtHintAdm,
 .tab-content .uc-sub, .ku-sub, .uc-catat { display: none !important; }
 .tab-content .hint:empty, .tab-content .uc-hint:empty { display: none !important; }
 
@@ -1517,6 +1517,72 @@ body.cmd .kh-harga input { color: #fbf3ea; }
 .lipat-btn { flex: none; border: 1px solid #cfd6e0; background: #f7f9fb; color: #0f2540; border-radius: 8px; padding: 6px 12px; font-size: 11.5px; font-weight: 800; cursor: pointer; }
 .lipat-kepala.buka .lipat-btn { background: #0f2540; color: #fff; border-color: #0f2540; }
 .lipat-isi.tertutup { display: none; }
+/* ==================== GABUNG BERKAS ==================== */
+#tabGabungBerkas .gb-card h2 { margin-bottom: 4px; }
+.gb-sub { font-size: 12.5px; color: #5b6b80; margin: 0 0 14px; max-width: 70ch; }
+.gb-kecil { font-size: 11.5px; color: #8b98a8; margin: 8px 0 0; }
+.gb-jenis { max-width: 320px; margin-bottom: 14px; }
+.gb-unggah { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px; }
+@media (max-width: 760px) { .gb-unggah { grid-template-columns: 1fr; } }
+.gb-slot { position: relative; display: flex; flex-direction: column; gap: 3px; padding: 14px 14px 14px 52px; border: 1.5px dashed #c5cfdc;
+  border-radius: 12px; background: #f8fafc; cursor: pointer; min-width: 0; }
+.gb-slot:hover, .gb-slot:focus-within { border-color: #3b82f6; }
+.gb-slot input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+.gb-slot b { font-size: 13px; color: #0f2540; }
+.gb-slot small { font-size: 11.5px; color: #64748b; overflow-wrap: anywhere; }
+.gb-slot.terisi { border-style: solid; border-color: #1f7a4d; background: #f0faf4; }
+.gb-slot.terisi small { color: #1f7a4d; font-weight: 700; }
+.gb-no { position: absolute; left: 14px; top: 14px; width: 26px; height: 26px; border-radius: 50%; background: #0f2540; color: #fff;
+  font-weight: 800; font-size: 12px; display: grid; place-items: center; }
+.gb-slot.terisi .gb-no { background: #1f7a4d; }
+.gb-btn { border: 0; border-radius: 10px; padding: 12px 18px; font-weight: 800; font-size: 13px; cursor: pointer; }
+.gb-btn.utama { background: #0f2540; color: #fff; width: 100%; }
+.gb-btn:disabled { opacity: .45; cursor: not-allowed; }
+.gb-pesan { margin-top: 10px; font-size: 12.5px; border-radius: 8px; }
+.gb-pesan:empty { display: none; }
+.gb-pesan.info, .gb-pesan.hati, .gb-pesan.bahaya, .gb-pesan.sukses { padding: 10px 12px; }
+.gb-pesan.info { background: #eff6ff; color: #1e40af; }
+.gb-pesan.hati { background: #fff7e6; color: #8a5300; }
+.gb-pesan.bahaya { background: #fdecec; color: #a32222; }
+.gb-pesan.sukses { background: #eaf7ef; color: #14532d; }
+.gb-angka { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px; }
+@media (max-width: 900px) { .gb-angka { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .gb-angka { grid-template-columns: 1fr; } }
+.gb-f { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.gb-f label { font-size: 11px; font-weight: 800; letter-spacing: .4px; text-transform: uppercase; color: #43556d; }
+.gb-f input, .gb-f select { padding: 9px 10px; border: 1px solid #cfd6e0; border-radius: 8px; font-size: 13px; font-variant-numeric: tabular-nums; min-width: 0; }
+.gb-tabel-wrap { overflow-x: auto; border: 1px solid #dfe4ea; border-radius: 10px; }
+.gb-tabel { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 720px; }
+.gb-tabel th, .gb-tabel td { padding: 7px 9px; border-bottom: 1px solid #eef1f5; text-align: left; vertical-align: middle; }
+.gb-tabel thead th { background: #0f2540; color: #fff; font-size: 11px; letter-spacing: .4px; text-transform: uppercase; }
+.gb-tabel tbody th { font-weight: 700; color: #0f2540; white-space: nowrap; }
+.gb-tabel td input { width: 100%; padding: 6px 8px; border: 1px solid #dfe4ea; border-radius: 6px; font-size: 12.5px; background: #fff; }
+.gb-tabel .gb-na { color: #b0bac7; text-align: center; }
+.gb-tabel .gb-pemisah th { background: #f1f5f9; color: #43556d; font-size: 11px; letter-spacing: .4px; text-transform: uppercase; }
+.gb-st { white-space: nowrap; font-weight: 700; font-size: 12px; }
+.gb-pill { display: inline-grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; font-size: 11px; color: #fff; margin-right: 4px; }
+.gb-st.ok { color: #1f7a4d; } .gb-st.ok .gb-pill { background: #1f7a4d; }
+.gb-st.warn { color: #a16207; } .gb-st.warn .gb-pill { background: #d97706; }
+.gb-st.bad { color: #b91c1c; } .gb-st.bad .gb-pill { background: #dc2626; }
+.gb-diag { margin: 0 0 10px; padding: 9px 12px; border-radius: 8px; font-size: 12.5px; font-weight: 700; overflow-wrap: anywhere; }
+.gb-diag:empty { display: none; }
+.gb-diag.ok { background: #eaf7ef; color: #14532d; } .gb-diag.hati { background: #fff7e6; color: #8a5300; } .gb-diag.bad { background: #fdecec; color: #a32222; }
+.gb-ringkas { margin: 14px 0; padding: 11px 13px; border-radius: 10px; font-weight: 700; font-size: 13px; }
+.gb-ringkas.ok { background: #eaf7ef; color: #14532d; }
+.gb-ringkas.warn { background: #fff7e6; color: #8a5300; }
+.gb-ringkas.bad { background: #fdecec; color: #a32222; }
+body.dark .gb-slot, body.cmd .gb-slot { background: #101a2c; border-color: #2a3b57; }
+body.cmd .gb-slot { background: #241a16; border-color: #4d2f23; }
+body.dark .gb-slot b, body.cmd .gb-slot b, body.dark .gb-tabel tbody th, body.cmd .gb-tabel tbody th { color: #e2e8f0; }
+body.dark .gb-slot.terisi, body.cmd .gb-slot.terisi { background: #0f2a1d; border-color: #34d399; }
+body.dark .gb-tabel-wrap, body.cmd .gb-tabel-wrap { border-color: #22334f; }
+body.dark .gb-tabel th, body.dark .gb-tabel td, body.cmd .gb-tabel th, body.cmd .gb-tabel td { border-bottom-color: #22334f; }
+body.dark .gb-tabel td input, body.cmd .gb-tabel td input, body.dark .gb-f input, body.dark .gb-f select { background: #0f1a2e; color: #e2e8f0; border-color: #2a3b57; }
+body.cmd .gb-f input, body.cmd .gb-f select { background: #1c1512; color: #fbf3ea; border-color: #4d2f23; }
+body.dark .gb-tabel .gb-pemisah th, body.cmd .gb-tabel .gb-pemisah th { background: #16233a; color: #94a3b8; }
+body.dark .gb-btn.utama { background: #2563eb; } body.cmd .gb-btn.utama { background: #e2432c; }
+body.dark .gb-f label, body.cmd .gb-f label, body.dark .gb-sub, body.cmd .gb-sub { color: #94a3b8; }
+
 #btnProyeksi.aktif { background: #0f2540; color: #fff; border-color: #0f2540; }
 body.dark #btnProyeksi.aktif { background: #2563eb; border-color: #2563eb; }
 body.cmd #btnProyeksi.aktif { background: #e2432c; border-color: #e2432c; }
@@ -3347,6 +3413,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <button class="tab-btn" data-tab="tabStockAyda" id="btnTab6" onclick="switchTab('tabStockAyda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg><span>Stock AYDA (Meeting)</span></button>
         <button class="tab-btn" data-tab="tabSorumBekas" id="btnTabSorum" onclick="switchTab('tabSorumBekas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h4M7 12h2M7 16h2"/><path d="M14 12h3M14 16h3"/></svg><span>KALKULATOR USED CAR</span></button>
         <button class="tab-btn" data-tab="tabDanaTunai" id="btnTabDatun" onclick="switchTab('tabDanaTunai')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/></svg><span>KALKULATOR DANA TUNAI</span></button>
+        <button class="tab-btn" data-tab="tabGabungBerkas" id="btnTabGabung" onclick="switchTab('tabGabungBerkas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="m9 15 2 2 4-4"/></svg><span>GABUNG BERKAS</span></button>
         <button class="tab-btn" data-tab="tabMotorBekas" id="btnTabMotor" onclick="switchTab('tabMotorBekas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M5.5 17h6l4-7h3M12 10h4M9 6h3l2 4"/></svg><span>KALKULATOR MOTOR BEKAS</span></button>
         <button class="tab-btn" data-tab="tabKelolaUser" id="btnTabUser" onclick="switchTab('tabKelolaUser')" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.6-5.5 6.5-5.5s5.5 2 6.5 5.5"/><path d="M18 8v6M15 11h6"/></svg><span>KELOLA PENGGUNA</span></button>
       </nav>
@@ -5451,6 +5518,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <button type="button" class="aktif" onclick="switchTab('tabSorumBekas')">Used Car</button>
         <button type="button" onclick="switchTab('tabDanaTunai')">Dana Tunai</button>
         <button type="button" onclick="switchTab('tabMotorBekas')">Motor Bekas</button>
+        <button type="button" onclick="switchTab('tabGabungBerkas')">Gabung Berkas</button>
         <button type="button" class="cmc-saja" onclick="switchTab('tabPbDatun')">Pembiayaan Datun</button>
       </div>
 
@@ -5765,12 +5833,76 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     </div>
 
 
+    <!-- ==================== TAB: GABUNG BERKAS (Appraiser + STNK + Simulasi) ==================== -->
+    <div id="tabGabungBerkas" class="tab-content">
+      <div class="cmo-nav">
+        <button type="button" onclick="switchTab('tabSorumBekas')">Used Car</button>
+        <button type="button" onclick="switchTab('tabDanaTunai')">Dana Tunai</button>
+        <button type="button" onclick="switchTab('tabMotorBekas')">Motor Bekas</button>
+        <button type="button" class="aktif" onclick="switchTab('tabGabungBerkas')">Gabung Berkas</button>
+      </div>
+
+      <div class="card gb-card">
+        <h2>1. Unggah berkas</h2>
+        <p class="gb-sub">Appraiser, STNK, dan PDF simulasi dicocokkan dulu. Kalau datanya cocok dan tidak melebihi ketentuan, ketiganya digabung jadi satu PDF.</p>
+        <div class="gb-f gb-jenis"><label for="gbJenis">Jenis simulasi</label>
+          <select id="gbJenis" onchange="gbGantiJenis()">
+            <option value="">Otomatis (dari PDF simulasi)</option>
+            <option value="DATUN">Dana Tunai</option>
+            <option value="SORUM">Sorum Bekas / Used Car</option>
+            <option value="MOTOR">Motor Bekas</option>
+          </select></div>
+        <div class="gb-unggah">
+          <label class="gb-slot" id="gbSlotApr">
+            <input type="file" id="gbFileApr" accept="application/pdf,image/*" onchange="gbPilih('apr', this)">
+            <span class="gb-no">A</span>
+            <b>PDF Appraiser</b>
+            <small id="gbNamaApr">Form pengajuan + analisa (PDF / foto)</small>
+          </label>
+          <label class="gb-slot" id="gbSlotStnk">
+            <input type="file" id="gbFileStnk" accept="application/pdf,image/*" onchange="gbPilih('stnk', this)">
+            <span class="gb-no">B</span>
+            <b>STNK</b>
+            <small id="gbNamaStnk">Foto STNK (boleh PDF)</small>
+          </label>
+          <label class="gb-slot" id="gbSlotSim">
+            <input type="file" id="gbFileSim" accept="application/pdf" onchange="gbPilih('sim', this)">
+            <span class="gb-no">C</span>
+            <b>PDF Simulasi</b>
+            <small id="gbNamaSim">Unduhan kalkulator Dana Tunai / Sorum Bekas / Motor Bekas</small>
+          </label>
+        </div>
+        <button type="button" class="gb-btn utama" id="gbBtnBaca" onclick="gbBaca()">Baca &amp; Cocokkan</button>
+        <div id="gbPesan" class="gb-pesan"></div>
+      </div>
+
+      <div class="card gb-card" id="gbHasilKartu" hidden>
+        <h2>2. Hasil pencocokan</h2>
+        <p class="gb-sub">Yang dicek: tahun unit, nomor rangka, taksiran harga pasar vs MRP, dan pinjaman. Kotak bisa dikoreksi kalau ada yang salah baca.</p>
+
+        <div class="gb-angka" hidden style="display:none;">
+          <div class="gb-f"><label for="gbHargaPasar">Harga pasar / taksasi (appraiser)</label><input id="gbHargaPasar" inputmode="numeric" placeholder="contoh 183.000.000" oninput="gbKetikAngka(this)"></div>
+          <div class="gb-f"><label for="gbMaksPinjam" id="gbLblMaks">Maks pinjaman (appraiser)</label><input id="gbMaksPinjam" inputmode="numeric" placeholder="contoh 146.400.000" oninput="gbKetikAngka(this)"></div>
+          <div class="gb-f" id="gbBoxMohon"><label for="gbPinjamMohon">Pinjaman dimohon (appraiser)</label><input id="gbPinjamMohon" inputmode="numeric" placeholder="contoh 100.000.000" oninput="gbKetikAngka(this)"></div>
+          <div class="gb-f"><label for="gbTenor">Tenor dipilih</label><select id="gbTenor" onchange="gbNilai()"></select></div>
+        </div>
+
+        <div id="gbDiagApr" class="gb-diag"></div>
+        <div class="gb-tabel-wrap"><table class="gb-tabel" id="gbTabel"></table></div>
+        <div id="gbRingkas" class="gb-ringkas"></div>
+        <button type="button" class="gb-btn utama" id="gbBtnGabung" onclick="gbGabung()" disabled>Gabungkan &amp; Unduh PDF</button>
+        <p class="gb-kecil" id="gbInfoJenis">Urutan file: Appraiser &rarr; STNK &rarr; Simulasi.</p>
+      </div>
+    </div>
+    <!-- ==================== AKHIR TAB GABUNG BERKAS ==================== -->
+
     <div id="tabDanaTunai" class="tab-content">
 
       <div class="cmo-nav">
         <button type="button" onclick="switchTab('tabSorumBekas')">Used Car</button>
         <button type="button" class="aktif" onclick="switchTab('tabDanaTunai')">Dana Tunai</button>
         <button type="button" onclick="switchTab('tabMotorBekas')">Motor Bekas</button>
+        <button type="button" onclick="switchTab('tabGabungBerkas')">Gabung Berkas</button>
         <button type="button" class="cmc-saja" onclick="switchTab('tabPbDatun')">Pembiayaan Datun</button>
       </div>
 
@@ -5956,6 +6088,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <button type="button" onclick="switchTab('tabSorumBekas')">Used Car</button>
         <button type="button" onclick="switchTab('tabDanaTunai')">Dana Tunai</button>
         <button type="button" class="aktif" onclick="switchTab('tabMotorBekas')">Motor Bekas</button>
+        <button type="button" onclick="switchTab('tabGabungBerkas')">Gabung Berkas</button>
         <button type="button" class="cmc-saja" onclick="switchTab('tabPbDatun')">Pembiayaan Datun</button>
       </div>
 
@@ -6324,7 +6457,7 @@ function masukAplikasi(u) {
   if (modeGudang) {
     document.body.classList.add("gudang");
     document.querySelectorAll(".side-nav .tab-btn").forEach(el => {
-      el.style.display = (el.id === "btnTabBast" || el.id === "btnTabKelengkapan") ? "" : "none";
+      el.style.display = (el.id === "btnTabBast" || el.id === "btnTabKelengkapan" || el.id === "btnTabGabung") ? "" : "none";
     });
   }
   /* Form BAST Gudang: sementara tidak untuk akun CABANG / AREA (HO & GUDANG tetap bisa) */
@@ -6338,7 +6471,7 @@ function masukAplikasi(u) {
     /* CMC: kalkulator + menu Pembiayaan Dana Tunai (data cabangnya sendiri) */
     const modeCmc = currentLoginRole === "CMC";
     if (modeCmc) document.body.classList.add("cmc");
-    const menuCmo = ["btnTabSorum", "btnTabDatun", "btnTabMotor"].concat(modeCmc ? ["btnTabPbDatun"] : []);
+    const menuCmo = ["btnTabSorum", "btnTabDatun", "btnTabMotor", "btnTabGabung"].concat(modeCmc ? ["btnTabPbDatun"] : []);
     document.querySelectorAll(".side-nav .tab-btn").forEach(el => {
       if (menuCmo.indexOf(el.id) < 0) el.style.display = "none";
     });
@@ -6731,9 +6864,16 @@ function loadData() {
   google.script.run
     .withSuccessHandler(function(rows) {
       try {
-        allData = lingkupSaring(parseRowsSmart(rows));
-        if (allData.length === 0) {
+        const semuaBaris = parseRowsSmart(rows);
+        if (semuaBaris.length === 0) {
           throw new Error("Data sheet kosong atau format header tidak dikenali");
+        }
+        allData = lingkupSaring(semuaBaris);
+        if (allData.length === 0) {
+          const L = (typeof lingkupInfo === "function") ? lingkupInfo() : null;
+          const nm = (typeof currentUser !== "undefined" && currentUser && currentUser.cabang) ? currentUser.cabang : "";
+          throw new Error("Belum ada data stock untuk " + (L && L.role === "AREA" ? "area " : "cabang ") + (nm || "akun ini") +
+            ". Pastikan kolom CABANG akun ini di sheet USERS memakai kode cabang yang sama dengan data (contoh: PBR, DRI, BTM).");
         }
         selectedData.clear();
         selectedData2.clear();
@@ -8708,7 +8848,7 @@ function setGrafikDariStock(terakhir, galat) {
       RAW_OS: parseNumber(r[3]),
       TANGGAL_TARIK: r[4] || "",
       TYPE: String(r[5] || "").trim(),
-      KATEGORI: stockKategori(r[6]),
+      KATEGORI: stockKategoriKontrak(r[1], r[6], r[2]),
       MUTASI: String(r[7] || "").trim().toUpperCase(),
       TAHUN_UNIT: String(r[8] || "").trim(),
       JENIS: String(r[9] || "").trim().toUpperCase()
@@ -8722,6 +8862,25 @@ function setGrafikDariStock(terakhir, galat) {
   if (tab && tab.classList.contains("active")) renderCharts();
 }
 function grafikSumber() { return grafikData || []; }
+
+/* Pengaman R2/R4 di dashboard: akhiran nomor kontrak /S atau /F = motor, /M = mobil.
+   (closing 2026 tidak punya CLASS, jadi kategori dari server versi lama bisa salah) */
+function stockKategoriKontrak(kontrak, dariServer, nopol) {
+  const m = String(kontrak || "").toUpperCase().trim().match(/\/([A-Z])\s*$/);
+  if (m && (m[1] === "S" || m[1] === "F")) return "R2";
+  if (m && m[1] === "M") return "R4";
+  return stockKategoriPlat(nopol) || stockKategori(dariServer);
+}
+
+/* Angka plat nomor: 1-1999 mobil penumpang, 2000-6999 sepeda motor, 7000-9999 bus/barang */
+function stockKategoriPlat(nopol) {
+  const p = String(nopol || "").toUpperCase().replace(/[^A-Z0-9]/g, "").match(/^[A-Z]{1,2}(\d{1,4})[A-Z]{0,3}$/);
+  if (!p) return "";
+  const n = parseInt(p[1], 10);
+  if (n >= 2000 && n <= 6999) return "R2";
+  if (n >= 1 && n <= 9999) return "R4";
+  return "";
+}
 
 function stockKategori(v) {
   const k = String(v || "").toUpperCase().trim();
@@ -8740,7 +8899,7 @@ function parseStockTahunan(res) {
     RAW_OS: parseNumber(r[3]),
     TANGGAL_TARIK: r[4],
     TYPE: String(r[5] || "").trim(),
-    KATEGORI: stockKategori(r[6]),
+    KATEGORI: stockKategoriKontrak(r[1], r[6], r[2]),
     MUTASI: String(r[7] || "").trim(),
     TAHUN_UNIT: String(r[8] || "").trim(),
     RANGKA: String(r[9] || "").trim(),
@@ -8794,8 +8953,10 @@ function afterTJPartLoaded() {
       if (stockTarikanError) {
         infoStock = " ⚠ DATABASE STOCK tidak terbaca: " + stockTarikanError;
       } else if (stockTarikanData.length) {
+        const nR2 = stockTarikanData.filter(r => r.KATEGORI === "R2").length;
         infoStock = " Tarikan ditambah " + gab.tambah.toLocaleString("id-ID") + " unit dari sheet " +
-          (stockTarikanInfo.map(x => x.nama).join(", ") || "DATABASE STOCK") + ".";
+          (stockTarikanInfo.map(x => x.nama).join(", ") || "DATABASE STOCK") +
+          " (R2 " + nR2.toLocaleString("id-ID") + " · R4 " + (stockTarikanData.length - nR2).toLocaleString("id-ID") + ").";
       } else if (!stockTarikanInfo.length) {
         infoStock = " ⚠ Sheet \"DATABASE STOCK\" tidak ditemukan.";
       } else {
@@ -15669,7 +15830,7 @@ function ucMinimalDp(kategori, umur, plat) {
   var slow = /SLOW/i.test(kategori);
   var p;
   if (umur <= 4) p = slow ? 0.20 : 0.15;          /* 1-4 tahun: FAST 15%, SLOW 20% */
-  else if (umur >= 9) p = 0.25;                    /* >=9 tahun: 25% semua kategori */
+  else if (umur >= 9) p = 0.20;                    /* >=9 tahun: 20% semua kategori */
   else p = slow ? 0.25 : 0.15;                     /* 5-8 tahun: FAST 15%, SLOW 25% */
   if (plat === 'B') p += 0.05;
   return p;
@@ -16279,6 +16440,11 @@ function ucUnduhPdfTenor() {
   doc.setTextColor(0);
   var tandai = (nopol || nama || '').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_|_$/g, '');
   var namaFile = 'Simulasi_Used_Car' + (tandai ? '_' + tandai : '') + '.pdf';
+  try {
+    cmdSimMeta(doc, { jenis: 'SORUM', unit: r.brand + ' ' + r.tipe, tahun: tahun, mrp: otr, otr: otr, dp: dp, pokok: otr - dp,
+      rangka: (typeof rkVin === 'function' && rkVin('uc')) || '', nama: nama || '', nopol: nopol || '',
+      tenor: d.map(function (x) { var a = x.addb || x.addm; return { t: x.bulan, angs: a ? a.angsuran : 0 }; }) });
+  } catch (e) {}
   doc.save(namaFile);
   if (pesan) pesan.innerText = 'PDF siap: ' + namaFile;
 }
@@ -17088,6 +17254,13 @@ function ucUnduhPdf(mode) {
   var nama = 'Simulasi_Sorum_Bekas_' + mtdBerkas.toUpperCase() + '_' +
     r.jenis.replace(/[^A-Za-z0-9]+/g, '_') + '_' + ucInfoUnit.tahun +
     (tandai ? '_' + tandai : '') + '.pdf';
+  try {
+    var hU = ucHasil, aU = hU[mtdBerkas] || hU;
+    cmdSimMeta(doc, { jenis: 'SORUM', metode: mtdBerkas.toUpperCase(), unit: r.brand + ' ' + r.tipe, tahun: ucInfoUnit.tahun,
+      mrp: ucInfoUnit.otr, otr: ucInfoUnit.otr, dp: ucInfoUnit.inp.dp, pokok: ucInfoUnit.otr - ucInfoUnit.inp.dp,
+      rangka: (typeof rkVin === 'function' && rkVin('uc')) || '', nama: id.nama || '', nopol: id.nopol || '',
+      tenor: [{ t: hU.bulan, angs: (aU && aU.angsuran) || hU.angsuran || 0 }] });
+  } catch (e) {}
   doc.save(nama);
   ucPesan(idHint, 'PDF 1 lembar A4 (' + mtdBerkas.toUpperCase() + ') siap dicetak: ' + nama);
 }
@@ -17131,18 +17304,614 @@ function ucUnduhPdf(mode) {
   else mulai();
 })();
 
+
+/* =====================================================================
+   GABUNG BERKAS: Appraiser + STNK + PDF Simulasi (Dana Tunai / Sorum Bekas / Motor Bekas)
+   - Simulasi dibaca dari data tersembunyi PDF (CMDSIM1) atau dari teksnya.
+   - STNK & halaman 1 appraiser dibaca AI lewat bacaStnk (Apps Script).
+   - Ketentuan: pinjaman tidak melebihi maks pinjaman & pinjaman dimohon,
+     harga pasar appraiser tidak melebihi MRP.
+   - Kalau semua cocok -> satu PDF: Appraiser -> STNK -> Simulasi.
+   ===================================================================== */
+var gbFile = { apr: null, stnk: null, sim: null };
+var gbData = { stnk: {}, apr: {}, sim: {} };
+var gbStatusAkhir = false;
+
+var GB_NAMA_JENIS = { DATUN: 'Dana Tunai', SORUM: 'Sorum Bekas', MOTOR: 'Motor Bekas' };
+function gbJenis() { var v = (gbEl('gbJenis') || {}).value; return v || (gbData.sim && gbData.sim.jenis) || 'DATUN'; }
+function gbBekas() { return gbJenis() !== 'DATUN'; }
+function gbGantiJenis() { if (gbEl('gbTabel') && gbEl('gbTabel').rows.length) gbGambarTabel(); }
+function gbEl(id) { return document.getElementById(id); }
+function gbPesan(kelas, html) { var p = gbEl('gbPesan'); if (p) { p.className = 'gb-pesan ' + (kelas || ''); p.innerHTML = html || ''; } }
+function gbEsc(t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+function gbAngka(v) { var s = String(v == null ? '' : v).replace(/[^0-9]/g, ''); return s ? parseInt(s, 10) : 0; }
+function gbRp(n) { return n ? 'Rp ' + Number(n).toLocaleString('id-ID') : '-'; }
+function gbKetikAngka(el) { var n = gbAngka(el.value); el.value = n ? n.toLocaleString('id-ID') : ''; gbNilai(); }
+
+function gbPilih(k, input) {
+  var f = input.files && input.files[0];
+  gbFile[k] = f || null;
+  var map = { apr: ['gbNamaApr', 'gbSlotApr'], stnk: ['gbNamaStnk', 'gbSlotStnk'], sim: ['gbNamaSim', 'gbSlotSim'] }[k];
+  if (f) { gbEl(map[0]).innerText = f.name; gbEl(map[1]).classList.add('terisi'); }
+}
+
+/* ---------- pdf.js dimuat saat dibutuhkan ---------- */
+var gbPdfJsJanji = null;
+function gbMuatPdfJs() {
+  if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+  if (gbPdfJsJanji) return gbPdfJsJanji;
+  gbPdfJsJanji = new Promise(function (ok, gagal) {
+    var s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js';
+    s.onload = function () {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+      ok(window.pdfjsLib);
+    };
+    s.onerror = function () { gbPdfJsJanji = null; gagal(new Error('Pustaka pembaca PDF gagal dimuat. Periksa koneksi.')); };
+    document.head.appendChild(s);
+  });
+  return gbPdfJsJanji;
+}
+function gbBuffer(file) { return file.arrayBuffer ? file.arrayBuffer() : new Response(file).arrayBuffer(); }
+function gbIsPdf(file) { return file && (file.type === 'application/pdf' || /\.pdf$/i.test(file.name || '')); }
+
+/* halaman PDF -> gambar JPEG (untuk dibaca AI) */
+function gbHalamanJadiGambar(file, no) {
+  return gbMuatPdfJs().then(function (pdfjs) {
+    return gbBuffer(file).then(function (buf) { return pdfjs.getDocument({ data: buf }).promise; });
+  }).then(function (pdf) {
+    return pdf.getPage(Math.min(no || 1, pdf.numPages));
+  }).then(function (hal) {
+    var v0 = hal.getViewport({ scale: 1 });
+    var sk = Math.min(3, 2200 / Math.max(v0.width, v0.height));
+    var vp = hal.getViewport({ scale: sk });
+    var c = document.createElement('canvas'); c.width = Math.round(vp.width); c.height = Math.round(vp.height);
+    var x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height);
+    return hal.render({ canvasContext: x, viewport: vp }).promise.then(function () {
+      var url = c.toDataURL('image/jpeg', 0.9);
+      return { url: url, base64: url.split(',')[1], mime: 'image/jpeg' };
+    });
+  });
+}
+function gbGambarDari(file) { return gbIsPdf(file) ? gbHalamanJadiGambar(file, 1) : tacKecilkan(file); }
+
+/* ---------- AI (bacaStnk) ---------- */
+/* AI Google kadang penuh (HTTP 503 / 429): tunggu sebentar lalu coba lagi, maks 3x */
+function gbBacaAiUlang(g, label) {
+  var MAKS = 3;
+  function coba(ke) {
+    return gbBacaAi(g).catch(function (e) {
+      var sibuk = /503|429|high demand|overload|UNAVAILABLE|RESOURCE_EXHAUSTED|try again/i.test(e && e.message || '');
+      if (!sibuk || ke >= MAKS) throw sibuk ? new Error('Server AI Google sedang penuh, sudah dicoba ' + MAKS + 'x. Coba lagi beberapa menit lagi') : e;
+      gbPesan('info', 'Server AI sedang sibuk saat membaca ' + label + ', mencoba lagi (' + (ke + 1) + '/' + MAKS + ')&hellip;');
+      return new Promise(function (ok) { setTimeout(ok, 4000 * ke); }).then(function () { return coba(ke + 1); });
+    });
+  }
+  return coba(1);
+}
+function gbBacaAi(g) {
+  return new Promise(function (ok, gagal) {
+    if (!(window.google && google.script && google.script.run && typeof google.script.run.bacaStnk === 'function')) {
+      gagal(new Error('Fungsi bacaStnk belum tersedia di Apps Script.')); return;
+    }
+    google.script.run
+      .withSuccessHandler(function (d) {
+        if (typeof d === 'string') { try { d = JSON.parse(d); } catch (e) { d = null; } }
+        if (!d) { gagal(new Error('Tidak terbaca')); return; }
+        if (d.error && !d.rangka && !d.nopol) { gagal(new Error(d.error)); return; }
+        ok(d);
+      })
+      .withFailureHandler(function (e) { gagal(e instanceof Error ? e : new Error((e && e.message) || String(e))); })
+      .bacaStnk(g.base64, g.mime);
+  });
+}
+/* file -> base64 apa adanya (untuk kirim PDF utuh ke AI) */
+function gbBase64File(file) {
+  return new Promise(function (ok, gagal) {
+    var fr = new FileReader();
+    fr.onload = function () { var u = String(fr.result); ok({ base64: u.split(',')[1], mime: file.type || 'application/pdf' }); };
+    fr.onerror = gagal; fr.readAsDataURL(file);
+  });
+}
+/* appraiser: kirim seluruh PDF ke bacaAppraisal (Gemini). Kalau fungsi belum dipasang -> pakai bacaStnk halaman 1 */
+function gbBacaAppraisal(file) {
+  var adaFungsi = window.google && google.script && google.script.run && typeof google.script.run.bacaAppraisal === 'function';
+  var lama = function (alasan) {
+    gbData.aprCaraLama = true;
+    gbData.aprAlasan = alasan || 'fungsi bacaAppraisal tidak ada di daftar fungsi dashboard';
+    return gbGambarDari(file).then(function (g) { return gbBacaAiUlang(g, 'appraiser'); });
+  };
+  gbData.aprCaraLama = false;
+  if (!adaFungsi) return lama();
+  var siap = (gbIsPdf(file) && file.size <= 15 * 1024 * 1024) ? gbBase64File(file).then(function (g) { g.mime = 'application/pdf'; return g; }) : gbGambarDari(file);
+  return siap.then(function (g) {
+    var MAKS = 3;
+    function coba(ke) {
+      return new Promise(function (ok, gagal) {
+        google.script.run
+          .withSuccessHandler(function (d) {
+            if (typeof d === 'string') { try { d = JSON.parse(d); } catch (e) { d = null; } }
+            if (!d) return gagal(new Error('Appraisal tidak terbaca'));
+            if (d.error) return gagal(new Error(d.error));
+            gbData.aprMentah = d;
+            ok(d);
+          })
+          .withFailureHandler(function (e) { gagal(e instanceof Error ? e : new Error((e && e.message) || String(e))); })
+          .bacaAppraisal(g.base64, g.mime);
+      }).catch(function (e) {
+        var msg = e && e.message || '';
+        if (/tidak diizinkan/i.test(msg)) return lama('Api.gs belum berisi \'bacaAppraisal\' (atau belum deploy New version)');
+        if (/belum ada di Apps Script/i.test(msg)) return lama('file BacaAppraisal.gs belum ada di Apps Script (atau belum deploy New version)');
+        var sibuk = /503|429|high demand|overload|UNAVAILABLE|RESOURCE_EXHAUSTED/i.test(msg);
+        if (!sibuk || ke >= MAKS) throw e;
+        gbPesan('info', 'Server AI sedang sibuk saat membaca appraiser, mencoba lagi (' + (ke + 1) + '/' + MAKS + ')&hellip;');
+        return new Promise(function (ok) { setTimeout(ok, 4000 * ke); }).then(function () { return coba(ke + 1); });
+      });
+    }
+    return coba(1);
+  });
+}
+
+function gbDariAi(d) {
+  if (Array.isArray(d)) d = d[0] || {};
+  if (d && typeof d.data === 'object' && d.data) d = Object.assign({}, d.data, d);
+  var p = function () { for (var i = 0; i < arguments.length; i++) { var v = d[arguments[i]]; if (v != null && String(v).trim()) return String(v).trim(); } return ''; };
+  var merk = p('merk', 'merek', 'brand'), tipe = p('tipe', 'type', 'model');
+  return {
+    nopol: p('nopol', 'no_polisi', 'nomorPolisi'),
+    nama: p('nama', 'nama_pemilik', 'pemilik'),
+    merkTipe: (merk + ' ' + tipe).trim(),
+    tahun: (p('tahun', 'tahun_pembuatan', 'thn').match(/\d{4}/) || [''])[0],
+    rangka: p('rangka', 'no_rangka', 'nomorRangka', 'vin'),
+    mesin: p('mesin', 'no_mesin', 'nomorMesin', 'engine'),
+    berlaku: p('berlaku', 'masa_berlaku', 'berlakuSampai', 'berlaku_sampai'),
+    hargaPasar: gbAngka(p('hargaPasar', 'harga_pasar', 'taksiranHargaPasar', 'taksiran_harga_pasar', 'taksasi', 'nilaiPasar')),
+    maksPinjaman: gbAngka(p('maksPinjaman', 'maks_pinjaman', 'maksimalPinjaman', 'plafon')),
+    pinjamanDimohon: gbAngka(p('pinjamanDimohon', 'pinjaman_dimohon', 'pinjamanYangDimohon', 'pinjaman_yang_dimohon', 'pinjaman', 'nilaiPinjaman')),
+    ltv: d.ltv ? String(d.ltv) : '',
+    pajak: p('pajak', 'berlakuPajak', 'berlaku_pajak', 'masaPajak', 'masa_pajak', 'masa_berlaku_pajak', 'tglPajak', 'pajak_sampai') ||
+           p('berlaku', 'masa_berlaku', 'berlakuSampai', 'berlaku_sampai')
+  };
+}
+
+/* ---------- PDF Simulasi ---------- */
+function gbBacaSimulasi(file) {
+  return gbBuffer(file).then(function (buf) {
+    /* 1) data tersembunyi (PDF simulasi versi baru) */
+    var lewatMeta = (typeof PDFLib !== 'undefined')
+      ? PDFLib.PDFDocument.load(buf.slice(0), { ignoreEncryption: true, updateMetadata: false }).then(function (d) {
+          var s = d.getSubject ? (d.getSubject() || '') : '';
+          if (s.indexOf('CMDSIM1:') === 0) { try { return JSON.parse(s.slice(8)); } catch (e) {} }
+          return null;
+        }).catch(function () { return null; })
+      : Promise.resolve(null);
+    return lewatMeta.then(function (meta) {
+      if (meta) { meta.sumber = 'data PDF'; return meta; }
+      /* 2) baca teks PDF (PDF simulasi lama) */
+      return gbMuatPdfJs().then(function (pdfjs) { return pdfjs.getDocument({ data: buf }).promise; })
+        .then(function (pdf) { return pdf.getPage(1); })
+        .then(function (hal) { return hal.getTextContent(); })
+        .then(function (tc) { var r = gbUraiTeksSimulasi(tc.items); r.sumber = 'teks PDF'; return r; });
+    });
+  });
+}
+/* susun potongan teks jadi baris (berdasarkan posisi y), lalu ambil nilai per label */
+function gbUraiTeksSimulasi(items) {
+  var baris = [];
+  items.forEach(function (it) {
+    var t = String(it.str || '').trim(); if (!t) return;
+    var y = Math.round(it.transform[5]), x = it.transform[4];
+    var b = baris.filter(function (r) { return Math.abs(r.y - y) <= 2; })[0];
+    if (!b) { b = { y: y, isi: [] }; baris.push(b); }
+    b.isi.push({ x: x, t: t });
+  });
+  baris.sort(function (a, b) { return b.y - a.y; });
+  var teks = baris.map(function (b) { b.isi.sort(function (p, q) { return p.x - q.x; }); return b.isi.map(function (i) { return i.t; }); });
+  var cari = function (re) { for (var i = 0; i < teks.length; i++) if (re.test(teks[i][0])) return teks[i]; return null; };
+  var rp = function (arr) { return (arr || []).join(' ').match(/Rp\s?[\d.]+/g) || []; };
+  var semua = teks.map(function (b) { return b.join(' '); }).join('\n').toUpperCase();
+  var out = { jenis: /MOTOR BEKAS/.test(semua) ? 'MOTOR' : (/SHOW ROOM BEKAS|SORUM BEKAS|USED CAR/.test(semua) ? 'SORUM' : 'DATUN') };
+  var u = cari(/^Unit$/i); if (u) out.unit = u.slice(1).join(' ');
+  var th = cari(/^Tahun unit/i); if (th) out.tahun = (th.join(' ').match(/\b(19|20)\d{2}\b/) || [''])[0];
+  var m = cari(/^MRP$/i) || cari(/^OTR \/ MRP$/i); if (m) out.mrp = gbAngka(rp(m)[0]);
+  var otr = cari(/^OTR( \/ MRP)?$/i); if (otr) out.otr = gbAngka(rp(otr)[0]);
+  var dp = cari(/^DP( \/ panjar)?$/i); if (dp) out.dp = gbAngka(rp(dp)[0]);
+  var pk = cari(/^Pokok dibiayai/i); if (pk) out.pokok = gbAngka(rp(pk)[0]);
+  if (!out.pokok && out.otr && out.dp) out.pokok = out.otr - out.dp;
+  var rk = cari(/^Nomor rangka$/i); if (rk && rk[1] && rk[1] !== '-') out.rangka = rk.slice(1).join('');
+  var th2 = cari(/^Tahun (mobil|motor)/i); if (th2 && !out.tahun) out.tahun = (th2.join(' ').match(/\b(19|20)\d{2}\b/) || [''])[0];
+  var pj = cari(/^Pinjaman$/i); if (pj) out.pinjaman = gbAngka(rp(pj)[0]);
+  var hd = null; for (var i = 0; i < teks.length; i++) if (/(BULAN|BLN)/.test(teks[i].join(' ')) && /RINCIAN/i.test(teks[i][0])) { hd = teks[i]; break; }
+  var an = cari(/^ANGSURAN/i);
+  if (hd && an) {
+    var tenor = (hd.join(' ').match(/(\d+)\s*(BULAN|BLN)/g) || []).map(function (s) { return parseInt(s, 10); });
+    var nilai = rp(an).map(gbAngka);
+    out.tenor = tenor.map(function (t, i) { return { t: t, angs: nilai[i] || 0 }; });
+  }
+  if (teks[2] && /·/.test(teks[2].join(' '))) {
+    var nn = teks[2].join(' ').split('·'); out.nama = (nn[0] || '').trim(); out.nopol = (nn[1] || '').trim();
+  }
+  return out;
+}
+
+/* ---------- alur utama ---------- */
+function gbBaca() {
+  if (!gbFile.apr || !gbFile.stnk || !gbFile.sim) { gbPesan('bahaya', 'Unggah ketiga berkas dulu (A, B, dan C).'); return; }
+  var btn = gbEl('gbBtnBaca'); btn.disabled = true;
+  gbPesan('info', 'Membaca berkas&hellip; biasanya 10&ndash;40 detik.');
+  var catatan = [];
+  gbData = { stnk: {}, apr: {}, sim: {} };
+
+  var pSim = gbBacaSimulasi(gbFile.sim).then(function (s) { gbData.sim = s; })
+    .catch(function (e) { catatan.push('Simulasi: ' + e.message); });
+  /* STNK dulu, baru appraiser (bergantian, supaya server AI tidak kebanjiran) */
+  var pAi = gbGambarDari(gbFile.stnk).then(function (g) { return gbBacaAiUlang(g, 'STNK'); }).then(function (d) { gbData.stnk = gbDariAi(d); })
+    .catch(function (e) { catatan.push('STNK: ' + e.message + ' (isi manual di tabel)'); })
+    .then(function () { return gbBacaAppraisal(gbFile.apr); }).then(function (d) { gbData.apr = gbDariAi(d); })
+    .catch(function (e) { gbData.aprGagal = e.message; catatan.push('Appraiser: ' + e.message + ' (isi manual di tabel)'); });
+
+  Promise.all([pSim, pAi]).then(function () {
+    btn.disabled = false;
+    if (gbData.sim && gbData.sim.jenis && !gbEl('gbJenis').value) gbEl('gbJenis').value = gbData.sim.jenis;
+    gbIsiTenor();
+    var isiAngka = function (id, n) { var el = gbEl(id); if (el) el.value = n ? Number(n).toLocaleString('id-ID') : ''; };
+    isiAngka('gbHargaPasar', gbData.apr.hargaPasar);
+    isiAngka('gbMaksPinjam', gbData.apr.maksPinjaman);
+    isiAngka('gbPinjamMohon', gbData.apr.pinjamanDimohon);
+    gbGambarTabel();
+    gbEl('gbHasilKartu').hidden = false;
+    var dg = gbEl('gbDiagApr'), m = gbData.aprMentah;
+    if (gbData.aprGagal) { dg.className = 'gb-diag bad'; dg.innerHTML = '&#10006; Appraiser gagal dibaca AI: ' + gbEsc(gbData.aprGagal); }
+    else if (gbData.aprCaraLama) { dg.className = 'gb-diag bad'; dg.innerHTML = '&#10006; Harga &amp; pinjaman appraiser tidak dibaca otomatis karena ' + gbEsc(gbData.aprAlasan) + '. Ketik manual di kolom Appraiser, atau pasang BacaAppraisal.gs + Api.gs lalu deploy New version.'; }
+    else if (m && !gbData.apr.hargaPasar && !gbData.apr.pinjamanDimohon) { dg.className = 'gb-diag hati'; dg.innerHTML = '! AI membaca appraiser (' + gbEsc(m.model || 'Gemini') + ') tapi angka tidak ditemukan. Jawaban AI: ' + gbEsc(JSON.stringify(m).slice(0, 260)); }
+    else if (m) { dg.className = 'gb-diag ok'; dg.innerHTML = '&#10004; Appraiser dibaca AI (' + gbEsc(m.model || 'Gemini') + ').'; }
+    else { dg.className = 'gb-diag'; dg.innerHTML = ''; }
+    if (!gbData.aprCaraLama && gbData.aprMentah && !gbData.apr.pinjamanDimohon && !gbData.apr.hargaPasar) {
+      catatan.push('AI sudah membaca appraiser (' + (gbData.aprMentah.model || 'Gemini') + ') tapi tidak menemukan harga pasar & pinjaman. Ketik manual di kolom Appraiser pada tabel. Jawaban AI: ' +
+        JSON.stringify(gbData.aprMentah).slice(0, 220));
+    }
+    if (gbData.aprCaraLama) catatan.push('Angka harga pasar & pinjaman dimohon belum terbaca otomatis: fungsi bacaAppraisal belum aktif di Apps Script (pasang BacaAppraisal.gs + Api.gs baru, lalu deploy New version). Sementara ketik manual di kolom Appraiser pada tabel.');
+    gbPesan(catatan.length ? 'hati' : 'sukses', catatan.length
+      ? 'Sebagian tidak terbaca otomatis:<br>' + catatan.map(gbEsc).join('<br>')
+      : 'Berkas terbaca. Cek tabel di bawah; angka yang salah baca bisa dikoreksi langsung.');
+    gbEl('gbHasilKartu').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+}
+
+function gbIsiTenor() {
+  var sel = gbEl('gbTenor'); var t = (gbData.sim && gbData.sim.tenor) || [];
+  sel.innerHTML = t.length ? t.map(function (x) { return '<option value="' + x.t + '">' + x.t + ' bulan &middot; ' + gbRp(x.angs) + '/bln</option>'; }).join('')
+                           : '<option value="">(tenor tidak terbaca)</option>';
+  if (t.length) sel.value = String(t[t.length - 1].t);
+}
+
+/* baris identitas: [kunci, label, sumber yang dibandingkan, jenis cek, wajib] */
+/* 4 hal yang dicek: [kunci, sumber yang dibandingkan, jenis cek] */
+function gbBaris() {
+  var bekas = gbBekas();
+  return [
+    ['tahun', 'Tahun unit', ['stnk', 'apr', 'sim'], 'sama'],
+    ['rangka', 'No rangka', ['stnk', 'apr', 'sim'], 'sama'],
+    ['harga', 'Taksiran harga pasar vs ' + (bekas ? 'OTR' : 'MRP'), ['apr', 'sim'], 'harga'],
+    ['pinjam', bekas ? 'Pinjaman vs pokok dibiayai' : 'Pinjaman', ['apr', 'sim'], 'pinjam']
+  ];
+}
+var GB_JUDUL = { stnk: 'STNK', apr: 'Appraiser', sim: 'Simulasi' };
+var GB_ANGKA = { harga: 1, pinjam: 1 };
+
+function gbNilaiAwal(src, k) {
+  var d = gbData[src] || {}, bekas = gbBekas();
+  if (src === 'stnk') return (k === 'tahun' || k === 'rangka') ? (d[k] || '') : null;
+  if (src === 'apr') {
+    if (k === 'harga') return d.hargaPasar || '';
+    if (k === 'pinjam') return d.pinjamanDimohon || '';
+    return d[k] || '';
+  }
+  if (k === 'tahun') return d.tahun || '';
+  if (k === 'rangka') return bekas ? (d.rangka || '') : null;
+  if (k === 'harga') return bekas ? (d.otr || d.mrp || '') : (d.mrp || '');
+  if (k === 'pinjam') return bekas ? (d.pokok || '') : (d.pinjaman || '');
+  return null;
+}
+function gbFormatSel(el) { var n = gbAngka(el.value); el.value = n ? n.toLocaleString('id-ID') : ''; gbNilai(); }
+
+function gbGambarTabel() {
+  var h = '<thead><tr><th>Data</th><th>STNK</th><th>Appraiser</th><th>Simulasi</th><th>Hasil</th></tr></thead><tbody>';
+  gbBaris().forEach(function (b) {
+    var angka = GB_ANGKA[b[0]];
+    h += '<tr data-k="' + b[0] + '"><th scope="row">' + b[1] + '</th>';
+    ['stnk', 'apr', 'sim'].forEach(function (src) {
+      var v = b[2].indexOf(src) < 0 ? null : gbNilaiAwal(src, b[0]);
+      if (v === null) { h += '<td class="gb-na">&mdash;</td>'; return; }
+      if (angka && v) v = Number(v).toLocaleString('id-ID');
+      h += '<td><input id="gb_' + b[0] + '_' + src + '" value="' + gbEsc(v) + '"' +
+        (angka ? ' inputmode="numeric" placeholder="Rp" oninput="gbFormatSel(this)"' : ' oninput="gbNilai()"') +
+        ' aria-label="' + b[1] + ' ' + GB_JUDUL[src] + '"></td>';
+    });
+    h += '<td class="gb-st" id="gbSt_' + b[0] + '"></td></tr>';
+  });
+  gbEl('gbTabel').innerHTML = h + '</tbody>';
+  gbNilai();
+}
+
+/* ---------- aturan cocok ---------- */
+function gbRapat(s) { return String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); }
+var GB_UMUM = ['CVT', 'CKD', 'CBU', 'MT', 'AT', 'MC', 'STD', 'DLX', 'AUTO', 'MANUAL', 'TIPE', 'TYPE', 'MINIBUS', 'SEDAN', 'MOBIL', 'MOTOR', 'PENUMPANG', 'ABS', 'CBS', 'ISS'];
+function gbToken(s) {
+  return String(s || '').toUpperCase().replace(/[^A-Z0-9 ]/g, ' ').split(/\s+/)
+    .filter(function (t) { return t.length >= 3 && GB_UMUM.indexOf(t) < 0 && !/^\d+$/.test(t); });
+}
+function gbTanggal(s) {
+  s = String(s || '').toUpperCase().trim(); if (!s) return null;
+  var BLN = { JAN: 1, FEB: 2, PEB: 2, MAR: 3, APR: 4, MEI: 5, MAY: 5, JUN: 6, JUL: 7, AGU: 8, AGS: 8, AUG: 8, SEP: 9, OKT: 10, OCT: 10, NOV: 11, DES: 12, DEC: 12 };
+  var m = s.match(/(\d{1,2})\s*[\/\-. ]\s*(\d{1,2})\s*[\/\-. ]\s*(\d{2,4})/);
+  if (m) return new Date((+m[3] < 100 ? 2000 + +m[3] : +m[3]), +m[2] - 1, +m[1]);
+  m = s.match(/(\d{1,2})\s*([A-Z]{3})[A-Z]*\s*(\d{4})/);
+  if (m && BLN[m[2]]) return new Date(+m[3], BLN[m[2]] - 1, +m[1]);
+  return null;
+}
+function gbCek(jenis, nilai, wajib) {
+  var isi = nilai.filter(function (v) { return String(v || '').trim(); });
+  if (isi.length < 2) return ['warn', 'Tidak terbaca, cek manual'];
+  if (jenis === 'sama') {
+    var r = isi.map(gbRapat);
+    return r.every(function (x) { return x === r[0]; }) ? ['ok', 'Cocok'] : ['bad', 'Tidak sama'];
+  }
+  if (jenis === 'nama') {
+    var n = isi.map(gbRapat);
+    if (n.every(function (x) { return x === n[0]; })) return ['ok', 'Cocok'];
+    return n.every(function (x) { return x.indexOf(n[0]) >= 0 || n[0].indexOf(x) >= 0; }) ? ['warn', 'Mirip'] : ['bad', 'Tidak sama'];
+  }
+  if (jenis === 'tipe') {
+    var tk = isi.map(gbToken);
+    for (var i = 0; i < tk.length; i++) for (var j = i + 1; j < tk.length; j++) {
+      if (!tk[i].some(function (t) { return tk[j].indexOf(t) >= 0; })) return ['bad', 'Tipe berbeda'];
+    }
+    return ['ok', 'Cocok'];
+  }
+  if (jenis === 'pajak') {
+    var dp = isi.map(gbTanggal);
+    if (dp.some(function (x) { return !x; })) return ['bad', 'Format tanggal tidak dikenali, ketik dd/mm/yyyy'];
+    var hariIni = new Date(new Date().toDateString());
+    if (dp.some(function (x) { return x < hariIni; })) return ['bad', 'Pajak sudah lewat masa aktif'];
+    return dp.every(function (x) { return x.getTime() === dp[0].getTime(); }) ? ['ok', 'Cocok'] : ['bad', 'Tanggal pajak beda'];
+  }
+  if (jenis === 'berlaku') {
+    var d = isi.map(gbTanggal);
+    var stnk = gbTanggal(nilai[0]);
+    if (stnk && stnk < new Date(new Date().toDateString())) return ['bad', 'STNK sudah lewat masa berlaku'];
+    if (d.some(function (x) { return !x; })) return ['warn', 'Format tanggal tidak dikenali'];
+    return d.every(function (x) { return x.getTime() === d[0].getTime(); }) ? ['ok', 'Cocok'] : ['warn', 'Tanggal beda, cek ulang'];
+  }
+  return ['warn', ''];
+}
+function gbTampilSt(id, st) {
+  var el = gbEl('gbSt_' + id); if (!el) return;
+  var ikon = { ok: '&#10004;', warn: '!', bad: '&#10006;' }[st[0]];
+  el.className = 'gb-st ' + st[0];
+  el.innerHTML = '<span class="gb-pill">' + ikon + '</span> ' + gbEsc(st[1]);
+}
+
+function gbNilai() {
+  if (!gbEl('gbTabel') || !gbEl('gbTabel').rows.length) return;
+  var buruk = 0, peringatan = 0, s = gbData.sim || {};
+  var ambil = function (k, src) { var el = gbEl('gb_' + k + '_' + src); return el ? el.value : ''; };
+  gbBaris().forEach(function (b) {
+    var st;
+    if (b[3] === 'sama') {
+      st = gbCek('sama', b[2].map(function (src) { return ambil(b[0], src); }), true);
+    } else {
+      var apr = gbAngka(ambil(b[0], 'apr')), sim = gbAngka(ambil(b[0], 'sim'));
+      if (!apr || !sim) st = ['bad', !apr ? 'Isi angka dari PDF appraiser' : 'Isi angka dari simulasi'];
+      else if (apr === sim) st = ['ok', 'Sama'];
+      else if (b[3] === 'harga') st = apr < sim ? ['ok', 'Tidak melebihi'] : ['bad', 'Harga pasar melebihi ' + gbRp(apr - sim)];
+      else st = sim < apr ? ['ok', 'Tidak melebihi'] : ['bad', 'Simulasi melebihi ' + gbRp(sim - apr)];
+    }
+    if (st[0] === 'bad') buruk++; if (st[0] === 'warn') peringatan++;
+    gbTampilSt(b[0], st);
+  });
+  gbEl('gbInfoJenis').innerHTML = 'Jenis: <b>' + GB_NAMA_JENIS[gbJenis()] + '</b> (' + gbEsc(s.sumber || 'manual') + ') &middot; Urutan file: Appraiser &rarr; STNK &rarr; Simulasi.';
+  gbStatusAkhir = buruk === 0;
+  gbEl('gbBtnGabung').disabled = !gbStatusAkhir;
+  gbEl('gbRingkas').className = 'gb-ringkas ' + (buruk ? 'bad' : (peringatan ? 'warn' : 'ok'));
+  gbEl('gbRingkas').innerHTML = buruk
+    ? '&#10006; ' + buruk + ' hal belum cocok. Perbaiki dulu sebelum digabung.'
+    : (peringatan ? '! Bisa digabung, ada ' + peringatan + ' catatan untuk dicek.' : '&#10004; Semua cocok. Siap digabung.');
+}
+
+/* ---------- gabung PDF ---------- */
+function gbTambahBerkas(keluar, file) {
+  if (gbIsPdf(file)) {
+    return gbBuffer(file).then(function (buf) { return PDFLib.PDFDocument.load(buf, { ignoreEncryption: true }); })
+      .then(function (src) { return keluar.copyPages(src, src.getPageIndices()); })
+      .then(function (hal) { hal.forEach(function (p) { keluar.addPage(p); }); });
+  }
+  return tacKecilkan(file).then(function (g) { return keluar.embedJpg(g.base64).then(function (img) {
+    var A4 = [595.28, 841.89], lebar = img.width > img.height;
+    var W = lebar ? A4[1] : A4[0], H = lebar ? A4[0] : A4[1], m = 28;
+    var sk = Math.min((W - 2 * m) / img.width, (H - 2 * m) / img.height);
+    var p = keluar.addPage([W, H]);
+    p.drawImage(img, { x: (W - img.width * sk) / 2, y: (H - img.height * sk) / 2, width: img.width * sk, height: img.height * sk });
+  }); });
+}
+/* ---------- stempel verifikasi ---------- */
+/* teks aman untuk font standar PDF (tanpa simbol unicode) */
+function gbAscii(t) {
+  return String(t == null ? '' : t).replace(/≤/g, '<=').replace(/≥/g, '>=').replace(/[−–—]/g, '-')
+    .replace(/[·•]/g, '-').replace(/×/g, 'x').replace(/[✔✖]/g, '').replace(/[^\x20-\x7E]/g, '').replace(/\s+/g, ' ').trim();
+}
+function gbHash(file) {
+  return gbBuffer(file).then(function (buf) {
+    if (!(window.crypto && crypto.subtle)) return '';
+    return crypto.subtle.digest('SHA-256', buf).then(function (h) {
+      return Array.prototype.map.call(new Uint8Array(h), function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+    });
+  }).catch(function () { return ''; });
+}
+function gbBuatId(hashes) {
+  var dasar = hashes.join('|') + '|' + Date.now() + '|' + Math.random();
+  var buf = new TextEncoder().encode(dasar);
+  var jadi = function (hex) { hex = hex.toUpperCase(); return 'CMD-' + hex.slice(0, 4) + '-' + hex.slice(4, 8) + '-' + hex.slice(8, 12); };
+  if (window.crypto && crypto.subtle) return crypto.subtle.digest('SHA-256', buf).then(function (h) {
+    return jadi(Array.prototype.map.call(new Uint8Array(h), function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''));
+  });
+  var r = ''; for (var i = 0; i < 12; i++) r += Math.floor(Math.random() * 16).toString(16);
+  return Promise.resolve(jadi(r));
+}
+/* ringkasan hasil cek dari tabel di layar */
+function gbRingkasCek() {
+  var baris = [];
+  document.querySelectorAll('#gbTabel tbody tr').forEach(function (tr) {
+    if (tr.classList.contains('gb-pemisah')) return;
+    var th = tr.querySelector('th'); var st = tr.querySelector('.gb-st'); if (!th || !st) return;
+    var nilai = [];
+    tr.querySelectorAll('td').forEach(function (td) {
+      if (td.classList.contains('gb-st') || td.classList.contains('gb-na')) return;
+      var inp = td.querySelector('input'); nilai.push(inp ? inp.value : td.innerText);
+    });
+    var kls = st.classList.contains('bad') ? 'TIDAK LOLOS' : (st.classList.contains('warn') ? 'CATATAN' : 'LOLOS');
+    baris.push({ label: gbAscii(th.innerText), nilai: gbAscii(nilai.filter(Boolean).join('  |  ')), status: kls, ket: gbAscii(st.innerText) });
+  });
+  return baris;
+}
+function gbLembarVerifikasi(keluar, info, font, tebal) {
+  var hal = keluar.insertPage(0, [595.28, 841.89]);
+  var W = 595.28, x = 42, y = 790;
+  var hijau = PDFLib.rgb(0.12, 0.48, 0.30), gelap = PDFLib.rgb(0.06, 0.15, 0.25), abu = PDFLib.rgb(0.42, 0.47, 0.55);
+  hal.drawRectangle({ x: 0, y: 812, width: W, height: 30, color: gelap });
+  hal.drawText('LEMBAR VERIFIKASI BERKAS - TOOLS CMD', { x: x, y: 822, size: 12, font: tebal, color: PDFLib.rgb(1, 1, 1) });
+  /* cap besar */
+  hal.drawRectangle({ x: W - 232, y: 690, width: 190, height: 84, borderColor: hijau, borderWidth: 2.5, rotate: PDFLib.degrees(-4), opacity: 0.95 });
+  hal.drawText('TERVERIFIKASI', { x: W - 214, y: 742, size: 20, font: tebal, color: hijau, rotate: PDFLib.degrees(-4) });
+  hal.drawText('SISTEM TOOLS CMD', { x: W - 210, y: 722, size: 12, font: tebal, color: hijau, rotate: PDFLib.degrees(-4) });
+  hal.drawText(info.id, { x: W - 206, y: 703, size: 10, font: tebal, color: hijau, rotate: PDFLib.degrees(-4) });
+  var tulis = function (lbl, val) {
+    hal.drawText(lbl, { x: x, y: y, size: 9, font: font, color: abu });
+    hal.drawText(gbAscii(val) || '-', { x: x + 120, y: y, size: 10, font: tebal, color: gelap });
+    y -= 17;
+  };
+  tulis('ID verifikasi', info.id);
+  tulis('Waktu cek', info.waktu);
+  tulis('Dicek oleh', info.oleh);
+  tulis('Jenis', info.jenis);
+  tulis('Unit', info.unit);
+  tulis('No polisi / nama', [info.nopol, info.nama].filter(Boolean).join(' - '));
+  y -= 10;
+  hal.drawText('HASIL PENGECEKAN OTOMATIS', { x: x, y: y, size: 10, font: tebal, color: gelap }); y -= 8;
+  hal.drawLine({ start: { x: x, y: y }, end: { x: W - x, y: y }, thickness: 0.8, color: abu }); y -= 16;
+  info.cek.forEach(function (c) {
+    var warna = c.status === 'LOLOS' ? hijau : (c.status === 'CATATAN' ? PDFLib.rgb(0.70, 0.45, 0.05) : PDFLib.rgb(0.75, 0.11, 0.11));
+    hal.drawText(c.label.slice(0, 52), { x: x, y: y, size: 9, font: tebal, color: gelap });
+    hal.drawText(c.status, { x: W - x - 80, y: y, size: 9, font: tebal, color: warna });
+    y -= 12;
+    hal.drawText((c.nilai || '').slice(0, 95), { x: x + 8, y: y, size: 8, font: font, color: abu });
+    y -= 17;
+  });
+  y -= 6;
+  hal.drawLine({ start: { x: x, y: y }, end: { x: W - x, y: y }, thickness: 0.8, color: abu }); y -= 16;
+  [
+    'Berkas ini digabung otomatis oleh sistem SETELAH lolos pengecekan tahun unit, nomor rangka,',
+    'taksiran harga pasar vs MRP, dan pinjaman. Urutan: lembar ini - Appraiser - STNK - Simulasi.',
+    'Cek keaslian: cari ID verifikasi di sheet LOG VERIFIKASI. Kalau ID tidak ada, berkas ini TIDAK SAH.',
+    'Sidik file (SHA-256, 16 digit awal): appraiser ' + (info.hashApr || '-').slice(0, 16) + ' / STNK ' + (info.hashStnk || '-').slice(0, 16) +
+      ' / simulasi ' + (info.hashSim || '-').slice(0, 16)
+  ].forEach(function (t) { hal.drawText(t, { x: x, y: y, size: 8, font: font, color: abu }); y -= 12; });
+}
+/* cap kecil di pojok bawah setiap halaman */
+function gbCapHalaman(keluar, info, font, tebal) {
+  var hijau = PDFLib.rgb(0.12, 0.48, 0.30);
+  var hal = keluar.getPages(), n = hal.length;
+  hal.forEach(function (p, i) {
+    var sz = p.getSize(), w = 232, h = 30, x = sz.width - w - 12, y = 10;
+    p.drawRectangle({ x: x, y: y, width: w, height: h, color: PDFLib.rgb(1, 1, 1), opacity: 0.88, borderColor: hijau, borderWidth: 1.2 });
+    p.drawText('TERVERIFIKASI SISTEM TOOLS CMD  -  ' + info.id, { x: x + 7, y: y + 18, size: 7.5, font: tebal, color: hijau });
+    p.drawText(gbAscii(info.waktu + '  -  ' + info.oleh).slice(0, 62) + '  -  hal ' + (i + 1) + '/' + n, { x: x + 7, y: y + 7, size: 6.5, font: font, color: PDFLib.rgb(0.3, 0.35, 0.42) });
+  });
+}
+
+function gbGabung() {
+  if (!gbStatusAkhir) return;
+  if (typeof PDFLib === 'undefined') { gbPesan('bahaya', 'Pustaka PDF belum termuat. Muat ulang halaman.'); return; }
+  var btn = gbEl('gbBtnGabung'); btn.disabled = true;
+  gbPesan('info', 'Menggabungkan &amp; memberi stempel verifikasi&hellip;');
+  var info = {
+    jenis: GB_NAMA_JENIS[gbJenis()],
+    unit: gbData.sim.unit || gbData.apr.merkTipe || gbData.stnk.merkTipe || '',
+    nopol: gbData.stnk.nopol || gbData.apr.nopol || gbData.sim.nopol || '',
+    nama: gbData.stnk.nama || gbData.apr.nama || gbData.sim.nama || '',
+    oleh: (typeof namaPencetak === 'function' && namaPencetak()) || 'pengguna',
+    waktu: new Date().toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+    cek: gbRingkasCek()
+  };
+  Promise.all([gbHash(gbFile.apr), gbHash(gbFile.stnk), gbHash(gbFile.sim)]).then(function (h) {
+    info.hashApr = h[0]; info.hashStnk = h[1]; info.hashSim = h[2];
+    return gbBuatId(h);
+  }).then(function (id) {
+    info.id = id;
+    return PDFLib.PDFDocument.create();
+  }).then(function (keluar) {
+    return gbTambahBerkas(keluar, gbFile.apr)
+      .then(function () { return gbTambahBerkas(keluar, gbFile.stnk); })
+      .then(function () { return gbTambahBerkas(keluar, gbFile.sim); })
+      .then(function () { return Promise.all([keluar.embedFont(PDFLib.StandardFonts.Helvetica), keluar.embedFont(PDFLib.StandardFonts.HelveticaBold)]); })
+      .then(function (f) {
+        gbLembarVerifikasi(keluar, info, f[0], f[1]);
+        gbCapHalaman(keluar, info, f[0], f[1]);
+        keluar.setTitle('Berkas ' + info.jenis + ' - ' + info.id);
+        keluar.setSubject('CMDVERIF1:' + JSON.stringify({ id: info.id, apr: info.hashApr, stnk: info.hashStnk, sim: info.hashSim }));
+        keluar.setProducer('TOOLS CMD');
+        return keluar.save();
+      });
+  }).then(function (bytes) {
+    var nopol = gbRapat(info.nopol);
+    var nama = String(info.nama || '').trim().replace(/[^A-Za-z0-9]+/g, '_').replace(/^_|_$/g, '');
+    var namaFile = 'Berkas_' + ({ DATUN: 'Datun', SORUM: 'Sorum_Bekas', MOTOR: 'Motor_Bekas' }[gbJenis()]) +
+      (nopol ? '_' + nopol : '') + (nama ? '_' + nama : '') + '_' + info.id + '.pdf';
+    var url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+    var a = document.createElement('a'); a.href = url; a.download = namaFile;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 60000);
+    btn.disabled = false;
+    var ok = 'PDF terunduh: <b>' + gbEsc(namaFile) + '</b><br>ID verifikasi: <b>' + gbEsc(info.id) + '</b>';
+    /* catat ke sheet LOG VERIFIKASI (bukti keaslian) */
+    var adaLog = window.google && google.script && google.script.run && typeof google.script.run.catatVerifikasi === 'function';
+    if (!adaLog) { gbPesan('hati', ok + '<br>Belum tercatat di LOG VERIFIKASI (fungsi catatVerifikasi belum dipasang).'); return; }
+    gbPesan('sukses', ok + '<br>Mencatat ke LOG VERIFIKASI&hellip;');
+    var s = gbData.sim || {}, val = function (id) { var e = gbEl(id); return e ? e.value : ''; };
+    google.script.run
+      .withSuccessHandler(function () { gbPesan('sukses', ok + '<br>Tercatat di LOG VERIFIKASI.'); })
+      .withFailureHandler(function (e) { gbPesan('hati', ok + '<br>Gagal mencatat ke LOG VERIFIKASI: ' + gbEsc(e && e.message ? e.message : e)); })
+      .catatVerifikasi({
+        id: info.id, oleh: info.oleh, jenis: info.jenis, nopol: info.nopol, nama: info.nama, unit: info.unit,
+        tahun: val('gb_tahun_stnk') || val('gb_tahun_apr'), rangka: val('gb_rangka_stnk') || val('gb_rangka_apr'),
+        pajak: '',
+        pinjaman: gbAngka(val('gb_pinjam_sim')), hargaPasar: gbAngka(val('gb_harga_apr')), mrp: gbAngka(val('gb_harga_sim')),
+        hasil: info.cek.some(function (c) { return c.status === 'CATATAN'; }) ? 'LOLOS DENGAN CATATAN' : 'LOLOS',
+        catatan: info.cek.filter(function (c) { return c.status !== 'LOLOS'; }).map(function (c) { return c.label + ': ' + c.ket; }).join('; '),
+        hashApr: info.hashApr, hashStnk: info.hashStnk, hashSim: info.hashSim
+      });
+  }).catch(function (e) {
+    btn.disabled = false;
+    gbPesan('bahaya', 'Gagal menggabungkan: ' + gbEsc(e && e.message ? e.message : e));
+  });
+}
+
+(function () {
+  if (typeof JUDUL_TAB !== 'undefined') JUDUL_TAB.tabGabungBerkas = ['Gabung Berkas', 'Cocokkan appraiser, STNK & simulasi, lalu gabung jadi satu PDF'];
+})();
+
 /* ---------- 6c. Menu bawah ala aplikasi (khusus tampilan HP) ---------- */
 (function () {
   var LABEL_PENDEK = {
     tabDashboard: 'Beranda', tabDataTarikan: 'Tarikan', tabListHarga: 'Harga',
     tabGrafik: 'Grafik', tabTarikanJualan: 'Tren Tarik', tabLor: 'LOR',
     tabAging: 'Aging', tabLapMeeting: 'Meeting', tabStockAyda: 'AYDA', tabPembiayaan: 'Dealer', tabPbDatun: 'Datun', tabTac: 'TAC',
-    tabSorumBekas: 'Kalkulator', tabDanaTunai: 'Dana Tunai', tabMotorBekas: 'Motor',
+    tabSorumBekas: 'Kalkulator', tabDanaTunai: 'Dana Tunai', tabMotorBekas: 'Motor', tabGabungBerkas: 'Gabung',
     tabBastGudang: 'BAST', tabKelengkapan: 'Kelengkapan', tabHargaAyda: 'Harga AYDA', tabTipeTahun: 'Tipe', tabKelolaUser: 'Pengguna'
   };
   var UTAMA = ['tabDashboard', 'tabSorumBekas', 'tabDanaTunai', 'tabLapMeeting'];
   /* label menu bawah untuk akun CMO / CMC */
-  var LABEL_CMO = { tabSorumBekas: 'Used Car', tabDanaTunai: 'Dana Tunai', tabMotorBekas: 'Motor Bekas', tabPbDatun: 'Pembiayaan' };
+  var LABEL_CMO = { tabSorumBekas: 'Used Car', tabDanaTunai: 'Dana Tunai', tabMotorBekas: 'Motor Bekas', tabPbDatun: 'Pembiayaan', tabGabungBerkas: 'Gabung' };
   var IKON_LAIN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
     '<circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>';
   var nav, sheet, latar, daftarBar = [];
@@ -17979,6 +18748,14 @@ function dtTeksCatatan() {
 }
 
 /* ---------- 5. Unduh PDF ---------- */
+
+/* Data tersembunyi di PDF simulasi (dibaca menu Gabung Berkas). Tidak tampil di halaman PDF. */
+function cmdSimMeta(doc, data) {
+  try {
+    data.v = 1; data.dibuat = new Date().toISOString();
+    doc.setProperties({ title: 'Simulasi ' + (data.jenis || ''), subject: 'CMDSIM1:' + JSON.stringify(data), creator: 'TOOLS CMD' });
+  } catch (e) { /* jangan sampai mengganggu cetak PDF */ }
+}
 function dtPesan(teks) { var el = dtEl('dtHint'); if (el) el.innerText = teks; }
 
 function dtGambarPdf() {
@@ -18065,6 +18842,11 @@ function dtGambarPdf() {
   doc.text('Simulasi ini perkiraan; nilai akhir mengikuti persetujuan kredit. Dicetak ' +
     new Date().toLocaleString('id-ID') + (typeof namaPencetak === 'function' && namaPencetak() ? ' oleh ' + namaPencetak() : '') + ' \u00b7 versi ' + DT_VERSI, 14, y);
   doc.setTextColor(0);
+  try {
+    cmdSimMeta(doc, { jenis: 'DATUN', unit: u.baris ? (u.baris.brand + ' ' + u.baris.tipe) : '', tahun: u.tahun || '', mrp: u.mrp || 0,
+      pinjaman: u.pinjaman || 0, nama: nama || '', nopol: nopol || '',
+      tenor: b.filter(function (x) { return x.tersedia !== false; }).map(function (x) { return { t: x.tenor, angs: x.angsuran || 0 }; }) });
+  } catch (e) {}
   return doc;
 }
 
@@ -18594,6 +19376,11 @@ function mbUnduhPdf() {
 
   var tandai = (nopol || nama || '').replace(/[^A-Za-z0-9]+/g, '_').replace(/^_|_$/g, '');
   var namaFile = 'Simulasi_Motor_Bekas' + (tandai ? '_' + tandai : '') + '.pdf';
+  try {
+    cmdSimMeta(doc, { jenis: 'MOTOR', unit: u.baris.brand + ' ' + u.baris.tipe, tahun: u.tahun, mrp: u.otr, otr: u.otr, dp: u.dp,
+      pokok: u.sisa || (u.otr - u.dp), rangka: (typeof rkVin === 'function' && rkVin('mb')) || '', nama: nama || '', nopol: nopol || '',
+      tenor: b.map(function (x) { return { t: x.tenor, angs: x.angsuran || 0 }; }) });
+  } catch (e) {}
   doc.save(namaFile);
   if (pesan) pesan.innerText = 'PDF siap dicetak: ' + namaFile;
 }
