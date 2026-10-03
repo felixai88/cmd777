@@ -5669,10 +5669,10 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
             <div class="uc-hint" id="ucHintDp"></div>
           </div>
           <div class="field uc-sembunyi"><label>Tenor (tahun)</label><select id="ucTenor" onchange="ucHitung()"><option value="1">1 tahun (12x)</option><option value="2">2 tahun (24x)</option><option value="3">3 tahun (36x)</option><option value="4">4 tahun (48x)</option><option value="5" selected>5 tahun (60x)</option></select></div>
-          <div class="field uc-sembunyi">
+          <div class="field uc-span2">
             <label>Asuransi All Risk (tahun)</label>
-            <select id="ucAr" onchange="ucHitung()"><option value="0">0 &mdash; TLO semua</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5 &mdash; All Risk penuh</option></select>
-            <div class="uc-hint" id="ucKetAr">Sisa tahun otomatis jadi TLO (total selalu 5 tahun, sama seperti tabel RUMUS).</div>
+            <select id="ucAr" onchange="ucHitung()"><option value="0">0 &mdash; TLO semua</option><option value="1">1 &mdash; All Risk 1 th, sisanya TLO</option><option value="2">2 &mdash; All Risk 2 th, sisanya TLO</option><option value="3">3 &mdash; All Risk 3 th, sisanya TLO</option><option value="4">4 &mdash; All Risk 4 th, sisanya TLO</option><option value="5">5 &mdash; All Risk penuh</option></select>
+            <div class="uc-hint" id="ucKetAr">TLO semua tenor.</div>
           </div>
           <div class="field uc-sembunyi"><label>Pemakaian</label><select id="ucPemakaian" onchange="ucHitung()"><option value="PRIBADI" selected>PRIBADI</option><option value="NIAGA">NIAGA</option></select></div>
           <div class="field uc-sembunyi"><label>Jenis Kendaraan</label><select id="ucJenisUnit" onchange="ucJenisManual = true; ucHitung()"><option value="MB">MB &mdash; Minibus / mobil</option><option value="PU">PU &mdash; Pick Up</option></select><div class="uc-hint">Otomatis dari Object Type di MRP.</div></div>
@@ -16487,10 +16487,11 @@ function ucHitung() {  if (!ucSiap) return;
   document.getElementById('ucWilayah').value = 'DK';
   document.getElementById('ucPemakaian').value = 'PRIBADI';
   var arTh = +document.getElementById('ucAr').value;
+  ucSegarkanCombo('ucAr');   /* label dropdown ikut nilai (mis. setelah Reset) */
   var tenor = +document.getElementById('ucTenor').value;
   /* biaya admin baku Rp 3.050.000 (termasuk polis) — selalu ditimpa, tidak bisa diketik manual */
   document.getElementById('ucAdm').value = ucFmt(ucBiayaAdmin(document.getElementById('ucJenisUnit').value));
-  document.getElementById('ucKetAr').innerText = 'All Risk ' + arTh + ' tahun + TLO ' + (5 - arTh) + ' tahun (total selalu 5 tahun, sama seperti tabel RUMUS).';
+  document.getElementById('ucKetAr').innerText = arTh === 0 ? 'TLO semua tenor.' : 'All Risk ' + arTh + ' tahun pertama, sisa tenor TLO. Contoh tenor 3 tahun: ' + Math.min(arTh, 3) + ' th All Risk' + (arTh < 3 ? ' + ' + (3 - arTh) + ' th TLO' : '') + '.';
 
   var inp = {
     tahunIni: thnIni, tahunMobil: tahun, tenor: tenor, otr: otr, dp: ucAngka('ucDp'), arTh: arTh,
@@ -16559,7 +16560,8 @@ function ucHitung() {  if (!ucSiap) return;
      cukup ingatkan untuk cek tenor (supaya CMO tidak memakai angka yang salah). */
   ucTenorTolak = null;
   if (!h.error && !ucRenderTabelTenor(inp, umur))
-    ucTenorTolak = 'Tidak ada tenor yang tersedia untuk unit umur ' + umur + ' tahun ini.';
+    ucTenorTolak = 'Tidak ada tenor yang tersedia untuk unit umur ' + umur + ' tahun ini.' +
+      (arTh > 0 ? ' Coba pilih asuransi TLO atau kurangi tahun All Risk.' : '');
   if (ucTenorTolak) {
     ucHasil = null;
     ucInfoUnit = null;
@@ -16578,7 +16580,7 @@ function ucHitung() {  if (!ucSiap) return;
   }
 
   if (h.error) {
-    peringatan.innerHTML = '<div class="uc-warn bahaya">' + h.error + '</div>';
+    peringatan.innerHTML = '<div class="uc-warn bahaya">' + h.error + (arTh > 0 ? ' Coba pilih asuransi TLO atau kurangi tahun All Risk.' : '') + '</div>';
     ucRenderLekat(null);
     kpi.innerHTML = '';
     ucKosongkanSkema();
