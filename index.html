@@ -6719,6 +6719,12 @@ body.dark #tabKpiCmo .kci-card.kci-tot,body.cmd #tabKpiCmo .kci-card.kci-tot{bac
             <option value="SORUM">Sorum Bekas / Used Car</option>
             <option value="MOTOR">Motor Bekas</option>
           </select></div>
+        <div class="gb-f gb-jenis" style="max-width:440px"><label for="gbMesin">Cara membaca berkas</label>
+          <select id="gbMesin" onchange="gbSiapkanOcr()">
+            <option value="auto">OCR cepat (PaddleOCR), cadangan AI Gemini</option>
+            <option value="ocr">OCR saja (tanpa AI)</option>
+            <option value="gemini">AI Gemini saja (cara lama)</option>
+          </select></div>
         <div class="gb-unggah">
           <label class="gb-slot" id="gbSlotApr">
             <input type="file" id="gbFileApr" accept="application/pdf,image/*" onchange="gbPilih('apr', this)">
@@ -6741,6 +6747,7 @@ body.dark #tabKpiCmo .kci-card.kci-tot,body.cmd #tabKpiCmo .kci-card.kci-tot{bac
         </div>
         <button type="button" class="gb-btn utama" id="gbBtnBaca" onclick="gbBaca()">Baca &amp; Cocokkan</button>
         <div id="gbPesan" class="gb-pesan"></div>
+        <details id="gbOcrLog" class="gb-diag" hidden><summary>Teks hasil OCR (untuk memeriksa apa yang terbaca)</summary><pre id="gbOcrIsi" style="white-space:pre-wrap;font-size:11px;font-weight:400;margin:6px 0 0"></pre></details>
       </div>
 
       <div class="card gb-card" id="gbHasilKartu" hidden>
@@ -18201,7 +18208,7 @@ function gbPilih(k, input) {
   var f = input.files && input.files[0];
   gbFile[k] = f || null;
   var map = { apr: ['gbNamaApr', 'gbSlotApr'], stnk: ['gbNamaStnk', 'gbSlotStnk'], sim: ['gbNamaSim', 'gbSlotSim'] }[k];
-  if (f) { gbEl(map[0]).innerText = f.name; gbEl(map[1]).classList.add('terisi'); }
+  if (f) { gbEl(map[0]).innerText = f.name; gbEl(map[1]).classList.add('terisi'); if (k !== 'sim') { gbSiapkanOcr(); gbPraBaca(k); } }
 }
 
 /* ---------- pdf.js dimuat saat dibutuhkan ---------- */
@@ -18403,20 +18410,180 @@ function gbUraiTeksSimulasi(items) {
   return out;
 }
 
+/* ---------- OCR CEPAT (PaddleOCR di browser) + cadangan Gemini ---------- */
+/* Urutan: 1) lapisan teks PDF (instan)  2) OCR PaddleOCR  3) AI Gemini kalau 1 & 2 belum menemukan isian penting */
+var gbDurasi = {};
+function gbMesin() { var el = gbEl('gbMesin'); return (el && el.value) || 'auto'; }
+function gbSiapkanOcr() {
+  if (gbMesin() !== 'gemini' && window.CmdOcr && !window.CmdOcr.siap()) window.CmdOcr.muat().catch(function () {});
+}
+function gbUrut(arr, fn) {
+  return arr.reduce(function (p, v) { return p.then(function (stop) { return stop === true ? true : fn(v); }); }, Promise.resolve(false));
+}
+function gbKanvasGambar(file, sisiMaks) {
+  sisiMaks = sisiMaks || 2000;
+  function buat(src, w, h) {
+    var sk = Math.min(1, sisiMaks / Math.max(w, h));
+    var c = document.createElement('canvas'); c.width = Math.round(w * sk); c.height = Math.round(h * sk);
+    var x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); x.drawImage(src, 0, 0, c.width, c.height);
+    return c;
+  }
+  function viaImg() {
+    return new Promise(function (ok, gagal) {
+      var u = URL.createObjectURL(file), im = new Image();
+      im.onload = function () { try { ok(buat(im, im.naturalWidth, im.naturalHeight)); } catch (e) { gagal(e); } URL.revokeObjectURL(u); };
+      im.onerror = function () { URL.revokeObjectURL(u); gagal(new Error('Gambar tidak bisa dibuka')); };
+      im.src = u;
+    });
+  }
+  if (window.createImageBitmap) {
+    return createImageBitmap(file, { imageOrientation: 'from-image' })
+      .then(function (bm) { var c = buat(bm, bm.width, bm.height); if (bm.close) bm.close(); return c; })
+      .catch(viaImg);
+  }
+  return viaImg();
+}
+function gbBukaPdf(file) {
+  return gbMuatPdfJs().then(function (pdfjs) { return gbBuffer(file).then(function (buf) { return pdfjs.getDocument({ data: buf }).promise; }); });
+}
+function gbItemTeksHalaman(pdf, no) {
+  return pdf.getPage(no).then(function (hal) {
+    var vp = hal.getViewport({ scale: 1 });
+    return hal.getTextContent().then(function (tc) {
+      var item = [];
+      tc.items.forEach(function (it) {
+        var t = String(it.str || '').trim(); if (!t) return;
+        var h = it.height || Math.abs(it.transform[3]) || 10;
+        item.push({ t: t, x: it.transform[4], y: vp.height - it.transform[5] - h, w: it.width || 0, h: h });
+      });
+      return item;
+    });
+  });
+}
+function gbKanvasHalaman(pdf, no, sisiMaks) {
+  return pdf.getPage(no).then(function (hal) {
+    var v0 = hal.getViewport({ scale: 1 });
+    var sk = Math.min(3, (sisiMaks || 2000) / Math.max(v0.width, v0.height));
+    var vp = hal.getViewport({ scale: sk });
+    var c = document.createElement('canvas'); c.width = Math.round(vp.width); c.height = Math.round(vp.height);
+    var x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height);
+    return hal.render({ canvasContext: x, viewport: vp }).promise.then(function () { return c; });
+  });
+}
+/* jenis: 'stnk' | 'apr'. Hasil: { data, sumber, teks } atau lempar Error (e.parsial = yang sempat terbaca) */
+function gbOcrDokumen(file, jenis, lapor) {
+  var P = window.CmdOcrParse, O = window.CmdOcr, t0 = performance.now();
+  var urai = jenis === 'stnk' ? P.stnk : P.appraisal;
+  var lengkap = jenis === 'stnk' ? P.stnkLengkap : P.appraisalLengkap;
+  var bagian = [], teks = [], sisa = 6;
+  function cukup(baris) { var g = urai(baris); return lengkap(g) && (jenis !== 'stnk' || String(g.rangka || '').length === 17); }
+  function selesai() {
+    var g = P.gabung(bagian);
+    if (lengkap(g)) return { data: g, sumber: 'OCR ' + ((performance.now() - t0) / 1000).toFixed(1) + ' dtk', teks: teks.join('\n') };
+    var e = new Error('OCR belum menemukan ' + (jenis === 'stnk' ? 'nomor rangka & tahun' : 'harga pasar & pinjaman dimohon'));
+    e.parsial = g; e.teks = teks.join('\n'); throw e;
+  }
+  /* satu foto/halaman: asli -> kontras -> dibalik, berhenti begitu lengkap (maks 6 putaran per berkas) */
+  function bacaKanvas(c) {
+    var putar = null;
+    return gbUrut(jenis === 'stnk' ? ['asli', 'kontras'] : ['asli', 'kontras', 'balik'], function (v) {
+      if (sisa <= 0) return true;
+      sisa--;
+      return O.baca(v === 'asli' ? c : O.variasi(c, v), lapor, { putar: putar, berhenti: cukup }).then(function (r) {
+        if (putar == null) putar = r.putar;
+        bagian.push(urai(r.baris)); teks.push('[putar ' + r.putar + '\u00b0, deteksi ' + r.ms.deteksi + ' ms, baca ' + r.ms.kenali + ' ms, ' + r.jmlKotak + ' kotak]\n' + r.teks);
+        return lengkap(P.gabung(bagian));
+      });
+    });
+  }
+  if (!gbIsPdf(file)) return gbKanvasGambar(file).then(bacaKanvas).then(selesai);
+  return gbBukaPdf(file).then(function (pdf) {
+    var halTeks = [], halOcr = [], i;
+    for (i = 1; i <= Math.min(pdf.numPages, 12); i++) halTeks.push(i);
+    for (i = 1; i <= Math.min(pdf.numPages, 5); i++) halOcr.push(i);
+    return gbUrut(halTeks, function (no) {
+      return gbItemTeksHalaman(pdf, no).then(function (item) { bagian.push(urai(O.susunBaris(item))); return lengkap(P.gabung(bagian)); });
+    }).then(function (ada) {
+      if (ada) return { data: P.gabung(bagian), sumber: 'teks PDF', teks: '' };
+      t0 = performance.now();
+      return gbUrut(halOcr, function (no) { return gbKanvasHalaman(pdf, no).then(bacaKanvas); }).then(selesai);
+    });
+  });
+}
+
+/* ---------- baca di latar belakang begitu berkas dipilih; tombol "Baca & Cocokkan" tinggal menampilkan hasilnya ---------- */
+var gbMemo = {};
+function gbOcrMemo(file, jenis, lapor) {
+  var kunci = jenis + '|' + file.name + '|' + file.size + '|' + file.lastModified, m = gbMemo[jenis];
+  if (m && m.kunci === kunci) return m.janji;
+  var t0 = performance.now();
+  var janji = gbOcrDokumen(file, jenis, lapor).then(function (r) { r.ms = Math.round(performance.now() - t0); return r; });
+  gbMemo[jenis] = { kunci: kunci, janji: janji };
+  janji.catch(function (e) { if (!(e && e.parsial) && gbMemo[jenis] && gbMemo[jenis].janji === janji) delete gbMemo[jenis]; });   /* gagal muat -> boleh dicoba ulang saat tombol diklik */
+  return janji;
+}
+function gbPraBaca(k) {
+  var f = gbFile[k], jenis = k === 'stnk' ? 'stnk' : 'apr', nama = gbEl(k === 'stnk' ? 'gbNamaStnk' : 'gbNamaApr');
+  if (!f || gbMesin() === 'gemini' || !window.CmdOcr || !window.CmdOcrParse) return;
+  var awal = f.name; nama.innerText = awal + ' \u00b7 membaca\u2026';
+  gbOcrMemo(f, jenis, function (t) { if (gbFile[k] === f) nama.innerText = awal + ' \u00b7 ' + t; })
+    .then(function (r) { if (gbFile[k] === f) nama.innerText = awal + ' \u00b7 \u2714 terbaca (' + (r.ms / 1000).toFixed(1) + ' dtk)'; })
+    .catch(function () { if (gbFile[k] === f) nama.innerText = awal + ' \u00b7 belum terbaca penuh, dicoba lagi saat klik Baca'; });
+}
+function gbCatatOcr(jenis, r) { gbData.ocrTeks = gbData.ocrTeks || {}; gbData.ocrTeks[jenis] = r.teks || ''; }
+function gbBacaStnkPintar(file) {
+  var mode = gbMesin(), t0 = performance.now();
+  function gemini() { gbData.stnkSumber = 'Gemini'; return gbGambarDari(file).then(function (g) { return gbBacaAiUlang(g, 'STNK'); }); }
+  function sebagian(e) { gbData.stnkSumber = 'OCR sebagian'; gbCatatOcr('stnk', e); return e.parsial; }
+  function catat(d) { gbDurasi.stnk = Math.round(performance.now() - t0); return d; }
+  if (mode === 'gemini' || !window.CmdOcr || !window.CmdOcrParse) return gemini().then(catat);
+  gbPesan('info', 'Membaca STNK dengan OCR&hellip;');
+  return gbOcrMemo(file, 'stnk', function (t) { gbPesan('info', gbEsc(t)); })
+    .then(function (r) { gbData.stnkSumber = r.sumber; gbCatatOcr('stnk', r); return r.data; })
+    .catch(function (e) {
+      if (e && e.parsial && mode === 'ocr') return sebagian(e);
+      if (mode === 'ocr') throw e;
+      gbPesan('info', gbEsc((e && e.message) || 'OCR gagal') + '. Pindah ke AI Gemini untuk STNK&hellip;');
+      return gemini().catch(function (e2) { if (e && e.parsial) return sebagian(e); throw e2; });
+    }).then(catat);
+}
+function gbBacaAprPintar(file) {
+  var mode = gbMesin(), t0 = performance.now();
+  function catat(d) { gbDurasi.apr = Math.round(performance.now() - t0); return d; }
+  function sebagian(e) { gbData.aprCaraLama = false; gbData.aprMentah = { model: 'PaddleOCR \u00b7 sebagian', ocr: true }; gbCatatOcr('apr', e); return e.parsial; }
+  if (mode === 'gemini' || !window.CmdOcr || !window.CmdOcrParse) return gbBacaAppraisal(file).then(catat);
+  gbPesan('info', 'Membaca appraiser dengan OCR&hellip;');
+  return gbOcrMemo(file, 'apr', function (t) { gbPesan('info', gbEsc(t)); })
+    .then(function (r) { gbData.aprCaraLama = false; gbData.aprMentah = { model: 'PaddleOCR \u00b7 ' + r.sumber, ocr: true }; gbCatatOcr('apr', r); return r.data; })
+    .catch(function (e) {
+      if (e && e.parsial && mode === 'ocr') return sebagian(e);
+      if (mode === 'ocr') throw e;
+      gbPesan('info', gbEsc((e && e.message) || 'OCR gagal') + '. Pindah ke AI Gemini untuk appraiser&hellip;');
+      return gbBacaAppraisal(file).catch(function (e2) { if (e && e.parsial) return sebagian(e); throw e2; });
+    }).then(catat);
+}
+function gbInfoWaktu() {
+  var a = [];
+  if (gbDurasi.stnk != null) a.push('STNK ' + (gbDurasi.stnk / 1000).toFixed(1) + ' dtk' + (gbData.stnkSumber ? ' (' + gbData.stnkSumber + ')' : ''));
+  if (gbDurasi.apr != null) a.push('Appraiser ' + (gbDurasi.apr / 1000).toFixed(1) + ' dtk' + (gbData.aprMentah && gbData.aprMentah.ocr ? ' (' + gbData.aprMentah.model.replace('PaddleOCR · ', '') + ')' : ''));
+  return a.length ? ' &middot; ' + a.join(' &middot; ') : '';
+}
+
 /* ---------- alur utama ---------- */
 function gbBaca() {
   if (!gbFile.apr || !gbFile.stnk || !gbFile.sim) { gbPesan('bahaya', 'Unggah ketiga berkas dulu (A, B, dan C).'); return; }
   var btn = gbEl('gbBtnBaca'); btn.disabled = true;
-  gbPesan('info', 'Membaca berkas&hellip; biasanya 10&ndash;40 detik.');
+  gbPesan('info', 'Membaca berkas&hellip;');
   var catatan = [];
-  gbData = { stnk: {}, apr: {}, sim: {} };
+  var gbMulai = performance.now();
+  gbData = { stnk: {}, apr: {}, sim: {} }; gbDurasi = {};
 
   var pSim = gbBacaSimulasi(gbFile.sim).then(function (s) { gbData.sim = s; })
     .catch(function (e) { catatan.push('Simulasi: ' + e.message); });
   /* STNK dulu, baru appraiser (bergantian, supaya server AI tidak kebanjiran) */
-  var pAi = gbGambarDari(gbFile.stnk).then(function (g) { return gbBacaAiUlang(g, 'STNK'); }).then(function (d) { gbData.stnk = gbDariAi(d); })
+  var pAi = gbBacaStnkPintar(gbFile.stnk).then(function (d) { gbData.stnk = gbDariAi(d); })
     .catch(function (e) { catatan.push('STNK: ' + e.message + ' (isi manual di tabel)'); })
-    .then(function () { return gbBacaAppraisal(gbFile.apr); }).then(function (d) { gbData.apr = gbDariAi(d); })
+    .then(function () { return gbBacaAprPintar(gbFile.apr); }).then(function (d) { gbData.apr = gbDariAi(d); })
     .catch(function (e) { gbData.aprGagal = e.message; catatan.push('Appraiser: ' + e.message + ' (isi manual di tabel)'); });
 
   Promise.all([pSim, pAi]).then(function () {
@@ -18428,12 +18595,14 @@ function gbBaca() {
     isiAngka('gbMaksPinjam', gbData.apr.maksPinjaman);
     isiAngka('gbPinjamMohon', gbData.apr.pinjamanDimohon);
     gbGambarTabel();
+    var lg = gbEl('gbOcrLog'), tk = gbData.ocrTeks || {}, isi = (tk.stnk ? '== STNK ==\n' + tk.stnk + '\n\n' : '') + (tk.apr ? '== APPRAISER ==\n' + tk.apr : '');
+    if (lg) { gbEl('gbOcrIsi').textContent = isi; lg.hidden = !isi; }
     gbEl('gbHasilKartu').hidden = false;
     var dg = gbEl('gbDiagApr'), m = gbData.aprMentah;
     if (gbData.aprGagal) { dg.className = 'gb-diag bad'; dg.innerHTML = '&#10006; Appraiser gagal dibaca AI: ' + gbEsc(gbData.aprGagal); }
     else if (gbData.aprCaraLama) { dg.className = 'gb-diag bad'; dg.innerHTML = '&#10006; Harga &amp; pinjaman appraiser tidak dibaca otomatis karena ' + gbEsc(gbData.aprAlasan) + '. Ketik manual di kolom Appraiser, atau pasang BacaAppraisal.gs + Api.gs lalu deploy New version.'; }
     else if (m && !gbData.apr.hargaPasar && !gbData.apr.pinjamanDimohon) { dg.className = 'gb-diag hati'; dg.innerHTML = '! AI membaca appraiser (' + gbEsc(m.model || 'Gemini') + ') tapi angka tidak ditemukan. Jawaban AI: ' + gbEsc(JSON.stringify(m).slice(0, 260)); }
-    else if (m) { dg.className = 'gb-diag ok'; dg.innerHTML = '&#10004; Appraiser dibaca AI (' + gbEsc(m.model || 'Gemini') + ').'; }
+    else if (m) { dg.className = 'gb-diag ok'; dg.innerHTML = '&#10004; Appraiser dibaca (' + gbEsc(m.model || 'Gemini') + ').' + (m.ocr ? ' Periksa angkanya di tabel sebelum menggabung.' : ''); }
     else { dg.className = 'gb-diag'; dg.innerHTML = ''; }
     if (!gbData.aprCaraLama && gbData.aprMentah && !gbData.apr.pinjamanDimohon && !gbData.apr.hargaPasar) {
       catatan.push('AI sudah membaca appraiser (' + (gbData.aprMentah.model || 'Gemini') + ') tapi tidak menemukan harga pasar & pinjaman. Ketik manual di kolom Appraiser pada tabel. Jawaban AI: ' +
@@ -18442,7 +18611,7 @@ function gbBaca() {
     if (gbData.aprCaraLama) catatan.push('Angka harga pasar & pinjaman dimohon belum terbaca otomatis: fungsi bacaAppraisal belum aktif di Apps Script (pasang BacaAppraisal.gs + Api.gs baru, lalu deploy New version). Sementara ketik manual di kolom Appraiser pada tabel.');
     gbPesan(catatan.length ? 'hati' : 'sukses', catatan.length
       ? 'Sebagian tidak terbaca otomatis:<br>' + catatan.map(gbEsc).join('<br>')
-      : 'Berkas terbaca. Cek tabel di bawah; angka yang salah baca bisa dikoreksi langsung.');
+      : 'Berkas terbaca dalam ' + ((performance.now() - gbMulai) / 1000).toFixed(1) + ' dtk' + gbInfoWaktu() + '. Cek tabel di bawah; angka yang salah baca bisa dikoreksi langsung.');
     gbEl('gbHasilKartu').scrollIntoView({ behavior: 'smooth', block: 'start' });
   });
 }
@@ -18484,6 +18653,8 @@ function gbNilaiAwal(src, k) {
 }
 function gbFormatSel(el) { var n = gbAngka(el.value); el.value = n ? n.toLocaleString('id-ID') : ''; gbNilai(); }
 
+/* login CMO / CMC: tahun & nomor rangka hanya dari hasil baca berkas, tidak bisa diketik */
+function gbKunciIdentitas() { var r = (typeof currentLoginRole !== 'undefined' && currentLoginRole) ? String(currentLoginRole).toUpperCase() : ''; return r === 'CMO' || r === 'CMC'; }
 function gbGambarTabel() {
   var h = '<thead><tr><th>Data</th><th>STNK</th><th>Appraiser</th><th>Simulasi</th><th>Hasil</th></tr></thead><tbody>';
   gbBaris().forEach(function (b) {
@@ -18495,7 +18666,8 @@ function gbGambarTabel() {
       if (angka && v) v = Number(v).toLocaleString('id-ID');
       h += '<td><input id="gb_' + b[0] + '_' + src + '" value="' + gbEsc(v) + '"' +
         (angka ? ' inputmode="numeric" placeholder="Rp" oninput="gbFormatSel(this)"' : ' oninput="gbNilai()"') +
-        ' aria-label="' + b[1] + ' ' + GB_JUDUL[src] + '"></td>';
+        ' aria-label="' + b[1] + ' ' + GB_JUDUL[src] + '"' +
+        ((b[0] === 'tahun' || b[0] === 'rangka') && gbKunciIdentitas() ? ' readonly tabindex="-1" placeholder="tidak terbaca" title="Dikunci: harus terbaca dari berkas. Unggah foto/PDF yang lebih jelas." style="opacity:.85;cursor:not-allowed"' : '') + '></td>';
     });
     h += '<td class="gb-st" id="gbSt_' + b[0] + '"></td></tr>';
   });
@@ -24755,6 +24927,511 @@ var PETA_DATA = {"prov":{"riau":[[[-0.921,101.914],[-0.9826,101.8453],[-0.9341,1
   });
   setTimeout(function () { terakhir = new Date(); tandai(false); }, 1500);
 })();
+</script>
+<style id="fixKontrasTema">
+/* ===== PERBAIKAN KONTRAS TEKS: tema gelap & CMD (+ sedikit tema terang) ===== */
+/* --- Gabung Berkas --- */
+body.dark .gb-slot small, body.cmd .gb-slot small { color: #a9b6c8; }
+body.dark .gb-slot.terisi small, body.cmd .gb-slot.terisi small { color: #6ee7b7; }
+.gb-kecil, .gb-kecil b { color: #64748b; }
+body.dark .gb-kecil, body.dark .gb-kecil b, body.cmd .gb-kecil, body.cmd .gb-kecil b { color: #9fb0c4; }
+.gb-tabel .gb-na { color: #7a8798; }
+body.dark .gb-st.ok, body.cmd .gb-st.ok { color: #4ade80; }
+body.dark .gb-st.warn, body.cmd .gb-st.warn { color: #fbbf24; }
+body.dark .gb-st.bad, body.cmd .gb-st.bad { color: #f87171; }
+.gb-st.warn .gb-pill { background: #b45309; }
+body.cmd .gb-btn.utama { background: #c8341e; }
+body:not(.dark):not(.cmd) #pageSub { color: #64748b; }
+/* --- Used Car / Dana Tunai / Motor Bekas: tema CMD belum punya warna tinta --- */
+body.cmd #tabSorumBekas, body.cmd #tabDanaTunai, body.cmd #tabMotorBekas {
+  --m1-tinta: #fbf3ea; --m1-abu: #c9b8a8; --m1-garis: #4d2f23; --m1-lembut: #2d211c;
+}
+/* --- KPI CMO --- */
+body.dark #tabKpiCmo .kc-namaCmo #kcNamaCmo, body.cmd #tabKpiCmo .kc-namaCmo #kcNamaCmo { color: #e2e8f0; }
+body.dark #tabKpiCmo .kc-namaCmo b, body.cmd #tabKpiCmo .kc-namaCmo b { color: #9fb0c4; }
+/* --- TAC --- */
+body.dark #tabTac details summary { color: #cbd5e1; }
+body.cmd #tabTac details summary { color: #f0b429; }
+body.cmd #tabTac .tac-drop { background: #1c1512; border-color: #4d2f23; }
+body.cmd #tabTac .tac-drop p, body.cmd #tabTac .tac-drop p b { color: #d9c7b6; }
+body.cmd #tabTac .tac-drop small { color: #b9a594; }
+body.dark #tabTac table.tac-aturan td, body.dark #tabTac table.tac-aturan th { background: #131f36; color: #e2e8f0; }
+body.cmd #tabTac table.tac-aturan td, body.cmd #tabTac table.tac-aturan th { background: #241a16; color: #fbf3ea; }
+body.dark #tabTac table.tac-aturan td.kode, body.cmd #tabTac table.tac-aturan td.kode { color: #9fb0c4; }
+
+</style>
+<script id="cmdOcrModul">
+/* =====================================================================
+   OCR PADDLE (PP-OCRv4) di dalam browser — tanpa server, tanpa kuota.
+   Model PaddleOCR (deteksi + pengenal teks) dijalankan oleh onnxruntime-web.
+   Semua dimuat SAAT DIBUTUHKAN (pertama kali pakai), lalu di-cache browser.
+   Mau hosting sendiri (lebih cepat & stabil)? Isi window.CMD_OCR_CFG sebelum
+   script ini jalan, contoh:
+     window.CMD_OCR_CFG = { ortJs:'ocr/ort.min.js', wasmPath:'ocr/', modelBase:'ocr/' };
+   ===================================================================== */
+(function (global) {
+  'use strict';
+  var CFG = {
+    ortJs: 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.3/dist/ort.min.js',
+    wasmPath: 'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.17.3/dist/',
+    modelBase: 'https://cdn.jsdelivr.net/npm/@gutenye/ocr-models@1.4.2/assets/',
+    det: 'ch_PP-OCRv4_det_infer.onnx',
+    rec: 'ch_PP-OCRv4_rec_infer.onnx',
+    dict: 'ppocr_keys_v1.txt',
+    sisiMaks: 1280,      /* sisi terpanjang gambar saat deteksi (makin besar makin teliti, makin lambat) */
+    sisiMin: 960,        /* gambar kecil diperbesar sampai kira-kira segini */
+    detThresh: 0.3,
+    latin: true,         /* batasi hasil ke huruf/angka/tanda baca latin: rangka tidak lagi salah jadi aksara Cina */
+    maksKotak: 160,
+    boxThresh: 0.5,
+    unclip: 1.6,
+    detNorm: 'paddle',   /* 'paddle' = (x/255-mean)/std, 'polos' = x/255 */
+    recNorm: 'paddle'    /* 'paddle' = (x/255-0.5)/0.5,  'polos' = x/255 */
+  };
+  var ov = global.CMD_OCR_CFG || {};
+  for (var k in ov) if (Object.prototype.hasOwnProperty.call(ov, k)) CFG[k] = ov[k];
+
+  var S = { janji: null, ort: null, det: null, rec: null, kamus: null };
+
+  function muatScript(src) {
+    return new Promise(function (ok, gagal) {
+      if (global.ort) return ok(global.ort);
+      var s = document.createElement('script');
+      s.src = src; s.async = true;
+      s.onload = function () { global.ort ? ok(global.ort) : gagal(new Error('onnxruntime-web tidak terpasang')); };
+      s.onerror = function () { gagal(new Error('Pustaka OCR gagal dimuat. Periksa koneksi internet.')); };
+      document.head.appendChild(s);
+    });
+  }
+  function ambil(url, jenis) {
+    return fetch(url).then(function (r) {
+      if (!r.ok) throw new Error('Model OCR gagal diunduh (' + r.status + '): ' + url.split('/').pop());
+      return jenis === 'teks' ? r.text() : r.arrayBuffer();
+    });
+  }
+
+  function muat(lapor) {
+    if (S.janji) return S.janji;
+    var say = function (t) { try { if (lapor) lapor(t); } catch (e) {} };
+    S.janji = (async function () {
+      say('Menyiapkan mesin OCR (sekali saja, ±25 MB)…');
+      var ort = await muatScript(CFG.ortJs);
+      ort.env.wasm.wasmPaths = CFG.wasmPath;
+      ort.env.wasm.numThreads = (global.crossOriginIsolated && navigator.hardwareConcurrency) ? Math.min(4, navigator.hardwareConcurrency) : 1;
+      ort.env.logLevel = 'error';
+      var base = CFG.modelBase;
+      say('Mengunduh model PaddleOCR…');
+      var bufs = await Promise.all([ambil(base + CFG.det), ambil(base + CFG.rec), ambil(base + CFG.dict, 'teks')]);
+      say('Memuat model ke memori…');
+      var opsi = { executionProviders: ['wasm'], graphOptimizationLevel: 'all' };
+      S.det = await ort.InferenceSession.create(new Uint8Array(bufs[0]), opsi);
+      S.rec = await ort.InferenceSession.create(new Uint8Array(bufs[1]), opsi);
+      var k = bufs[2].split(/\r?\n/);
+      while (k.length && k[k.length - 1] === '') k.pop();
+      k.push(' ');                       /* kelas terakhir = spasi; kelas 0 = blank CTC */
+      S.kamus = k; S.ort = ort;
+      if (CFG.latin) {
+        var iz = [0];
+        for (var q = 0; q < k.length; q++) if (/^[0-9A-Za-z .,:;\/()\-&%+#@'"=_*]$/.test(k[q])) iz.push(q + 1);
+        S.izin = Int32Array.from(iz);
+      }
+      try {   /* pemanasan: panggilan pertama ke ONNX paling lambat, jadi dilakukan sekarang */
+        var f1 = {}; f1[S.det.inputNames[0]] = new ort.Tensor('float32', new Float32Array(3 * 64 * 64), [1, 3, 64, 64]); await S.det.run(f1);
+        var f2 = {}; f2[S.rec.inputNames[0]] = new ort.Tensor('float32', new Float32Array(3 * 48 * 96), [1, 3, 48, 96]); await S.rec.run(f2);
+      } catch (e) {}
+      return true;
+    })().catch(function (e) { S.janji = null; throw e; });
+    return S.janji;
+  }
+
+  /* ---------- util gambar ---------- */
+  function kanvas(w, h) { var c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
+  function keTensor(imgData, w, h, mode, jenis) {
+    var n = w * h, out = new Float32Array(3 * n), d = imgData.data;
+    var mean, std;
+    if (mode === 'paddle' && jenis === 'det') { mean = [0.485, 0.456, 0.406]; std = [0.229, 0.224, 0.225]; }
+    else if (mode === 'paddle') { mean = [0.5, 0.5, 0.5]; std = [0.5, 0.5, 0.5]; }
+    else { mean = [0, 0, 0]; std = [1, 1, 1]; }
+    for (var i = 0, p = 0; i < n; i++, p += 4) {
+      /* urutan kanal model PaddleOCR = B, G, R */
+      out[i] = (d[p + 2] / 255 - mean[0]) / std[0];
+      out[n + i] = (d[p + 1] / 255 - mean[1]) / std[1];
+      out[2 * n + i] = (d[p] / 255 - mean[2]) / std[2];
+    }
+    return out;
+  }
+
+  /* ---------- deteksi: peta probabilitas -> kotak teks ---------- */
+  async function deteksi(src, cepat) {
+    var sw = src.width, sh = src.height;
+    var sisi = Math.max(sw, sh), sk = 1;
+    var mx = cepat || CFG.sisiMaks;
+    if (sisi > mx) sk = mx / sisi;
+    else if (!cepat && sisi < CFG.sisiMin) sk = Math.min(2.5, CFG.sisiMin / sisi);
+    var W = Math.max(32, Math.round(sw * sk / 32) * 32), H = Math.max(32, Math.round(sh * sk / 32) * 32);
+    var c = kanvas(W, H), x = c.getContext('2d', { willReadFrequently: true });
+    x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
+    x.imageSmoothingQuality = 'high'; x.drawImage(src, 0, 0, W, H);
+    var data = keTensor(x.getImageData(0, 0, W, H), W, H, CFG.detNorm, 'det');
+    var inName = S.det.inputNames[0];
+    var feeds = {}; feeds[inName] = new S.ort.Tensor('float32', data, [1, 3, H, W]);
+    var out = await S.det.run(feeds);
+    var prob = out[S.det.outputNames[0]].data;
+
+    var n = W * H, bin = new Uint8Array(n), seen = new Uint8Array(n);
+    for (var i = 0; i < n; i++) bin[i] = prob[i] > CFG.detThresh ? 1 : 0;
+    var stack = new Int32Array(n), kotak = [];
+    for (var yy = 0; yy < H; yy++) {
+      for (var xx = 0; xx < W; xx++) {
+        var idx = yy * W + xx;
+        if (!bin[idx] || seen[idx]) continue;
+        var sp = 0, minx = xx, maxx = xx, miny = yy, maxy = yy, cnt = 0, sum = 0;
+        stack[sp++] = idx; seen[idx] = 1;
+        while (sp) {
+          var q = stack[--sp], qy = (q / W) | 0, qx = q - qy * W;
+          cnt++; sum += prob[q];
+          if (qx < minx) minx = qx; if (qx > maxx) maxx = qx; if (qy < miny) miny = qy; if (qy > maxy) maxy = qy;
+          for (var dy = -1; dy <= 1; dy++) {
+            var ny = qy + dy; if (ny < 0 || ny >= H) continue;
+            for (var dx = -1; dx <= 1; dx++) {
+              var nx = qx + dx; if (nx < 0 || nx >= W) continue;
+              var ni = ny * W + nx;
+              if (bin[ni] && !seen[ni]) { seen[ni] = 1; stack[sp++] = ni; }
+            }
+          }
+        }
+        var bw = maxx - minx + 1, bh = maxy - miny + 1;
+        if (cnt < 12 || bw < 4 || bh < 4) continue;
+        if (sum / cnt < CFG.boxThresh) continue;
+        var dd = (bw * bh * CFG.unclip) / (2 * (bw + bh));
+        var x0 = Math.max(0, minx - dd), y0 = Math.max(0, miny - dd), x1 = Math.min(W, maxx + 1 + dd), y1 = Math.min(H, maxy + 1 + dd);
+        kotak.push({ x: x0 * sw / W, y: y0 * sh / H, w: (x1 - x0) * sw / W, h: (y1 - y0) * sh / H, skorDet: sum / cnt });
+      }
+    }
+    return kotak;
+  }
+
+  /* ---------- pengenal teks ---------- */
+  async function kenali(src, b) {
+    var tinggi = 48, lebar = Math.max(16, Math.min(1600, Math.round(tinggi * b.w / b.h)));
+    var c = kanvas(lebar, tinggi), x = c.getContext('2d', { willReadFrequently: true });
+    x.fillStyle = '#fff'; x.fillRect(0, 0, lebar, tinggi);
+    x.imageSmoothingQuality = 'high';
+    x.drawImage(src, b.x, b.y, b.w, b.h, 0, 0, lebar, tinggi);
+    var data = keTensor(x.getImageData(0, 0, lebar, tinggi), lebar, tinggi, CFG.recNorm, 'rec');
+    var feeds = {}; feeds[S.rec.inputNames[0]] = new S.ort.Tensor('float32', data, [1, 3, tinggi, lebar]);
+    var out = await S.rec.run(feeds);
+    var o = out[S.rec.outputNames[0]], T = o.dims[1], C = o.dims[2], d = o.data;
+    var teks = '', sum = 0, jml = 0, prev = -1;
+    for (var t = 0; t < T; t++) {
+      var best = 0, bv = -1, base = t * C;
+      var iz2 = S.izin;
+      if (iz2) { for (var zi = 0; zi < iz2.length; zi++) { var v = d[base + iz2[zi]]; if (v > bv) { bv = v; best = iz2[zi]; } } }
+      else { for (var cI = 0; cI < C; cI++) { var v2 = d[base + cI]; if (v2 > bv) { bv = v2; best = cI; } } }
+      if (best !== 0 && best !== prev) { teks += (S.kamus[best - 1] != null ? S.kamus[best - 1] : ''); sum += bv; jml++; }
+      prev = best;
+    }
+    return { teks: teks, skor: jml ? sum / jml : 0, kelas: C };
+  }
+
+  /* ---------- susun hasil jadi baris (atas->bawah, kiri->kanan) ---------- */
+  function susunBaris(item) {
+    var urut = item.slice().sort(function (a, b) { return (a.y + a.h / 2) - (b.y + b.h / 2); });
+    var baris = [];
+    urut.forEach(function (it) {
+      var cy = it.y + it.h / 2, tgt = null;
+      for (var i = baris.length - 1; i >= 0; i--) {
+        var r = baris[i];
+        if (Math.abs(r.cy - cy) < Math.min(r.h, it.h) * 0.55) { tgt = r; break; }
+      }
+      if (!tgt) { tgt = { cy: cy, h: it.h, sel: [] }; baris.push(tgt); }
+      tgt.sel.push(it);
+      tgt.cy = tgt.sel.reduce(function (s, z) { return s + z.y + z.h / 2; }, 0) / tgt.sel.length;
+    });
+    return baris.sort(function (a, b) { return a.cy - b.cy; }).map(function (r) {
+      return r.sel.sort(function (a, b) { return a.x - b.x; });
+    });
+  }
+
+  /* ---------- arah foto: STNK sering difoto miring 90° ---------- */
+  function putarKanvas(src, deg) {      /* putar searah jarum jam */
+    var sw = src.width, sh = src.height, tegak = deg === 90 || deg === 270;
+    var c = kanvas(tegak ? sh : sw, tegak ? sw : sh), x = c.getContext('2d');
+    x.translate(c.width / 2, c.height / 2); x.rotate(deg * Math.PI / 180); x.drawImage(src, -sw / 2, -sh / 2);
+    return c;
+  }
+  function petakan(b, deg, sw, sh) {    /* kotak di gambar asli -> kotak di gambar yang sudah diputar */
+    if (deg === 90) return { x: sh - (b.y + b.h), y: b.x, w: b.h, h: b.w };
+    if (deg === 180) return { x: sw - (b.x + b.w), y: sh - (b.y + b.h), w: b.w, h: b.h };
+    if (deg === 270) return { x: b.y, y: sw - (b.x + b.w), w: b.h, h: b.w };
+    return { x: b.x, y: b.y, w: b.w, h: b.h };
+  }
+  async function skorArah(src, kotak, deg) {   /* baca 6 baris terpanjang pada arah ini; skor tinggi = arah benar */
+    var sw = src.width, sh = src.height, cv = deg ? putarKanvas(src, deg) : src;
+    var pilih = kotak.map(function (b, i) { return i; }).filter(function (i) { return Math.max(kotak[i].w, kotak[i].h) > Math.min(kotak[i].w, kotak[i].h) * 2.2; })
+      .sort(function (a, b) { return Math.max(kotak[b].w, kotak[b].h) - Math.max(kotak[a].w, kotak[a].h); }).slice(0, 6);
+    var jml = 0, hasil = {};
+    for (var i = 0; i < pilih.length; i++) { var r = await kenali(cv, petakan(kotak[pilih[i]], deg, sw, sh)); hasil[pilih[i]] = r; jml += r.skor; }
+    return { skor: pilih.length ? jml / pilih.length : 0, hasil: hasil };
+  }
+  async function tentukanArah(src, kotak) {
+    if (kotak.length < 3) return { putar: 0, pra: null };
+    var t = 0, d = 0, terbaik = null;
+    kotak.forEach(function (b) { var a = b.w * b.h; if (b.h > b.w * 1.3) t += a; else if (b.w > b.h * 1.3) d += a; });
+    var calon = t > d * 1.5 ? [90, 270, 0] : [0, 180];
+    for (var i = 0; i < calon.length; i++) {
+      var s = await skorArah(src, kotak, calon[i]); s.putar = calon[i];
+      if (!terbaik || s.skor > terbaik.skor + 0.05) terbaik = s;
+      if (calon[i] === 0 && s.skor >= 0.8) break;
+    }
+    return { putar: terbaik.putar, pra: terbaik.putar === 0 ? terbaik.hasil : null };
+  }
+  /* 'kontras' = abu-abu + regangkan kontras (foto pudar); 'balik' = kontras lalu dibalik (tulisan putih di kotak gelap) */
+  function variasi(src, jenis) {
+    var c = kanvas(src.width, src.height), x = c.getContext('2d', { willReadFrequently: true });
+    x.drawImage(src, 0, 0);
+    var im = x.getImageData(0, 0, c.width, c.height), d = im.data, n = c.width * c.height, g = new Uint8Array(n), h = new Uint32Array(256), i;
+    for (i = 0; i < n; i++) { g[i] = (d[4 * i] * 0.299 + d[4 * i + 1] * 0.587 + d[4 * i + 2] * 0.114) | 0; h[g[i]]++; }
+    var lo = 0, hi = 255, a = 0, amb = n * 0.02;
+    while (lo < 254 && (a += h[lo]) < amb) lo++;
+    a = 0; while (hi > 1 && (a += h[hi]) < amb) hi--;
+    var sk = 255 / Math.max(20, hi - lo);
+    for (i = 0; i < n; i++) { var v = Math.max(0, Math.min(255, (g[i] - lo) * sk)); if (jenis === 'balik') v = 255 - v; d[4 * i] = d[4 * i + 1] = d[4 * i + 2] = v; d[4 * i + 3] = 255; }
+    x.putImageData(im, 0, 0); return c;
+  }
+
+  /* opsi: { putar: 0|90|180|270 (lewati deteksi arah), berhenti: fn(baris)->true untuk berhenti lebih awal }
+     Pekerjaan diantre satu-satu supaya STNK & appraiser tidak berebut CPU. */
+  var antre = Promise.resolve();
+  function baca(src, lapor, opsi) {
+    var p = antre.then(function () { return bacaInti(src, lapor, opsi || {}); });
+    antre = p.catch(function () {});
+    return p;
+  }
+  async function bacaInti(src, lapor, opsi) {
+    var say = function (t) { try { if (lapor) lapor(t); } catch (e) {} };
+    await muat(lapor);
+    var t0 = performance.now(), w = src.width || src.naturalWidth, h = src.height || src.naturalHeight;
+    var cur = src, kotak, putar = opsi.putar, pra = null, henti = false;
+    if (putar == null) {   /* arah ditentukan dari deteksi kecil (cepat); deteksi penuh cukup sekali */
+      var kk = await deteksi(cur, 800); if (kk.length < 5) kk = await deteksi(cur);
+      putar = (await tentukanArah(cur, kk)).putar;
+    }
+    if (putar) { say('Foto miring, diluruskan\u2026'); cur = putarKanvas(src, putar); }
+    kotak = await deteksi(cur);
+    var t1 = performance.now(), hasil = [], kls = 0;
+    var urut = kotak.map(function (b, i) { return i; }).sort(function (a, b) { return (kotak[a].y - kotak[b].y) || (kotak[a].x - kotak[b].x); }).slice(0, CFG.maksKotak);
+    for (var n = 0; n < urut.length; n++) {
+      var b = kotak[urut[n]], r = (pra && pra[urut[n]]) || await kenali(cur, b); kls = r.kelas;
+      if (r.teks && r.skor >= 0.3) hasil.push({ t: r.teks, skor: r.skor, x: b.x, y: b.y, w: b.w, h: b.h });
+      if (n % 4 === 3) { say('Membaca teks ' + (n + 1) + '/' + urut.length + '\u2026'); await new Promise(function (ok) { setTimeout(ok, 0); }); }
+      if (opsi.berhenti && n % 6 === 5 && opsi.berhenti(susunBaris(hasil))) { henti = true; break; }
+    }
+    var t2 = performance.now(), baris = susunBaris(hasil);
+    return {
+      baris: baris,
+      teks: baris.map(function (r) { return r.map(function (z) { return z.t; }).join('  '); }).join('\n'),
+      ms: { deteksi: Math.round(t1 - t0), kenali: Math.round(t2 - t1), total: Math.round(t2 - t0) },
+      ukuran: { w: w, h: h }, jmlKotak: kotak.length, kelas: kls, kamus: S.kamus.length, putar: putar, henti: henti
+    };
+  }
+
+  global.CmdOcr = { muat: muat, baca: baca, susunBaris: susunBaris, variasi: variasi, cfg: CFG, siap: function () { return !!S.det; } };
+})(window);
+
+</script>
+<script id="cmdOcrParse">
+/* =====================================================================
+   PENGURAI FIELD dari baris OCR / teks PDF (tanpa AI).
+   Masukan: baris = [[{t,x,y,w,h}, ...], ...]  (atas->bawah, kiri->kanan)
+   Keluaran memakai nama kunci yang sama dengan jawaban AI sebelumnya,
+   jadi gbDariAi() bisa langsung memakainya.
+   ===================================================================== */
+(function (global) {
+  'use strict';
+
+  function N(s) {
+    return String(s == null ? '' : s).toUpperCase()
+      .replace(/[：﹕]/g, ':').replace(/[‐‑–—−]/g, '-').replace(/\u00a0/g, ' ')
+      .replace(/\s+/g, ' ').trim();
+  }
+  function siapkan(baris) {
+    return (baris || []).map(function (r) {
+      var sel = Array.isArray(r) ? r : [r];
+      return { teks: N(sel.map(function (c) { return c.t; }).join('  ')) };
+    }).filter(function (r) { return r.teks; });
+  }
+  function bersihAwal(v) { return String(v || '').replace(/^[\s:.\-=\/]+/, '').trim(); }
+
+  /* cari baris pertama yang cocok `re` (dan tidak `tolak`), kembalikan teks sesudah label.
+     Kalau di baris itu kosong / tidak lolos `ok`, coba 1–2 baris di bawahnya. */
+  function ambilLabel(R, re, o) {
+    o = o || {};
+    for (var i = 0; i < R.length; i++) {
+      var tk = R[i].teks;
+      if (o.tolak && o.tolak.test(tk)) continue;
+      var m = re.exec(tk);
+      if (!m) continue;
+      var sisa = bersihAwal(tk.slice(m.index + m[0].length));
+      if (o.bersih) sisa = o.bersih(sisa);
+      var hasil = o.ok ? o.ok(sisa) : sisa;
+      if (hasil) return hasil;
+      for (var j = 1; j <= 2 && i + j < R.length; j++) {
+        var nx = R[i + j].teks;
+        if (o.tolak && o.tolak.test(nx)) break;
+        if (o.berhenti && o.berhenti.test(nx)) break;
+        var h2 = o.ok ? o.ok(o.bersih ? o.bersih(nx) : nx) : nx;
+        if (h2) return h2;
+      }
+    }
+    return '';
+  }
+
+  /* ---------- nomor rangka ---------- */
+  function rapikRangka(raw) {
+    var t = String(raw || '').replace(/[^A-Z0-9]/g, '');
+    if (t.length < 17) return t;
+    var c = t.slice(0, 17);
+    return c.replace(/[OQ]/g, '0').replace(/I/g, '1');   /* VIN tidak pernah berisi huruf I, O, Q */
+  }
+  function okRangka(v) {
+    var t = String(v || '').replace(/^(?:[\s\/,]*(?:NIK|VIN|NO\.?|NOMOR|CHASSIS|CHASIS)\b)+[\s:.\-\/]*/, '');
+    t = t.replace(/\(.*?\)/g, ' ');
+    var tok = t.replace(/[^A-Z0-9]/g, '');
+    if (tok.length < 9) return '';
+    var angka = (tok.match(/\d/g) || []).length, huruf = (tok.match(/[A-Z]/g) || []).length;
+    if (angka < 2 || huruf < 2) return '';
+    return rapikRangka(tok);
+  }
+  function cariRangka(R) {
+    var v = ambilLabel(R, /(?:NO(?:MOR|\.)?\s*)?(?:RANGKA|CHASSIS|CHASIS|NO\.?\s*RANGKA)/, { ok: okRangka, tolak: /MESIN|ENGINE/ });
+    if (v) return v;
+    var semua = R.map(function (r) { return r.teks; }).join(' ');
+    var kand = semua.replace(/[^A-Z0-9 ]/g, ' ').split(/\s+/).filter(function (s) { return (s.length === 17 || (/^MH/.test(s) && s.length >= 15 && s.length <= 19)) && /\d/.test(s) && /[A-Z]/.test(s); });
+    return kand.length ? rapikRangka(kand[0]) : '';
+  }
+
+  /* ---------- tahun ---------- */
+  function okTahun(v) {
+    var t = String(v || '').replace(/O/g, '0').replace(/[IL]/g, '1');
+    var m = t.match(/\b(19[89]\d|20[0-4]\d)\b/);
+    if (!m) return '';
+    var y = +m[1], now = new Date().getFullYear();
+    return (y >= 1980 && y <= now + 1) ? String(y) : '';
+  }
+  function cariTahun(R) {
+    var v = ambilLabel(R, /(?:TAHUN|THN\.?)\s*(?:PEMBUATAN|BUAT|KENDARAAN|UNIT|MOBIL|MOTOR)/, { ok: okTahun, tolak: /REGISTRASI/ });
+    if (v) return v;
+    return ambilLabel(R, /\b(?:TAHUN|THN\.?)\b/, { ok: okTahun, tolak: /REGISTRASI|BERLAKU|PAJAK|PINJAMAN|TENOR/ });
+  }
+
+  /* ---------- lain-lain STNK ---------- */
+  function cariMesin(R) {
+    return ambilLabel(R, /(?:NO(?:MOR|\.)?\s*)?MESIN/, { ok: function (v) {
+      var t = String(v || '').replace(/^[\s:.\-\/]+/, '').replace(/[^A-Z0-9]/g, '');
+      return (t.length >= 5 && t.length <= 18 && /\d/.test(t)) ? t : '';
+    }, tolak: /ISI\s*SILINDER/ });
+  }
+  function cariNopol(R) {
+    return ambilLabel(R, /(?:NO(?:MOR|\.)?\s*REGISTRASI|NO(?:MOR|\.)?\s*POL(?:ISI)?|NOPOL)/, { ok: function (v) {
+      var m = String(v || '').match(/\b([A-Z]{1,2})\s?(\d{1,4})\s?([A-Z]{1,3})\b/);
+      return m ? (m[1] + ' ' + m[2] + ' ' + m[3]) : '';
+    } });
+  }
+  function teksSaja(v) { var t = String(v || '').replace(/^[\s:.\-\/]+/, '').trim(); return t.length >= 2 ? t : ''; }
+  function cariBerlaku(R) {
+    return ambilLabel(R, /(?:BERLAKU\s*(?:SAMPAI|S\/D|HINGGA)?|MASA\s*BERLAKU)/, { ok: function (v) {
+      var m = String(v || '').match(/(\d{1,2}\s*[-\/. ]\s*\d{1,2}\s*[-\/. ]\s*\d{2,4})/) ||
+              String(v || '').match(/(\d{1,2}\s*[A-Z]{3,9}\s*\d{4})/);
+      return m ? m[1].replace(/\s+/g, '') : '';
+    } });
+  }
+
+  function stnk(baris) {
+    var R = siapkan(baris);
+    var o = {
+      nopol: cariNopol(R),
+      nama: ambilLabel(R, /NAMA(?:\s*PEMILIK)?/, { ok: teksSaja, tolak: /NAMA\s*(?:BANK|FINCO|DEALER)/ }),
+      merk: ambilLabel(R, /\b(?:MERK|MEREK)\b/, { ok: teksSaja }),
+      tipe: ambilLabel(R, /\b(?:TYPE|TIPE)\b/, { ok: teksSaja }),
+      tahun: cariTahun(R) || tahunTunggal(R),
+      rangka: cariRangka(R),
+      mesin: cariMesin(R),
+      berlaku: cariBerlaku(R)
+    };
+    return o;
+  }
+  function stnkLengkap(o) { return !!(o && o.rangka && o.rangka.length >= 9 && o.tahun); }
+
+  /* ---------- appraiser ---------- */
+  function daftarRupiah(s) {
+    var out = [], re = /(\d{1,3}(?:[.,\s]\d{3})+|\d{6,})(?:[.,]\d{1,2}(?!\d))?/g, m;
+    var teks = String(s || '').replace(/(\d)\s+(\d{3})(?!\d)/g, '$1.$2');
+    while ((m = re.exec(teks)) !== null) {
+      var n = parseInt(m[1].replace(/[^0-9]/g, ''), 10);
+      if (n >= 100000) out.push(n);
+    }
+    return out;
+  }
+  function okRp(v) { var l = daftarRupiah(v); return l.length ? String(l[0]) : ''; }
+
+  /* cadangan: baris yang hanya berisi satu tahun (bukan tanggal / masa berlaku) */
+  function tahunTunggal(R) {
+    for (var i = 0; i < R.length; i++) {
+      var tk = R[i].teks;
+      if (/REGISTRASI|BERLAKU|PAJAK|NIK|RANGKA|MESIN|NOMOR|JANUARI|FEBRUARI|MARET|APRIL|MEI|JUNI|JULI|AGUSTUS|SEPTEMBER|OKTOBER|NOVEMBER|DESEMBER/.test(tk)) continue;
+      if ((tk.match(/\d+/g) || []).length === 1) { var y = okTahun(tk); if (y) return y; }
+    }
+    return '';
+  }
+  /* angka rupiah yang letaknya paling dekat dengan sel berlabel `re`: di kanan (satu baris) atau tepat di bawah (kolom sama).
+     Dipakai untuk kotak tabel "Pelunasan" yang labelnya di atas angka, bersebelahan dengan kotak "OTR / DP". */
+  function nilaiDekat(baris, re) {
+    var sel = [], best = '', bd = 1e9;
+    (baris || []).forEach(function (r) { (Array.isArray(r) ? r : [r]).forEach(function (c) { if (c && c.w != null) sel.push(c); }); });
+    sel.forEach(function (L) {
+      if (!re.test(N(L.t))) return;
+      var lcx = L.x + L.w / 2, lcy = L.y + L.h / 2;
+      sel.forEach(function (V) {
+        if (V === L) return;
+        var rp = daftarRupiah(V.t); if (!rp.length) return;
+        var dy = V.y + V.h / 2 - lcy, d;
+        if (Math.abs(dy) < L.h * 0.6 && V.x >= L.x + L.w * 0.5) d = V.x - (L.x + L.w);
+        else if (dy > 0 && dy < L.h * 6 && Math.abs(V.x + V.w / 2 - lcx) < (L.w + V.w) / 2 + L.h) d = dy * 3;
+        else return;
+        if (d < bd) { bd = d; best = String(rp[0]); }
+      });
+    });
+    return best;
+  }
+
+  function appraisal(baris) {
+    var R = siapkan(baris);
+    var o = {
+      hargaPasar: ambilLabel(R, /(?:TAKSIRAN|TAKSASI|ESTIMASI|NILAI)?\s*HARGA\s*(?:PASAR|WAJAR|TAKSIRAN)|TAKSIRAN\s*HARGA|TAKSASI|NILAI\s*PASAR/, { ok: okRp }),
+      maksPinjaman: ambilLabel(R, /MAKS(?:IMAL|IMUM)?\.?\s*(?:PINJAMAN|PLAFON|PLAFOND|KREDIT|PEMBIAYAAN)|PLAFON|PLAFOND/, { ok: okRp }),
+      pinjamanDimohon: ambilLabel(R, /PINJAMAN\s*(?:YANG\s*)?(?:DIMOHON(?:KAN)?|DIAJUKAN)|DIMOHON(?:KAN)?|(?:JUMLAH|NILAI|TOTAL)\s*PINJAMAN|PENGAJUAN\s*PINJAMAN/, { ok: okRp, tolak: /MAKS/ }),
+      ltv: ambilLabel(R, /\bLTV\b/, { ok: function (v) { var m = String(v || '').match(/(\d{1,3}(?:[.,]\d{1,2})?)\s*%/); return m ? m[1] + '%' : ''; } }),
+      rangka: ambilLabel(R, /(?:NO(?:MOR|\.)?\s*)?(?:RANGKA|CHASSIS|CHASIS)/, { ok: okRangka, tolak: /MESIN|ENGINE/ }),
+      tahun: cariTahun(R)
+    };
+    /* "Pelunasan" (dealer) dipakai sebagai pinjaman kalau tidak ada label "pinjaman dimohon" */
+    o.pelunasan = nilaiDekat(baris, /PELUNASAN/) || ambilLabel(R, /PELUNASAN/, { ok: function (v) { var l = daftarRupiah(v); return l.length ? String(l[l.length - 1]) : ''; } });
+    if (!o.pinjamanDimohon) o.pinjamanDimohon = o.pelunasan;
+    return o;
+  }
+  function appraisalLengkap(o) { return !!(o && o.hargaPasar && o.pinjamanDimohon); }
+
+  /* gabung beberapa halaman: nilai pertama yang terisi menang */
+  function gabung(daftar) {
+    var out = {};
+    daftar.forEach(function (d) { for (var k in d) if (d[k] && !out[k]) out[k] = d[k]; });
+    return out;
+  }
+
+  global.CmdOcrParse = { stnk: stnk, stnkLengkap: stnkLengkap, appraisal: appraisal, appraisalLengkap: appraisalLengkap, gabung: gabung, daftarRupiah: daftarRupiah, siapkan: siapkan };
+})(typeof window !== 'undefined' ? window : globalThis);
+
 </script>
 </body>
 </html>
