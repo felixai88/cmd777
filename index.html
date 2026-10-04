@@ -20,10 +20,10 @@
   if (window.google && google.script && google.script.run) return;   /* sedang jalan di Apps Script */
 
   /* Link Web App Apps Script (deploy yang ujungnya /exec) */
-  var API_URL = "https://script.google.com/macros/s/AKfycbzhwFjxQ6WszXdNcm-ThTIk4_W0CAOA51qYF6h_ym27OZP5YZ0PGxUCfsC06E0dSLYkoA/exec";
+  var API_URL = "https://script.google.com/macros/s/AKfycbyrqYf-VIPAaR8pFIUiYeR3WYq3dq_3JS1OCTLVciEcwp9hC-MoOXe293YN3LVz1PqF5w/exec";
 
   /* fungsi server yang boleh dipanggil — harus sama dengan daftar di Api.gs */
-  var FUNGSI = ["loginUser", "cekSesi", "logoutUser", "gantiPassword", "daftarUser", "tambahUser", "resetPasswordUser", "ubahStatusUser", "fetchSheetCSV", "fetchJualanCSV", "fetchTarikanCSV", "fetchLapMeetingCSV", "fetchTarikanAllCSV", "fetchStockTahunan", "bacaSheetAman", "getPeriodeMrp", "getPeriodeMrpSorum", "getMrpSorumBekas", "getMatriksRangka", "bacaStnk", "bacaAppraisal", "catatVerifikasi", "fetchHargaAyda", "getDataPembiayaan", "bacaTacDealer", "ajukanPengajuanHarga", "ambilBerkasDrive", "fetchKelengkapanEstimasi", "fetchPengajuanHarga", "simpanBastLengkap", "simpanGabunganEstimasi", "simpanKeteranganEstimasi", "simpanMemoHarga", "simpanMemoMassal", "unggahBerkasEstimasi", "getDaftarCabang", "fetchKpiCmoList", "fetchKpiCmoDetail", "simpanAktivitas", "simpanProspek", "updateStatusProspek", "fetchAktivitasList", "fetchProspekList"];
+  var FUNGSI = ["loginUser", "cekSesi", "logoutUser", "gantiPassword", "daftarUser", "tambahUser", "resetPasswordUser", "ubahStatusUser", "fetchSheetCSV", "fetchJualanCSV", "fetchTarikanCSV", "fetchLapMeetingCSV", "fetchTarikanAllCSV", "fetchStockTahunan", "bacaSheetAman", "getPeriodeMrp", "getPeriodeMrpSorum", "getMrpSorumBekas", "getMatriksRangka", "bacaStnk", "bacaAppraisal", "catatVerifikasi", "fetchHargaAyda", "getDataPembiayaan", "bacaTacDealer", "ajukanPengajuanHarga", "ambilBerkasDrive", "fetchKelengkapanEstimasi", "fetchPengajuanHarga", "simpanBastLengkap", "simpanGabunganEstimasi", "simpanKeteranganEstimasi", "simpanMemoHarga", "simpanMemoMassal", "unggahBerkasEstimasi", "getDaftarCabang", "fetchKpiCmoList", "fetchKpiCmoDetail", "simpanAktivitas", "simpanProspek", "updateStatusProspek", "fetchAktivitasList", "fetchProspekList", "fetchKpiCmoRekap"];
 
   function panggil(nama, args, ok, gagal, obj) {
     fetch(API_URL, {
@@ -2181,7 +2181,6 @@ body.cmd .geser-hint svg { stroke: #dcc7b5; }
   .msheet-tema button { flex: 1 1 0; background: #f5f8fb; color: #43556d; border-radius: 12px; font-size: 12px; min-height: 44px; }
   .msheet-tema button.active { background: #0f2540; color: #fff; }
 
-  body.cmo .msheet, body.cmo .msheet-bd { display: none !important; }
 }
 
 /* --- CMO / CMC: pindah kalkulator lewat menu bawah (ala aplikasi), di HP maupun laptop --- */
@@ -3469,7 +3468,8 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     var r = google.script.run
       .withSuccessHandler(function(res){ cat.jawaban = res; kcDiagTampil(); ok(res); })
       .withFailureHandler(function(e){ cat.gagal = String(e && e.message ? e.message : e); kcDiagTampil(); gagal(e); });
-    r[nama].apply(r, args);
+    if (typeof r[nama] !== 'function'){ cat.gagal = 'fungsi tidak terdaftar'; gagal(new Error('Fungsi ' + nama + ' belum terdaftar di halaman ini.')); return; }
+    try { r[nama].apply(r, args); } catch (e){ gagal(e); }
   }
   /* panel Diagnosa: versi tampilan + isi permintaan/jawaban server terakhir (token tidak ditampilkan) */
   function kcDiagTeks(){
@@ -3546,7 +3546,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
                : (res && Array.isArray(res.list)) ? res.list
                : (res && Array.isArray(res.data)) ? res.data
                : (res && res.cmos) ? res.cmos : [];
-      KC.list = list;
+      KC.list = list.filter(function(c){ var n = String(typeof c === 'string' ? c : (c.nama || c.cmo || c.CMO || '')).trim().toUpperCase(); return n && n !== 'NAMA CMO'; });
       kcIsiFilter();
       kcStatus('','');
       if (sesudah) sesudah();
@@ -3558,6 +3558,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
 
   /* muat DETAIL KPI untuk CMO yang dipilih */
   function kcMuatDetail(paksa){
+    if (window.kcInputRender) { window.kcInputRender(false); return; }
     if (!paksa && KC.data) { kcRender(); return; }
     if (KC.sedang) return;
     if (typeof google === 'undefined' || !google.script || !google.script.run){
@@ -3569,7 +3570,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     var f = kcFilter();
     if (!f.cmo){
       KC.data = null; kcRender();
-      kcStatus('', KC.list && KC.list.length ? 'Pilih nama CMO untuk menampilkan KPI.' : 'Belum ada CMO yang bisa ditampilkan.');
+      kcStatus('','');
       return;
     }
     var pr = kcDaftarPeriode();
@@ -3600,6 +3601,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
   }
 
   function kcMuat(paksa){
+    if (window.kcInputRender) { window.kcInputRender(!!paksa); return; }
     kcMuatList(function(){ kcMuatDetail(paksa); });
   }
 
@@ -3608,7 +3610,8 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     var sel = kcEl('kcCmo');
     if (sel && KC.list && KC.list.length){
       var lama = sel.value;
-      sel.innerHTML = '<option value="">— pilih CMO —</option>' + KC.list.map(function(c){
+      var cbPilih = (kcEl('kcCabang')||{}).value || '';
+      sel.innerHTML = '<option value="">SEMUA CMO</option>' + KC.list.filter(function(c){ return !cbPilih || (typeof c==='object' && String(c.cabang||c.CABANG||'')===cbPilih); }).map(function(c){
         var nama = typeof c === 'string' ? c : (c.nama || c.cmo || c.CMO || '');
         var cab  = (typeof c === 'object' && (c.cabang || c.CABANG)) ? (c.cabang || c.CABANG) : '';
         return '<option value="'+kcEsc(nama)+'">'+kcEsc(nama)+(cab?' — '+kcEsc(cab):'')+'</option>';
@@ -3627,7 +3630,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     }
     /* placeholder kolom Bulan = bulan berjalan (kosong berarti bulan ini) */
     var bl = kcEl('kcBulan');
-    if (bl){ var sk = new Date(); bl.placeholder = kcNamaBulan(sk.getMonth() + 1, sk.getFullYear()); }
+    if (bl){ var sk = new Date(); bl.placeholder = kcNamaBulan(sk.getMonth() + 1, sk.getFullYear()); if (!bl.value) bl.value = sk.getFullYear() + '-' + ('0' + (sk.getMonth() + 1)).slice(-2); }
   }
 
   function kcHitung(it){
@@ -3636,13 +3639,12 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     var celah = t > 0 ? (r - t) : 0;
     var status='', warna;
     if (t <= 0)             { warna = '#f0b429'; }
-    else if (pct >= 100)    { status='Tercapai'; warna = '#10b981'; }
-    else                    { status='Di Bawah'; warna = '#ef4444'; }
+    else if (pct >= 100)    { status='Tercapai'; warna = '#16a34a'; }
+    else                    { status='Di Bawah'; warna = pct < 30 ? '#ef4444' : (pct < 70 ? '#f97316' : '#eab308'); }
     return { target:t, real:r, pct:pct, celah:celah, status:status, warna:warna };
   }
 
   function kcRender(){
-    if (window.kcInputRender) setTimeout(window.kcInputRender, 0);
     var d = KC.data;
     var namaEl = kcEl('kcNamaCmo');
     if (namaEl) namaEl.innerText = (kcEl('kcCmo')||{}).value || (d && d.cmoAktif) || '-';
@@ -3652,8 +3654,8 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     if (rg) rg.innerHTML = KC_KPI.map(function(k){
       var it = d.ringkas[k.key]; var h = kcHitung(it);
       var pctTeks = h.pct===null ? '&nbsp;' : kcPct(h.pct);
-      var pctBg = h.pct===null ? '#eef2f7' : (h.pct>=100 ? '#e7f5ec' : '#fbe6e6');
-      var pctFg = h.pct===null ? '#94a3b8' : (h.pct>=100 ? '#10b981' : '#e74c3c');
+      var pctBg = '#1f4e79';
+      var pctFg = '#ffffff';
       return '<div class="kc-box">' +
         '<div class="kc-box-head"><span class="kc-box-ico" style="background:'+(KC_WARNA[k.key]||'#64748b')+';">' +
           '<svg viewBox="0 0 24 24" fill="currentColor"><path d="'+k.ico+'"/></svg></span>' +
@@ -3671,7 +3673,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       var celahWarna = h.celah<0 ? '#a32222' : (h.celah>0 ? '#1f7a4d' : '#64748b');
       var pctTeks = h.pct===null ? '' : kcPct(h.pct);
       var barW = h.pct===null ? 8 : Math.min(100, Math.max(3, h.pct));
-      var barC = h.pct===null ? '#3b82f6' : (h.pct>=100 ? '#10b981' : '#ef4444');
+      var barC = h.pct===null ? '#2e75b6' : h.warna;
       var ico = h.status==='Tercapai' ? '<span class="kc-dot" style="background:#10b981;"></span> '
               : (h.status==='Di Bawah' ? '<span class="kc-dot" style="background:#ef4444;"></span> ' : '');
       return '<tr>' +
@@ -3687,6 +3689,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
   }
 
   function kcExcel(){
+    if (window.kcExcelLengkap) { window.kcExcelLengkap(); return; }
     if (!KC.data || typeof XLSX === 'undefined'){ alert('Data belum siap.'); return; }
     var d = KC.data;
     var wb = XLSX.utils.book_new();
@@ -3726,6 +3729,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
   if (document.readyState === 'complete') pasangKait(); else window.addEventListener('load', pasangKait);
 
   function pasangDiag(){
+    if (!/[?&]debug\b/.test(location.search)) return;   /* Diagnosa hanya muncul jika alamat memakai ?debug */
     var st = kcEl('kcStatus'); if (!st || kcEl('kcDiagBox')) return;
     var w = document.createElement('div');
     w.innerHTML = '<div style="margin:-6px 0 10px 2px;font-size:11.5px;"><a href="#" id="kcDiagLink" style="color:#64748b;text-decoration:underline;">Diagnosa</a></div>' +
@@ -3749,7 +3753,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pasang); else pasang();
   window.kcMuatUlang = function(){ KC.data = null; kcMuat(true); };
-  window.kcApi = { filter: kcFilter, periode: kcDaftarPeriode, ambil: kcAmbil, esc: kcEsc, fmt: kcFmt };
+  window.kcApi = { setData: function(o){ KC.data = o ? kcNormalisasi(o) : null; kcRender(); }, filter: kcFilter, periode: kcDaftarPeriode, ambil: kcAmbil, esc: kcEsc, fmt: kcFmt, rp: kcFmtRpRingkas };
 })();
 </script>
 <!-- KONTEN UTAMA APLIKASI -->
@@ -4244,6 +4248,35 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
 #tabKpiCmo table.kci{width:100%;min-width:560px;border-collapse:collapse;font-size:12.5px;}
 #tabKpiCmo table.kci th{background:#345f98;color:#fff;padding:8px 8px;font-size:11px;text-align:left;white-space:nowrap;}
 #tabKpiCmo table.kci td{padding:8px;border-bottom:1px solid #e6ebf1;vertical-align:middle;}
+
+#tabKpiCmo .kci-toggle{cursor:pointer;user-select:none;}
+#tabKpiCmo .kci-toggle span:first-of-type{opacity:.85;font-weight:600;margin-left:6px;}
+#tabKpiCmo .kci-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;margin-bottom:22px;}
+#tabKpiCmo .kci-card{background:#fff;border:1px solid #dfe4ea;border-radius:12px;padding:12px 14px;cursor:pointer;}
+#tabKpiCmo .kci-card.kci-tot{grid-column:1/-1;cursor:default;border-color:#5b9bd5;background:#f4f9ff;}
+#tabKpiCmo .kci-ch{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;}
+#tabKpiCmo .kci-ch small{display:block;color:#64748b;font-size:11px;}
+#tabKpiCmo .kci-pc{color:#fff;font-weight:900;font-size:12.5px;padding:4px 10px;border-radius:12px;}
+#tabKpiCmo .kci-row{display:flex;justify-content:space-between;font-size:12px;color:#475569;margin-top:6px;gap:8px;}
+#tabKpiCmo .kci-bar2{height:6px;background:#eef2f6;border-radius:4px;overflow:hidden;margin-top:3px;}
+#tabKpiCmo .kci-bar2 i{display:block;height:100%;border-radius:4px;}
+#tabKpiCmo .kci-info{padding:16px;text-align:center;color:#64748b;}
+body.dark #tabKpiCmo .kci-card,body.cmd #tabKpiCmo .kci-card{background:#131f36;border-color:#22334f;color:#e2e8f0;}
+body.dark #tabKpiCmo .kci-card.kci-tot,body.cmd #tabKpiCmo .kci-card.kci-tot{background:#17294a;}
+@media (max-width:720px){
+  #tabKpiCmo .controls{display:grid !important;grid-template-columns:1fr 1fr;gap:10px !important;}
+  #tabKpiCmo .controls .field{min-width:0;margin:0;}
+  #tabKpiCmo .controls .field:first-child{grid-column:1/-1;}
+  #tabKpiCmo .controls select,#tabKpiCmo .controls input{width:100%;min-width:0 !important;box-sizing:border-box;}
+  #tabKpiCmo .controls .actions{grid-column:1/-1;margin-left:0 !important;display:flex;gap:8px;}
+  #tabKpiCmo .controls .actions button{flex:1;}
+  #tabKpiCmo .kc-hero{padding:12px 14px;} #tabKpiCmo .kc-hero h2{font-size:14px;}
+  #tabKpiCmo table.kc-det{min-width:0;table-layout:auto;font-size:12px;}
+  #tabKpiCmo table.kc-det th:nth-child(5),#tabKpiCmo table.kc-det td:nth-child(5),
+  #tabKpiCmo table.kc-det th:nth-child(7),#tabKpiCmo table.kc-det td:nth-child(7){display:none;}
+  #tabKpiCmo table.kc-det thead th,#tabKpiCmo table.kc-det tbody td{padding:7px 5px;}
+  #tabKpiCmo .kci-grid{grid-template-columns:1fr;}
+}
 #tabKpiCmo .kci-badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;font-weight:800;color:#fff;background:#64748b;}
 #tabKpiCmo .kci-btn,#kciModal .kci-btn{border:0;border-radius:8px;padding:8px 14px;font-weight:800;font-size:13px;color:#fff;background:#2563eb;cursor:pointer;}
 #kciModal .kci-btn.abu{background:#94a3b8;} #kciModal .kci-btn[disabled]{opacity:.6;cursor:wait;}
@@ -5843,7 +5876,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     <div class="controls" style="gap:14px;">
       <div class="field">
         <label>Nama CMO</label>
-        <select id="kcCmo" style="min-width:220px;"><option value="">— pilih CMO —</option></select>
+        <select id="kcCmo" style="min-width:220px;"><option value="">SEMUA CMO</option></select>
       </div>
       <div class="field">
         <label>Cabang</label>
@@ -5860,7 +5893,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
           <option value="TELESALES">Telesales</option>
         </select>
       </div>
-      <div class="field">
+      <div class="field" style="display:none;">
         <label>Target AC</label>
         <select id="kcTargetAc">
           <option value="">Bulan Ini</option>
@@ -5870,7 +5903,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       </div>
       <div class="field">
         <label>Bulan</label>
-        <input type="text" id="kcBulan" placeholder="Oktober 2026" style="min-width:150px;">
+        <input type="month" id="kcBulan" style="min-width:150px;">
       </div>
       <div class="actions" style="margin-left:auto;gap:8px;">
         <button type="button" id="kcReload" class="btn-excel">Muat Ulang</button>
@@ -5880,22 +5913,10 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     </div>
   </div>
 
-  <div id="kcInput" style="display:none;">
-    <div class="kc-bar">PROSPEK &amp; AKTIVITAS</div>
-    <div class="kc-wrap" style="padding:12px;">
-      <div id="kciAksi" style="display:none;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
-        <button type="button" class="kci-btn" id="kciBtnAkt">+ Input Aktivitas</button>
-        <button type="button" class="kci-btn" id="kciBtnPro" style="background:#0f766e;">+ Input Prospek</button>
-      </div>
-      <div style="overflow-x:auto;">
-        <table class="kci"><thead><tr><th>Tanggal</th><th>Konsumen</th><th>RO/New</th><th>Nilai</th><th>Status</th><th>Aksi</th></tr></thead>
-        <tbody id="kciIsi"></tbody></table>
-      </div>
-    </div>
-  </div>
-
-  <div class="kc-namaCmo"><b>NAMA CMO :</b><span id="kcNamaCmo">-</span></div>
   <div id="kcStatus" class="status" style="margin-bottom:12px;"></div>
+  <div id="kcRekap" style="display:none;"></div>
+  <div id="kcSingle">
+  <div class="kc-namaCmo"><b id="kcLabel">NAMA CMO :</b><span id="kcNamaCmo">-</span></div>
 
   <div class="kc-bar">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 20h18M6 16V9M12 16V4M18 16v-6"/></svg>
@@ -5916,56 +5937,235 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       <tbody id="kcDetailIsi"></tbody>
     </table>
   </div>
+  </div>
+
+  <div id="kcInput" style="display:none;">
+    <div id="kciAksi" style="display:none;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+      <button type="button" class="kci-btn" id="kciBtnAkt">+ Input Aktivitas</button>
+      <button type="button" class="kci-btn" id="kciBtnPro" style="background:#0f766e;">+ Input Prospek</button>
+    </div>
+    <div class="kc-bar kci-toggle" data-t="kciAktWrap">RINCIAN AKTIVITAS <span id="kciAktN"></span><span class="kci-pan" style="margin-left:auto;">&#9662;</span></div>
+    <div class="kc-wrap" id="kciAktWrap" style="display:none;">
+      <table class="kci"><thead><tr><th>Waktu</th><th>CMO</th><th>Kegiatan</th><th>Keterangan</th><th>Foto</th></tr></thead><tbody id="kciAktIsi"></tbody></table>
+    </div>
+    <div class="kc-bar kci-toggle" data-t="kciProWrap">RINCIAN PROSPEK <span id="kciProN"></span><span class="kci-pan" style="margin-left:auto;">&#9662;</span></div>
+    <div class="kc-wrap" id="kciProWrap" style="display:none;">
+      <table class="kci"><thead><tr><th>Tanggal</th><th>CMO</th><th>Konsumen</th><th>RO/New</th><th>Nilai</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="kciIsi"></tbody></table>
+    </div>
+  </div>
 
 </div>
 <!-- ==================== AKHIR TAB: KPI CMO ==================== -->
+<style>
+#tabKpiCmo .kc-bar:not(.kci-toggle){justify-content:center;background:#2e75b6;font-size:13px;}
+#tabKpiCmo .kc-grid{background:#fff;gap:1px;}
+#tabKpiCmo .kc-box{background:#1f4e79;border:0;}
+#tabKpiCmo .kc-box-head{background:#1f4e79;color:#fff;border:0;justify-content:center;text-align:center;min-height:44px;}
+#tabKpiCmo .kc-box-head .kc-box-nama{color:#fff;text-align:center;}
+#tabKpiCmo .kc-box-body,#tabKpiCmo .kc-box-body.kc-rp{flex-direction:column;background:#dbe5f1;}
+#tabKpiCmo .kc-box-real{font-size:28px;color:#1f3a5f;min-height:56px;}
+#tabKpiCmo .kc-box-body.kc-rp .kc-box-real{font-size:17px;}
+#tabKpiCmo .kc-box-target,#tabKpiCmo .kc-box-body.kc-rp .kc-box-target{flex:0 0 auto;background:#fff;color:#1f3a5f;font-style:italic;font-weight:800;border:0;border-top:1px solid #c5d3e6;font-size:13px;padding:5px 4px;}
+#tabKpiCmo .kc-box-pct{background:#1f4e79 !important;color:#fff !important;}
+#tabKpiCmo table.kc-det thead th{background:#1f4e79;border-right:1px solid #2f6aa3;}
+#tabKpiCmo table.kc-det tbody tr:nth-child(even) td{background:#dde8f5;}
+#tabKpiCmo table.kc-det tbody tr:nth-child(odd) td{background:#fff;}
+#tabKpiCmo table.kc-det tbody td.kc-td-pct{background:inherit;}
+#tabKpiCmo .kc-barProg{background:repeating-linear-gradient(45deg,#e2e8f0,#e2e8f0 3px,#f1f5f9 3px,#f1f5f9 6px);}
+#tabKpiCmo table.kci-rk{min-width:760px;}
+#tabKpiCmo table.kci-rk th{background:#1f4e79;text-align:center;}
+#tabKpiCmo table.kci-rk td{text-align:center;white-space:nowrap;}
+#tabKpiCmo table.kci-rk td small{color:#64748b;font-weight:400;}
+#tabKpiCmo table.kci-rk td:first-child{text-align:left;position:sticky;left:0;background:#fff;min-width:120px;white-space:normal;}
+#tabKpiCmo table.kci-rk tbody tr{cursor:pointer;} #tabKpiCmo table.kci-rk tbody tr:hover td{background:#eaf2fb;}
+#tabKpiCmo .kci-pc{color:#fff;font-weight:900;font-size:12.5px;padding:3px 9px;border-radius:12px;display:inline-block;}
+@media (max-width:720px){ #tabKpiCmo .kc-box-real{font-size:22px;min-height:46px;} }
+</style>
+
 <div id="kciModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(15,37,64,.55);align-items:center;justify-content:center;padding:12px;">
   <div id="kciKotak" style="background:#fff;color:#0f2540;border-radius:12px;padding:18px;width:100%;max-width:420px;max-height:90vh;overflow:auto;"></div>
 </div>
 <script>
-/* ===== KPI CMO: input aktivitas, input prospek, ubah status prospek (1x) ===== */
+/* ===== KPI CMO: rekap semua CMO, rincian (hide/unhide), input, ubah status 1x, Excel lengkap ===== */
 (function(){
   'use strict';
-  var K = { list: [] };
+  var K = { seq: 0, pro: [], base: null };
+  var KPI6 = [['followUp','Follow Up'],['kanvassing','Kanvassing'],['prospek','Prospek'],['survey','Survei'],['approve','Disetujui'],['pencairan','Pencairan']];
+  var FINAL = ['REJECT','APPROVE'];
+  var WARNA = { APPROVE:'#10b981', REJECT:'#ef4444', SURVEY:'#3b82f6', PENDING:'#f59e0b' };
   function $(i){ return document.getElementById(i); }
   function A(){ return window.kcApi; }
   function esc(x){ return A().esc(x); }
-  function rolenya(){ try { return String((currentUser && currentUser.role) || '').toUpperCase(); } catch(e){ return ''; } }
+  function user(){ try { return currentUser || {}; } catch(e){ return {}; } }
+  function role(){ return String(user().role || '').toUpperCase(); }
+  function bersih(t){ return String(t == null ? '' : t).replace(/\s+/g,' ').trim().toUpperCase(); }
   function tok(){ try { return sesiAmbil(); } catch(e){ return ''; } }
   function run(fn, arg, ok, err){ A().ambil(fn, [tok(), arg], ok, err); }
   function pesanErr(e){ return (e && e.message) ? e.message : String(e); }
+  function per(pr){ var p = pr.list[0]; return ('0'+p.m).slice(-2) + '/' + p.y; }
   function buka(html){ $('kciKotak').innerHTML = html; $('kciModal').style.display = 'flex'; }
   function tutup(){ $('kciModal').style.display = 'none'; }
   function psn(t, ok){ var el = $('kciPesan'); if (el){ el.style.color = ok ? '#047857' : '#b91c1c'; el.textContent = t || ''; } }
   function sibuk(b){ var t = $('kciSimpan'); if (t) t.disabled = !!b; }
   function tglIni(){ var d = new Date(); return d.getFullYear() + '-' + ('0'+(d.getMonth()+1)).slice(-2) + '-' + ('0'+d.getDate()).slice(-2); }
   function dmy(iso){ var a = String(iso||'').split('-'); return a.length === 3 ? a[2]+'/'+a[1]+'/'+a[0] : ''; }
-  var WARNA = { APPROVE:'#10b981', REJECT:'#ef4444', SURVEY:'#3b82f6', PENDING:'#f59e0b' };
+  function kosong(id, n, teks, merah){ $(id).innerHTML = '<tr><td colspan="' + n + '" style="text-align:center;color:' + (merah ? '#b91c1c' : '#94a3b8') + ';">' + esc(teks) + '</td></tr>'; }
 
-  function muat(){
-    if (!A()) return;
-    var wrap = $('kcInput'); if (!wrap) return;
-    wrap.style.display = '';
-    $('kciAksi').style.display = rolenya() === 'CMO' ? 'flex' : 'none';
-    var f = A().filter(), pr = A().periode(), box = $('kciIsi');
-    if (!f.cmo){ box.innerHTML = '<tr><td colspan="6" style="color:#94a3b8;text-align:center;">Pilih nama CMO untuk melihat prospek.</td></tr>'; return; }
-    var filter = { cmo: f.cmo };
-    if (pr.list && pr.list.length === 1) filter.periode = ('0'+pr.list[0].m).slice(-2) + '/' + pr.list[0].y;
-    run('fetchProspekList', filter, function(r){
-      if (!r || r.ok === false){ box.innerHTML = '<tr><td colspan="6" style="color:#b91c1c;">' + esc((r && r.error) || 'Gagal memuat prospek') + '</td></tr>'; return; }
-      K.list = r.list || [];
-      if (!K.list.length){ box.innerHTML = '<tr><td colspan="6" style="color:#94a3b8;text-align:center;">Belum ada prospek pada periode ini.</td></tr>'; return; }
-      box.innerHTML = K.list.map(function(x, i){
-        var t = String(x.tahap || '').toUpperCase();
-        var aksi = x.terkunci ? '<span title="' + esc((x.dieditOleh||'') + ' ' + (x.tanggalEdit||'')) + '" style="color:#64748b;">&#128274; Terkunci</span>'
-                              : '<button type="button" class="kci-btn" data-i="' + i + '">Ubah status</button>';
-        return '<tr><td>' + esc(x.tanggal) + '</td><td><b>' + esc(x.namaKonsumen) + '</b><br><small style="color:#64748b;">' + esc(x.noTelp) + '</small></td><td>' + esc(x.roNew) +
-               '</td><td>' + A().fmt(x.nilai, true) + '</td><td><span class="kci-badge" style="background:' + (WARNA[t]||'#64748b') + ';" title="' + esc(x.catatan) + '">' + esc(t) + '</span></td><td>' + aksi + '</td></tr>';
-      }).join('');
-    }, function(e){ box.innerHTML = '<tr><td colspan="6" style="color:#b91c1c;">' + esc(pesanErr(e)) + '</td></tr>'; });
+  /* ---------- hitung & saring ---------- */
+  function nol(){ return { followUp:0, kanvassing:0, prospek:0, survey:0, reject:0, pending:0, approve:0, pencairan:0 }; }
+  function jumlah(rows){ var n = nol(), t = nol(); rows.forEach(function(r){ Object.keys(n).forEach(function(k){ n[k] += +((r.nilai||{})[k]) || 0; t[k] += +((r.target||{})[k]) || 0; }); }); return { nilai:n, target:t }; }
+  function pctRata(n, t){
+    var a = []; KPI6.forEach(function(k){ var tg = +t[k[0]] || 0; if (tg > 0) a.push(Math.min(100, (+n[k[0]] || 0) / tg * 100)); });
+    return a.length ? a.reduce(function(x, y){ return x + y; }, 0) / a.length : null;
+  }
+  function warna(p){ return p === null ? '#94a3b8' : (p >= 100 ? '#16a34a' : (p >= 70 ? '#eab308' : (p >= 30 ? '#f97316' : '#ef4444'))); }
+  function pilih(rows, f){ return rows.filter(function(r){ return (!f.cabang || r.cabang === f.cabang) && (!f.cmo || bersih(r.cmo) === bersih(f.cmo)); }); }
+  function namaCab(k){ var d = window.CABANG_SHEET || []; for (var i = 0; i < d.length; i++){ if (String(d[i].kode || '').toUpperCase().trim() === k) return String(d[i].nama || '').toUpperCase().trim(); } return ''; }
+  function labelCab(k){ var n = namaCab(k); return (n && n !== k) ? k + ' — ' + n : k; }
+
+  /* dropdown Cabang (dari sheet CABANG, dibatasi sesuai role) & CMO (dari data) */
+  function isiFilter(rows){
+    var cs = $('kcCabang'), ms = $('kcCmo'); if (!cs || !ms) return;
+    var r = role(), ucab = String(user().cabang || '').toUpperCase(), set = {};
+    (window.CABANG_SHEET || []).forEach(function(c){
+      var k = String(c.kode || '').toUpperCase().trim(); if (!k) return;
+      if (r === 'HO') set[k] = 1;
+      else if (r === 'AREA'){ try { if (AREA_MAP[ucab] && AREA_MAP[ucab].indexOf(k) >= 0) set[k] = 1; } catch(e){} }
+    });
+    rows.forEach(function(x){ if (x.cabang) set[x.cabang] = 1; });
+    var kode = Object.keys(set).sort(), lamaC = cs.value;
+    cs.innerHTML = '<option value="">Semua Cabang</option>' + kode.map(function(k){ return '<option value="' + esc(k) + '">' + esc(labelCab(k)) + '</option>'; }).join('');
+    cs.value = kode.indexOf(lamaC) >= 0 ? lamaC : '';
+    var fc = cs.value, lamaM = ms.value;
+    var nm = rows.filter(function(x){ return !fc || x.cabang === fc; }).map(function(x){ return x.cmo; }).sort();
+    ms.innerHTML = '<option value="">SEMUA CMO</option>' + nm.map(function(n){ return '<option value="' + esc(n) + '">' + esc(n) + '</option>'; }).join('');
+    ms.value = nm.indexOf(lamaM) >= 0 ? lamaM : ((r === 'CMO' && nm.length === 1) ? nm[0] : '');
+    var bl = $('kcBulan'); if (bl && !bl.value){ var d = new Date(); bl.value = d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2); }
+  }
+
+  function sel2(c, n, t, key, rp){
+    var v = rp ? A().rp(n[key]) : n[key], tg = +t[key] || 0;
+    return '<td>' + v + (tg > 0 ? '<small> / ' + (rp ? A().rp(tg) : tg) + '</small>' : '') + '</td>';
+  }
+  function render(rows, pr){
+    var f = A().filter(), sel = pilih(rows, f), j = jumlah(sel);
+    var judul = f.cmo ? f.cmo : (f.cabang ? labelCab(f.cabang) : (role() === 'HO' ? 'SEMUA CABANG' : (role() === 'AREA' ? 'AREA ' + String(user().cabang || '') : labelCab(String(user().cabang || '').toUpperCase()))));
+    var lbl = $('kcLabel'); if (lbl) lbl.textContent = f.cmo ? 'NAMA CMO :' : 'CAKUPAN :';
+    A().setData({ ok: true, cmo: judul, bulan: pr.label, nilai: j.nilai, target: j.target });
+    var box = $('kcRekap');
+    if (f.cmo){ box.style.display = 'none'; return; }
+    box.style.display = '';
+    if (!sel.length){ box.innerHTML = '<div class="kci-info">Belum ada data CMO pada periode ini.</div>'; return; }
+    var cabSet = {}; sel.forEach(function(x){ cabSet[x.cabang || '-'] = 1; });
+    var modeCab = !f.cabang && Object.keys(cabSet).length > 1, grup = {};
+    sel.forEach(function(x){ var k = modeCab ? (x.cabang || '-') : x.cmo; (grup[k] = grup[k] || []).push(x); });
+    var baris = Object.keys(grup).map(function(k){ var g = jumlah(grup[k]); return { k: k, nama: modeCab ? labelCab(k) : k, sub: modeCab ? grup[k].length + ' CMO' : (grup[k][0].cabang || ''), n: g.nilai, t: g.target, p: pctRata(g.nilai, g.target) }; });
+    baris.sort(function(a, b){ return (b.p === null ? -1 : b.p) - (a.p === null ? -1 : a.p) || (a.nama < b.nama ? -1 : 1); });
+    box.innerHTML = '<div class="kc-bar">' + (modeCab ? 'PERFORMA PER CABANG' : 'PERFORMA PER CMO') + '</div><div class="kc-wrap"><table class="kci kci-rk"><thead><tr><th>' + (modeCab ? 'Cabang' : 'CMO') +
+      '</th><th>Follow Up</th><th>Kanvass.</th><th>Prospek</th><th>Survei</th><th>Tolak</th><th>Tunda</th><th>Setuju</th><th>Pencairan</th><th>Capaian</th></tr></thead><tbody>' +
+      baris.map(function(x){
+        return '<tr data-k="' + esc(x.k) + '" data-m="' + (modeCab ? 'cab' : 'cmo') + '"><td><b>' + esc(x.nama) + '</b><br><small>' + esc(x.sub) + '</small></td>' +
+          sel2(0, x.n, x.t, 'followUp') + sel2(0, x.n, x.t, 'kanvassing') + sel2(0, x.n, x.t, 'prospek') + sel2(0, x.n, x.t, 'survey') +
+          '<td>' + x.n.reject + '</td><td>' + x.n.pending + '</td>' + sel2(0, x.n, x.t, 'approve') + sel2(0, x.n, x.t, 'pencairan', true) +
+          '<td><span class="kci-pc" style="background:' + warna(x.p) + ';">' + (x.p === null ? '-' : Math.round(x.p) + '%') + '</span></td></tr>';
+      }).join('') + '</tbody></table></div><div style="font-size:11.5px;color:#64748b;margin:-14px 0 16px 4px;">Ketuk satu baris untuk melihat detailnya.</div>';
+  }
+
+  /* ---------- muat data rekap (sekali per bulan) + rincian ---------- */
+  function muat(paksa){
+    if (!A() || !$('kcInput')) return;
+    var pr = A().periode(); if (pr.error) return;
+    $('kcInput').style.display = '';
+    $('kciAksi').style.display = role() === 'CMO' ? 'flex' : 'none';
+    var seq = ++K.seq, p = per(pr);
+    function lanjut(rows){ if (seq !== K.seq) return; isiFilter(rows); render(rows, pr); muatDaftar(seq); }
+    if (!paksa && K.base && K.base.per === p && Date.now() - K.base.ts < 30000){ lanjut(K.base.rows); return; }
+    $('kcRekap').style.display = ''; $('kcRekap').innerHTML = '<div class="kci-info">Memuat data KPI...</div>';
+    function gagal(m){ if (seq !== K.seq) return; $('kcRekap').style.display = '';
+      $('kcRekap').innerHTML = '<div class="kci-info" style="color:#b91c1c;">' + esc(m) + (/tidak diizinkan|belum ada/i.test(m) ? '<br><small>Pasang KpiRekap.gs, tambahkan fetchKpiCmoRekap ke Api.gs, lalu deploy versi baru.</small>' : '') + '</div>'; }
+    run('fetchKpiCmoRekap', { periode: p }, function(r){
+      if (!r || r.ok === false){ gagal((r && r.error) || 'Gagal memuat rekap'); return; }
+      K.base = { per: p, rows: r.rows || [], ts: Date.now() }; lanjut(K.base.rows);
+    }, function(e){ gagal(pesanErr(e)); });
   }
   window.kcInputRender = muat;
 
+  function muatDaftar(seq){
+    var f = A().filter(), pr = A().periode(), flt = { periode: per(pr) };
+    if (f.cmo) flt.cmo = f.cmo; if (f.cabang) flt.cabang = f.cabang;
+    run('fetchAktivitasList', flt, function(r){
+      if (seq !== K.seq) return;
+      if (!r || r.ok === false){ kosong('kciAktIsi', 5, (r && r.error) || 'Gagal memuat aktivitas', true); return; }
+      var l = r.list || []; $('kciAktN').textContent = '(' + l.length + ')';
+      if (!l.length){ kosong('kciAktIsi', 5, 'Belum ada aktivitas pada periode ini.'); return; }
+      $('kciAktIsi').innerHTML = l.slice(0, 300).map(function(x){
+        return '<tr><td style="white-space:nowrap;">' + esc(x.waktu) + '</td><td>' + esc(x.cmo) + '</td><td>' + esc(x.kegiatan) + '</td><td>' + esc(x.keterangan) + '</td><td>' +
+               (x.foto ? '<a href="' + esc(x.foto) + '" target="_blank" rel="noopener">Lihat</a>' : '-') + '</td></tr>';
+      }).join('');
+    }, function(e){ if (seq === K.seq) kosong('kciAktIsi', 5, pesanErr(e), true); });
+    run('fetchProspekList', flt, function(r){
+      if (seq !== K.seq) return;
+      if (!r || r.ok === false){ kosong('kciIsi', 7, (r && r.error) || 'Gagal memuat prospek', true); return; }
+      var l = (r.list || []).filter(function(x){ return !f.prospek || bersih(x.sumberOrder) === bersih(f.prospek); });
+      K.pro = l; $('kciProN').textContent = '(' + l.length + ')';
+      if (!l.length){ kosong('kciIsi', 7, 'Belum ada prospek pada periode ini.'); return; }
+      var saya = bersih(user().nama || user().username);
+      $('kciIsi').innerHTML = l.map(function(x, i){
+        var t = bersih(x.tahap), final = FINAL.indexOf(t) >= 0 || x.terkunci;
+        var tombol = '<button type="button" class="kci-btn" data-i="' + i + '">' + (final ? 'Ubah (HO)' : 'Ubah status') + '</button>';
+        var aksi = role() === 'HO' ? tombol
+                 : final ? '<span style="color:#64748b;" title="' + esc((x.dieditOleh || '') + ' ' + (x.tanggalEdit || '')) + '">&#128274; Final</span>'
+                 : (role() === 'CMO' && bersih(x.cmo) === saya ? tombol : '<span style="color:#94a3b8;">-</span>');
+        return '<tr><td style="white-space:nowrap;">' + esc(x.tanggal) + '</td><td>' + esc(x.cmo) + '</td><td><b>' + esc(x.namaKonsumen) + '</b><br><small style="color:#64748b;">' + esc(x.noTelp) + '</small></td><td>' + esc(x.roNew) +
+               '</td><td>' + A().fmt(x.nilai, true) + '</td><td><span class="kci-badge" style="background:' + (WARNA[t] || '#64748b') + ';" title="' + esc(x.catatan) + '">' + esc(t) + '</span>' +
+               (x.catatan ? '<br><small style="color:#64748b;">' + esc(x.catatan) + '</small>' : '') + '</td><td>' + aksi + '</td></tr>';
+      }).join('');
+    }, function(e){ if (seq === K.seq) kosong('kciIsi', 7, pesanErr(e), true); });
+  }
+
+  /* ---------- Excel lengkap sesuai filter ---------- */
+  window.kcExcelLengkap = function(){
+    if (typeof XLSX === 'undefined'){ alert('Library Excel belum siap. Muat ulang halaman.'); return; }
+    var f = A().filter(), pr = A().periode(); if (pr.error){ alert(pr.error); return; }
+    var p = per(pr);
+    if (!K.base || K.base.per !== p){ alert('Data belum selesai dimuat. Tunggu sebentar lalu coba lagi.'); return; }
+    var sel = pilih(K.base.rows, f), flt = { periode: p }; if (f.cmo) flt.cmo = f.cmo; if (f.cabang) flt.cabang = f.cabang;
+    var btn = $('kcExcel'), teks = btn.textContent; btn.disabled = true; btn.textContent = 'Menyiapkan...';
+    var h = {}, sisa = 2, gagal = false;
+    function selesai(){ btn.disabled = false; btn.textContent = teks; }
+    function ambil(fn, kunci){
+      run(fn, flt, function(r){
+        if (gagal) return;
+        if (!r || r.ok === false){ gagal = true; selesai(); alert('Gagal: ' + ((r && r.error) || fn)); return; }
+        h[kunci] = r; if (--sisa === 0){ try { tulis(sel, h, p, f); } catch(e){ alert('Gagal membuat Excel: ' + pesanErr(e)); } selesai(); }
+      }, function(e){ if (gagal) return; gagal = true; selesai(); alert('Gagal: ' + pesanErr(e)); });
+    }
+    ambil('fetchAktivitasList', 'akt'); ambil('fetchProspekList', 'pro');
+  };
+  function tulis(sel, h, periode, f){
+    var wb = XLSX.utils.book_new();
+    function sheet(nama, kolom, baris, lebar){
+      var ws = XLSX.utils.aoa_to_sheet([kolom].concat(baris)); ws['!cols'] = lebar.map(function(w){ return { wch: w }; });
+      XLSX.utils.book_append_sheet(wb, ws, nama);
+    }
+    var HD = ['FOLLOW UP','TARGET FU','KANVASSING','TARGET KANV','PROSPEK','TARGET PROSPEK','SURVEY','TARGET SURVEY','TOLAK','TERTUNDA','APPROVE','TARGET APPROVE','PENCAIRAN','TARGET PENCAIRAN','CAPAIAN RATA2 (%)'];
+    var LB = [10,10,12,12,10,12,10,12,8,10,10,12,16,16,14];
+    function baris(n, t){ var p = pctRata(n, t); return [n.followUp,t.followUp,n.kanvassing,t.kanvassing,n.prospek,t.prospek,n.survey,t.survey,n.reject,n.pending,n.approve,t.approve,n.pencairan,t.pencairan, p === null ? '' : Math.round(p * 10) / 10]; }
+    var cab = {}; sel.forEach(function(x){ (cab[x.cabang || '-'] = cab[x.cabang || '-'] || []).push(x); });
+    sheet('REKAP CABANG', ['CABANG','NAMA CABANG','JML CMO'].concat(HD), Object.keys(cab).sort().map(function(k){ var g = jumlah(cab[k]); return [k, namaCab(k), cab[k].length].concat(baris(g.nilai, g.target)); }), [10,22,9].concat(LB));
+    sheet('REKAP CMO', ['CMO','CABANG'].concat(HD), sel.map(function(r){ var g = jumlah([r]); return [r.cmo, r.cabang].concat(baris(g.nilai, g.target)); }), [24,10].concat(LB));
+    sheet('TARGET', ['CMO','CABANG','PERIODE','FOLLOW UP','KANVASSING','PROSPEK','SURVEY','APPROVE','PENCAIRAN'],
+      sel.map(function(r){ var t = r.target || {}; return [r.cmo, r.cabang, periode, t.followUp||0, t.kanvassing||0, t.prospek||0, t.survey||0, t.approve||0, t.pencairan||0]; }), [24,10,10,11,12,10,10,10,16]);
+    sheet('AKTIVITAS', ['WAKTU','CMO','CABANG','KEGIATAN','KETERANGAN','DOKUMENTASI'],
+      (h.akt.list || []).map(function(x){ return [x.waktu, x.cmo, x.cabang, x.kegiatan, x.keterangan, x.foto]; }), [18,24,10,28,40,40]);
+    var pro = (h.pro.list || []).filter(function(x){ return !f.prospek || bersih(x.sumberOrder) === bersih(f.prospek); });
+    sheet('PROSPEK', ['NO','TANGGAL','CMO','CABANG','NAMA KONSUMEN','NO TELP','RO/NEW','TAHAP','NILAI PINJAMAN','JAMINAN','SUMBER ORDER','CATATAN','DIEDIT OLEH','TANGGAL EDIT'],
+      pro.map(function(x){ return [x.no, x.tanggal, x.cmo, x.cabang, x.namaKonsumen, x.noTelp, x.roNew, x.tahap, x.nilai, x.jaminan, x.sumberOrder, x.catatan, x.dieditOleh, x.tanggalEdit]; }), [6,12,24,10,26,16,8,14,16,22,18,24,22,18]);
+    var nm = f.cmo || (f.cabang ? 'CABANG_' + f.cabang : 'SEMUA');
+    XLSX.writeFile(wb, 'KPI_CMO_' + nm.replace(/[^A-Za-z0-9]+/g, '_') + '_' + periode.replace('/', '-') + '.xlsx');
+  }
+
+  /* ---------- formulir ---------- */
   function kecilkan(file, cb){
     var r = new FileReader();
     r.onload = function(){ var im = new Image();
@@ -5975,16 +6175,14 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       im.onerror = function(){ cb(''); }; im.src = r.result; };
     r.onerror = function(){ cb(''); }; r.readAsDataURL(file);
   }
-  function selesai(){ tutup(); muat(); if (window.kcMuatUlang) window.kcMuatUlang(); }
+  function selesai(){ tutup(); if (window.kcMuatUlang) window.kcMuatUlang(); }
+  function tombolForm(){ return '<div id="kciPesan" class="kci-pesan"></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;"><button type="button" class="kci-btn abu" id="kciBatal">Batal</button><button type="button" class="kci-btn" id="kciSimpan">Simpan</button></div>'; }
 
   function formAktivitas(){
     var opt = ['FOLLOW UP/KUNJUNGAN RO','KANVASSING/KUNJUNGAN AGEN','BRIEFING PAGI','SURVEY','LAINNYA'].map(function(k){ return '<option>'+k+'</option>'; }).join('');
-    buka('<h3 style="margin:0 0 4px;">Input aktivitas</h3><div class="kci-f">' +
-      '<label>Jenis kegiatan</label><select id="kciKeg">' + opt + '</select>' +
-      '<label>Keterangan</label><textarea id="kciKet" rows="3" placeholder="Contoh: kunjungi 3 konsumen RO di Pasar Baru"></textarea>' +
-      '<label>Foto dokumentasi (opsional)</label><input type="file" id="kciFoto" accept="image/*"></div>' +
-      '<div id="kciPesan" class="kci-pesan"></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;">' +
-      '<button type="button" class="kci-btn abu" id="kciBatal">Batal</button><button type="button" class="kci-btn" id="kciSimpan">Simpan</button></div>');
+    buka('<h3 style="margin:0 0 4px;">Input aktivitas</h3><div class="kci-f"><label>Jenis kegiatan</label><select id="kciKeg">' + opt + '</select>' +
+      '<label>Keterangan</label><textarea id="kciKet" rows="3" placeholder="Contoh: kunjungi 3 konsumen RO"></textarea>' +
+      '<label>Foto dokumentasi (opsional)</label><input type="file" id="kciFoto" accept="image/*"></div>' + tombolForm());
     $('kciBatal').onclick = tutup;
     $('kciSimpan').onclick = function(){
       var kirim = function(b64){
@@ -5996,19 +6194,14 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       var fl = $('kciFoto').files[0]; if (fl) kecilkan(fl, kirim); else kirim('');
     };
   }
-
   function formProspek(){
     var sb = ['WALK IN','REFERENSI','DIGITAL','DEALER','TELESALES'].map(function(k){ return '<option>'+k+'</option>'; }).join('');
-    buka('<h3 style="margin:0 0 4px;">Input prospek</h3><div class="kci-f">' +
-      '<label>Tanggal</label><input type="date" id="kciTgl" value="' + tglIni() + '">' +
-      '<label>Nama konsumen *</label><input type="text" id="kciNama">' +
-      '<label>No. telepon</label><input type="tel" id="kciTelp">' +
+    buka('<h3 style="margin:0 0 4px;">Input prospek</h3><div class="kci-f"><label>Tanggal</label><input type="date" id="kciTgl" value="' + tglIni() + '">' +
+      '<label>Nama konsumen *</label><input type="text" id="kciNama"><label>No. telepon</label><input type="tel" id="kciTelp">' +
       '<label>RO / New</label><select id="kciRo"><option>NEW</option><option>RO</option></select>' +
       '<label>Nilai pinjaman (Rp)</label><input type="text" inputmode="numeric" id="kciNilai" placeholder="10000000">' +
       '<label>Jaminan</label><input type="text" id="kciJam" placeholder="Contoh: BEAT DELUXE">' +
-      '<label>Sumber order</label><select id="kciSumber">' + sb + '</select></div>' +
-      '<div id="kciPesan" class="kci-pesan"></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;">' +
-      '<button type="button" class="kci-btn abu" id="kciBatal">Batal</button><button type="button" class="kci-btn" id="kciSimpan">Simpan</button></div>');
+      '<label>Sumber order</label><select id="kciSumber">' + sb + '</select></div>' + tombolForm());
     $('kciBatal').onclick = tutup;
     $('kciSimpan').onclick = function(){
       if (!$('kciNama').value.trim()){ psn('Nama konsumen wajib diisi.'); return; }
@@ -6019,23 +6212,21 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       }, function(e){ sibuk(false); psn(pesanErr(e)); });
     };
   }
-
   function formStatus(x){
+    var lb = 'display:flex;gap:8px;align-items:center;font-size:14px;color:#0f2540;margin:6px 0;';
     buka('<h3 style="margin:0 0 4px;">Ubah status prospek</h3><div style="font-size:13px;color:#475569;">' + esc(x.namaKonsumen) + ' &middot; ' + A().fmt(x.nilai, true) + '</div>' +
-      '<div class="kci-f"><label>Keputusan</label>' +
-      '<label style="display:flex;gap:8px;align-items:center;font-size:14px;color:#0f2540;margin:6px 0;"><input type="radio" name="kciSt" value="APPROVE"> Approve</label>' +
-      '<label style="display:flex;gap:8px;align-items:center;font-size:14px;color:#0f2540;margin:6px 0;"><input type="radio" name="kciSt" value="REJECT"> Reject</label>' +
+      '<div class="kci-f"><label>Keputusan</label><label style="' + lb + '"><input type="radio" name="kciSt" value="APPROVE"> Approve</label>' +
+      '<label style="' + lb + '"><input type="radio" name="kciSt" value="REJECT"> Reject</label>' +
       '<label>Catatan (wajib jika Reject)</label><textarea id="kciCat" rows="3"></textarea></div>' +
-      '<div style="margin-top:10px;padding:8px 10px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;font-size:12.5px;color:#9a3412;">Status hanya bisa diubah <b>1 kali</b>. Setelah disimpan, prospek ini terkunci.</div>' +
-      '<div id="kciPesan" class="kci-pesan"></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;">' +
-      '<button type="button" class="kci-btn abu" id="kciBatal">Batal</button><button type="button" class="kci-btn" id="kciSimpan">Simpan &amp; kunci</button></div>');
+      '<div style="margin-top:10px;padding:8px 10px;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;font-size:12.5px;color:#9a3412;">' + (role() === 'HO' ? 'Sebagai <b>HO</b> Anda dapat mengubah status ini meski sudah final. Perubahan dicatat atas nama Anda.' : 'Status hanya bisa diubah <b>1 kali</b>. Setelah Approve atau Reject disimpan, prospek ini final dan tidak bisa diubah lagi.') + '</div>' +
+      '<div id="kciPesan" class="kci-pesan"></div><div style="display:flex;gap:8px;justify-content:flex-end;margin-top:14px;"><button type="button" class="kci-btn abu" id="kciBatal">Batal</button><button type="button" class="kci-btn" id="kciSimpan">Simpan &amp; kunci</button></div>');
     $('kciBatal').onclick = tutup;
     $('kciSimpan').onclick = function(){
       var pilih = document.querySelector('input[name="kciSt"]:checked');
       if (!pilih){ psn('Pilih Approve atau Reject.'); return; }
       var cat = $('kciCat').value.trim();
       if (pilih.value === 'REJECT' && !cat){ psn('Catatan wajib diisi kalau Reject.'); return; }
-      if (!confirm('Simpan status ' + pilih.value + '? Setelah ini tidak bisa diubah lagi.')) return;
+      if (!confirm('Simpan status ' + pilih.value + '?' + (role() === 'HO' ? '' : ' Setelah ini tidak bisa diubah lagi.'))) return;
       sibuk(true); psn('Menyimpan...', true);
       run('updateStatusProspek', { baris: x.baris, tahap: pilih.value, catatan: cat }, function(r){
         sibuk(false); if (r && r.ok){ psn('Status disimpan dan dikunci.', true); setTimeout(selesai, 600); } else psn((r && r.error) || 'Gagal menyimpan.');
@@ -6046,8 +6237,19 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
   function pasang(){
     $('kciBtnAkt').addEventListener('click', formAktivitas);
     $('kciBtnPro').addEventListener('click', formProspek);
-    $('kciIsi').addEventListener('click', function(e){ var b = e.target.closest('button[data-i]'); if (b) formStatus(K.list[+b.getAttribute('data-i')]); });
+    $('kciIsi').addEventListener('click', function(e){ var b = e.target.closest('button[data-i]'); if (b) formStatus(K.pro[+b.getAttribute('data-i')]); });
     $('kciModal').addEventListener('click', function(e){ if (e.target === this) tutup(); });
+    document.querySelectorAll('#tabKpiCmo .kci-toggle').forEach(function(el){
+      el.addEventListener('click', function(){
+        var w = $(el.getAttribute('data-t')), buka = w.style.display === 'none';
+        w.style.display = buka ? '' : 'none'; el.querySelector('.kci-pan').innerHTML = buka ? '&#9652;' : '&#9662;';
+      });
+    });
+    $('kcRekap').addEventListener('click', function(e){
+      var tr = e.target.closest('tr[data-k]'); if (!tr) return;
+      var el = tr.getAttribute('data-m') === 'cab' ? $('kcCabang') : $('kcCmo');
+      el.value = tr.getAttribute('data-k'); el.dispatchEvent(new Event('change'));
+    });
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', pasang); else pasang();
 })();
@@ -18574,11 +18776,11 @@ function gbGabung() {
     tabGrafik: 'Grafik', tabTarikanJualan: 'Tren Tarik', tabLor: 'LOR',
     tabAging: 'Aging', tabLapMeeting: 'Meeting', tabStockAyda: 'AYDA', tabPembiayaan: 'Dealer', tabPbDatun: 'Datun', tabTac: 'TAC',
     tabSorumBekas: 'Kalkulator', tabDanaTunai: 'Dana Tunai', tabMotorBekas: 'Motor', tabGabungBerkas: 'Gabung',
-    tabBastGudang: 'BAST', tabKelengkapan: 'Kelengkapan', tabHargaAyda: 'Harga AYDA', tabTipeTahun: 'Tipe', tabKelolaUser: 'Pengguna'
+    tabKpiCmo: 'KPI CMO', tabBastGudang: 'BAST', tabKelengkapan: 'Kelengkapan', tabHargaAyda: 'Harga AYDA', tabTipeTahun: 'Tipe', tabKelolaUser: 'Pengguna'
   };
   var UTAMA = ['tabDashboard', 'tabSorumBekas', 'tabDanaTunai', 'tabLapMeeting'];
   /* label menu bawah untuk akun CMO / CMC */
-  var LABEL_CMO = { tabSorumBekas: 'Used Car', tabDanaTunai: 'Dana Tunai', tabMotorBekas: 'Motor Bekas', tabPbDatun: 'Pembiayaan', tabGabungBerkas: 'Gabung' };
+  var LABEL_CMO = { tabKpiCmo: 'KPI CMO', tabSorumBekas: 'Used Car', tabDanaTunai: 'Dana Tunai', tabMotorBekas: 'Motor Bekas', tabPbDatun: 'Pembiayaan', tabGabungBerkas: 'Gabung' };
   var IKON_LAIN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
     '<circle cx="5" cy="12" r="1.7"/><circle cx="12" cy="12" r="1.7"/><circle cx="19" cy="12" r="1.7"/></svg>';
   var nav, sheet, latar, daftarBar = [];
@@ -18642,7 +18844,7 @@ function gbGabung() {
 
     /* --- isi bar bawah: menu utama yang tersedia, sisanya masuk "Lainnya" --- */
     var bar = [];
-    var urutan = document.body.classList.contains('cmo') ? ['tabSorumBekas', 'tabDanaTunai', 'tabMotorBekas', 'tabPbDatun'] : UTAMA;
+    var urutan = document.body.classList.contains('cmo') ? ['tabSorumBekas', 'tabDanaTunai', 'tabMotorBekas', 'tabKpiCmo'] : UTAMA;
     urutan.forEach(function (id) {
       for (var i = 0; i < tombol.length; i++) {
         if (tombol[i].getAttribute('data-tab') === id) { bar.push(tombol[i]); break; }
