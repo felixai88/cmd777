@@ -25723,7 +25723,7 @@ body.dark .ai-aksi button.utama, body.cmd .ai-aksi button.utama { background: li
 body.dark .ai-input, body.cmd .ai-input { border-color: rgba(255,255,255,.08); } body.dark .ai-input textarea, body.cmd .ai-input textarea { background: #12233b; color: #e2e8f0; border-color: #2c4266; }
 body.dark .ai-tm, body.cmd .ai-tm { color: #0f2540; }
 @media (max-width: 700px) {
-  #cmdAi { right: 14px; bottom: 14px; }
+  #cmdAi { right: 14px; bottom: 84px; }
   #cmdAiFab { width: 56px; height: 56px; }
   #cmdAiPanel { position: fixed; inset: 0; width: auto; max-width: none; height: auto; border-radius: 0; bottom: 0; }
   body.nav-open #cmdAi { display: none; }
@@ -25749,7 +25749,7 @@ body.dark .ai-tm, body.cmd .ai-tm { color: #0f2540; }
     </div>
     <div class="ai-pesan" id="cmdAiPesan"></div>
     <form class="ai-input" id="cmdAiForm">
-      <textarea id="cmdAiTanya" rows="1" placeholder="Tanya atau minta cek pekerjaan&hellip;"></textarea>
+      <textarea id="cmdAiTanya" rows="1" placeholder="Tanya apa saja&hellip;"></textarea>
       <button type="submit" aria-label="Kirim"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></button>
     </form>
   </div>
@@ -25911,7 +25911,7 @@ body.dark .ai-tm, body.cmd .ai-tm { color: #0f2540; }
   function segarMenu() { $('cmdAiMenu').textContent = judulMenu().judul; }
   function sapa() {
     $('cmdAiPesan').innerHTML = '';
-    gel('bot', '<p>Halo! Saya <b>Asisten CMD</b>. Saya membaca isian dan hasil di menu yang sedang Anda buka, lalu memberi tahu kalau ada yang keliru, janggal, atau belum lengkap.</p><p>Tekan <b>Koreksi halaman ini</b> atau tanya langsung.</p>');
+    gel('bot', '<p>Halo! Saya <b>Asisten CMD</b>. Saya membaca isian dan hasil di menu yang sedang Anda buka, lalu memberi tahu kalau ada yang keliru, janggal, atau belum lengkap.</p><p>Tekan <b>Koreksi halaman ini</b>, atau tanya apa saja, termasuk hal di luar pekerjaan.</p>');
   }
   $('cmdAiFab').onclick = function () { buka(); };
   $('cmdAiTutup').onclick = function () { buka(false); };
