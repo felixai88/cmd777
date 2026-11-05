@@ -23,7 +23,7 @@
   var API_URL = "https://script.google.com/macros/s/AKfycbyrqYf-VIPAaR8pFIUiYeR3WYq3dq_3JS1OCTLVciEcwp9hC-MoOXe293YN3LVz1PqF5w/exec";
 
   /* fungsi server yang boleh dipanggil — harus sama dengan daftar di Api.gs */
-  var FUNGSI = ["loginUser", "cekSesi", "logoutUser", "gantiPassword", "daftarUser", "tambahUser", "resetPasswordUser", "ubahStatusUser", "fetchSheetCSV", "fetchJualanCSV", "fetchTarikanCSV", "fetchLapMeetingCSV", "fetchTarikanAllCSV", "fetchStockTahunan", "bacaSheetAman", "getPeriodeMrp", "getPeriodeMrpSorum", "getMrpSorumBekas", "getMatriksRangka", "bacaStnk", "bacaAppraisal", "catatVerifikasi", "fetchHargaAyda", "getDataPembiayaan", "bacaTacDealer", "ajukanPengajuanHarga", "ambilBerkasDrive", "fetchKelengkapanEstimasi", "fetchPengajuanHarga", "simpanBastLengkap", "simpanGabunganEstimasi", "simpanKeteranganEstimasi", "simpanMemoHarga", "simpanMemoMassal", "unggahBerkasEstimasi", "getDaftarCabang", "fetchKpiCmoList", "fetchKpiCmoDetail", "simpanAktivitas", "simpanProspek", "updateStatusProspek", "fetchAktivitasList", "fetchProspekList", "fetchKpiCmoRekap"];
+  var FUNGSI = ["loginUser", "cekSesi", "logoutUser", "gantiPassword", "daftarUser", "tambahUser", "resetPasswordUser", "ubahStatusUser", "fetchSheetCSV", "fetchJualanCSV", "fetchTarikanCSV", "fetchLapMeetingCSV", "fetchTarikanAllCSV", "fetchStockTahunan", "bacaSheetAman", "getPeriodeMrp", "getPeriodeMrpSorum", "getMrpSorumBekas", "getMatriksRangka", "bacaStnk", "bacaAppraisal", "catatVerifikasi", "fetchHargaAyda", "getDataPembiayaan", "bacaTacDealer", "ajukanPengajuanHarga", "ambilBerkasDrive", "fetchKelengkapanEstimasi", "fetchPengajuanHarga", "simpanBastLengkap", "simpanGabunganEstimasi", "simpanKeteranganEstimasi", "simpanMemoHarga", "simpanMemoMassal", "unggahBerkasEstimasi", "getDaftarCabang", "fetchKpiCmoList", "fetchKpiCmoDetail", "simpanAktivitas", "simpanProspek", "updateStatusProspek", "fetchAktivitasList", "fetchProspekList", "fetchKpiCmoRekap", "asistenKoreksi"];
 
   function panggil(nama, args, ok, gagal, obj) {
     fetch(API_URL, {
@@ -25622,5 +25622,322 @@ body.dark #tabTac table.tac-aturan td.kode, body.cmd #tabTac table.tac-aturan td
 })();
 
 </script>
+<!-- ===================== ASISTEN AI CMD + TAMPILAN BARU ===================== -->
+<style id="cmdAiGaya">
+/* ---------- TAMPILAN BARU (lapisan di atas gaya lama, aman untuk 3 tema) ---------- */
+:root { --cmd-radius: 16px; --cmd-ease: cubic-bezier(.2,.8,.2,1); }
+body { background-image: radial-gradient(900px 420px at 100% -10%, rgba(59,130,246,.10), transparent 60%), radial-gradient(700px 380px at -10% 110%, rgba(226,67,44,.07), transparent 60%); background-attachment: fixed; }
+.tab-content.active { animation: cmdMasuk .38s var(--cmd-ease) both; }
+@keyframes cmdMasuk { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+.sidebar { background: linear-gradient(180deg, #12325c 0%, #0f2540 45%, #0a1a2f 100%); box-shadow: 6px 0 28px rgba(8,20,40,.18); }
+.brand { background: linear-gradient(135deg, rgba(255,255,255,.07), transparent); }
+.brand-logo { box-shadow: 0 6px 16px rgba(0,0,0,.35); }
+.side-nav .tab-btn { transition: transform .2s var(--cmd-ease), background .2s, box-shadow .2s; }
+.side-nav .tab-btn:hover { transform: translateX(3px); }
+.side-nav .tab-btn.active { background: linear-gradient(135deg, #3b82f6, #6366f1); box-shadow: 0 10px 22px rgba(79,70,229,.38); }
+
+.topbar { backdrop-filter: blur(14px) saturate(1.4); -webkit-backdrop-filter: blur(14px) saturate(1.4); box-shadow: 0 6px 24px rgba(15,37,64,.06); }
+body:not(.dark):not(.cmd) .topbar { background: rgba(255,255,255,.82); }
+.topbar h1 { font-size: 20px; font-weight: 800; background: linear-gradient(90deg, #0f2540, #2563eb); -webkit-background-clip: text; background-clip: text; color: transparent; }
+body.dark .topbar h1, body.cmd .topbar h1 { background: linear-gradient(90deg, #fff, #93c5fd); -webkit-background-clip: text; background-clip: text; }
+
+.card, .stat-card { border-radius: var(--cmd-radius); transition: transform .25s var(--cmd-ease), box-shadow .25s var(--cmd-ease); }
+body:not(.dark):not(.cmd) .card, body:not(.dark):not(.cmd) .stat-card { border-color: rgba(15,37,64,.07); box-shadow: 0 1px 2px rgba(15,37,64,.04), 0 10px 28px rgba(15,37,64,.05); }
+.stat-card:hover, .card:hover { transform: translateY(-2px); box-shadow: 0 14px 34px rgba(15,37,64,.11); }
+.stat-card { position: relative; overflow: hidden; }
+.stat-card::after { content: ""; position: absolute; right: -30px; top: -30px; width: 90px; height: 90px; border-radius: 50%; background: radial-gradient(circle, rgba(59,130,246,.14), transparent 70%); pointer-events: none; }
+.card h2 { display: flex; align-items: center; gap: 8px; }
+.card h2::before { content: ""; width: 4px; height: 16px; border-radius: 4px; background: linear-gradient(180deg, #3b82f6, #E2432C); flex: 0 0 4px; }
+
+.btn-refresh, .uc-btn-hitung { background: linear-gradient(135deg, #1d4ed8, #4f46e5) !important; color: #fff !important; box-shadow: 0 6px 16px rgba(79,70,229,.28); border-radius: 10px !important; transition: transform .15s, box-shadow .2s, opacity .2s; }
+.btn-refresh:hover, .uc-btn-hitung:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(79,70,229,.36); opacity: 1; }
+.btn-excel { background: linear-gradient(135deg, #16a34a, #1f7a4d) !important; border-radius: 10px; }
+.btn-pdf { background: linear-gradient(135deg, #f59e0b, #c9781f) !important; border-radius: 10px; }
+input, select, textarea { transition: border-color .2s, box-shadow .2s; }
+input:focus, select:focus, textarea:focus { outline: none; border-color: #4f46e5 !important; box-shadow: 0 0 0 3px rgba(79,70,229,.16); }
+.tab-content table thead th { position: sticky; top: 0; }
+body:not(.dark):not(.cmd) .tab-content table tbody tr:hover td { background: #f1f6ff; }
+::-webkit-scrollbar { width: 9px; height: 9px; } ::-webkit-scrollbar-thumb { background: rgba(100,116,139,.35); border-radius: 9px; } ::-webkit-scrollbar-thumb:hover { background: rgba(100,116,139,.6); }
+
+/* ---------- ASISTEN AI ---------- */
+#cmdAi { position: fixed; right: 22px; bottom: 22px; z-index: 90000; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+#cmdAi * { box-sizing: border-box; }
+#cmdAiFab { width: 62px; height: 62px; padding: 0; border-radius: 50%; border: 0; cursor: pointer; color: #fff; display: grid; place-items: center; position: relative;
+  background: conic-gradient(from 210deg, #3b82f6, #8b5cf6, #E2432C, #F0B429, #3b82f6); box-shadow: 0 12px 30px rgba(79,70,229,.45); transition: transform .25s var(--cmd-ease); }
+#cmdAiFab::before { content: ""; position: absolute; inset: 3px; border-radius: 50%; background: linear-gradient(145deg, #12325c, #0a1628); }
+#cmdAiFab svg { position: relative; width: 28px; height: 28px; }
+#cmdAiFab:hover { transform: scale(1.08) rotate(-4deg); opacity: 1; }
+#cmdAiFab .nd { position: absolute; top: -3px; right: -3px; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 11px; background: #E2432C; color: #fff; font: 800 11px/22px system-ui; text-align: center; display: none; box-shadow: 0 3px 8px rgba(226,67,44,.5); z-index: 2; }
+#cmdAiFab.ada .nd { display: block; }
+#cmdAiFab::after { content: ""; position: absolute; inset: -6px; border-radius: 50%; border: 2px solid rgba(139,92,246,.5); animation: aiDenyut 2.6s ease-out infinite; }
+@keyframes aiDenyut { 0% { transform: scale(.9); opacity: .9; } 100% { transform: scale(1.35); opacity: 0; } }
+#cmdAiPanel { position: absolute; right: 0; bottom: 78px; width: 392px; max-width: calc(100vw - 28px); height: min(640px, calc(100vh - 120px)); display: none; flex-direction: column; overflow: hidden;
+  background: #fff; color: #0f2540; border-radius: 20px; box-shadow: 0 30px 70px rgba(8,20,40,.35); border: 1px solid rgba(15,37,64,.08); }
+#cmdAi.buka #cmdAiPanel { display: flex; animation: aiBuka .3s var(--cmd-ease); }
+@keyframes aiBuka { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: none; } }
+.ai-kepala { padding: 14px 16px; color: #fff; display: flex; align-items: center; gap: 11px; background: linear-gradient(135deg, #12325c, #4f46e5 70%, #8b5cf6); position: relative; }
+.ai-kepala .av { width: 38px; height: 38px; border-radius: 12px; background: rgba(255,255,255,.16); display: grid; place-items: center; flex: 0 0 38px; }
+.ai-kepala .av svg { width: 22px; height: 22px; }
+.ai-kepala b { display: block; font-size: 14px; letter-spacing: .2px; }
+.ai-kepala small { display: flex; align-items: center; gap: 6px; font-size: 11px; opacity: .85; }
+.ai-kepala small i { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; box-shadow: 0 0 0 3px rgba(74,222,128,.25); }
+.ai-kepala button { margin-left: auto; background: rgba(255,255,255,.14); color: #fff; width: 30px; height: 30px; padding: 0; border-radius: 9px; font-size: 16px; }
+.ai-kepala button + button { margin-left: 0; }
+.ai-konteks { padding: 9px 14px; font-size: 11.5px; color: #475569; background: #f1f5f9; border-bottom: 1px solid #e2e8f0; display: flex; gap: 8px; align-items: center; }
+.ai-konteks b { color: #1d4ed8; }
+.ai-aksi { display: flex; gap: 6px; padding: 10px 12px 4px; flex-wrap: wrap; }
+.ai-aksi button { padding: 6px 10px; font-size: 11px; white-space: nowrap; border-radius: 999px; background: #eef2ff; color: #3730a3; border: 1px solid #c7d2fe; font-weight: 700; }
+.ai-aksi button.utama { background: linear-gradient(135deg, #1d4ed8, #4f46e5); color: #fff; border-color: transparent; box-shadow: 0 6px 14px rgba(79,70,229,.3); }
+.ai-pesan { flex: 1; overflow-y: auto; padding: 12px 14px; display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth; }
+.ai-gel { max-width: 92%; padding: 10px 13px; border-radius: 14px; font-size: 13px; line-height: 1.55; word-wrap: break-word; animation: cmdMasuk .25s var(--cmd-ease); }
+.ai-gel.bot { background: #f1f5f9; border-top-left-radius: 4px; align-self: flex-start; }
+.ai-gel.user { background: linear-gradient(135deg, #1d4ed8, #4f46e5); color: #fff; border-top-right-radius: 4px; align-self: flex-end; }
+.ai-gel p { margin: 0 0 6px; } .ai-gel p:last-child { margin: 0; } .ai-gel ul { margin: 4px 0; padding-left: 18px; }
+.ai-temuan { display: flex; flex-direction: column; gap: 7px; align-self: stretch; }
+.ai-tm { border-radius: 12px; padding: 10px 12px; font-size: 12.5px; line-height: 1.5; border: 1px solid; cursor: default; background: #fff; animation: cmdMasuk .3s var(--cmd-ease) both; }
+.ai-tm .t { display: flex; gap: 7px; align-items: center; font-weight: 800; margin-bottom: 3px; }
+.ai-tm .t em { font-style: normal; font-size: 10px; letter-spacing: .6px; text-transform: uppercase; padding: 2px 7px; border-radius: 6px; }
+.ai-tm .s { margin-top: 4px; color: #166534; font-weight: 600; }
+.ai-tm button { margin-top: 7px; padding: 5px 10px; font-size: 11px; border-radius: 8px; background: #0f2540; color: #fff; }
+.ai-tm.salah { border-color: #fecaca; background: #fef2f2; } .ai-tm.salah em { background: #dc2626; color: #fff; }
+.ai-tm.perhatian { border-color: #fde68a; background: #fffbeb; } .ai-tm.perhatian em { background: #d97706; color: #fff; }
+.ai-tm.info { border-color: #bfdbfe; background: #eff6ff; } .ai-tm.info em { background: #2563eb; color: #fff; }
+.ai-tm.baik { border-color: #bbf7d0; background: #f0fdf4; } .ai-tm.baik em { background: #16a34a; color: #fff; }
+.ai-ketik { display: flex; gap: 4px; padding: 4px 2px; } .ai-ketik i { width: 7px; height: 7px; border-radius: 50%; background: #94a3b8; animation: aiKetik 1s infinite; } .ai-ketik i:nth-child(2) { animation-delay: .15s; } .ai-ketik i:nth-child(3) { animation-delay: .3s; }
+@keyframes aiKetik { 0%,80%,100% { transform: translateY(0); opacity: .4; } 40% { transform: translateY(-5px); opacity: 1; } }
+.ai-input { display: flex; gap: 8px; padding: 10px 12px 12px; border-top: 1px solid #e2e8f0; }
+.ai-input textarea { flex: 1; resize: none; height: 42px; max-height: 110px; padding: 10px 12px; border: 1px solid #cbd5e1; border-radius: 12px; font: 13px/1.4 system-ui, sans-serif; background: #fff; color: #0f2540; }
+.ai-input button { width: 42px; height: 42px; padding: 0; border-radius: 12px; background: linear-gradient(135deg, #1d4ed8, #4f46e5); color: #fff; display: grid; place-items: center; }
+.ai-input button svg { width: 18px; height: 18px; }
+/* sorotan kolom yang dikoreksi */
+.cmdai-sorot { outline: 3px solid #E2432C !important; outline-offset: 2px; border-radius: 6px; animation: aiSorot 1s ease-in-out 4; }
+@keyframes aiSorot { 50% { outline-color: #F0B429; box-shadow: 0 0 0 7px rgba(226,67,44,.18); } }
+.cmdai-tanda { border-color: #E2432C !important; background-image: linear-gradient(0deg, rgba(226,67,44,.07), rgba(226,67,44,.07)); }
+/* tema gelap & CMD */
+body.dark #cmdAiPanel, body.cmd #cmdAiPanel { background: #0f1b2e; color: #e2e8f0; border-color: rgba(255,255,255,.1); }
+body.dark .ai-konteks, body.cmd .ai-konteks { background: #12233b; color: #94a3b8; border-color: rgba(255,255,255,.08); } body.dark .ai-konteks b, body.cmd .ai-konteks b { color: #93c5fd; }
+body.dark .ai-gel.bot, body.cmd .ai-gel.bot { background: #1a2b45; color: #e2e8f0; }
+body.dark .ai-aksi button, body.cmd .ai-aksi button { background: #1a2b45; color: #c7d2fe; border-color: #2c4266; }
+body.dark .ai-aksi button.utama, body.cmd .ai-aksi button.utama { background: linear-gradient(135deg, #1d4ed8, #4f46e5); color: #fff; }
+body.dark .ai-input, body.cmd .ai-input { border-color: rgba(255,255,255,.08); } body.dark .ai-input textarea, body.cmd .ai-input textarea { background: #12233b; color: #e2e8f0; border-color: #2c4266; }
+body.dark .ai-tm, body.cmd .ai-tm { color: #0f2540; }
+@media (max-width: 700px) {
+  #cmdAi { right: 14px; bottom: 14px; }
+  #cmdAiFab { width: 56px; height: 56px; }
+  #cmdAiPanel { position: fixed; inset: 0; width: auto; max-width: none; height: auto; border-radius: 0; bottom: 0; }
+  body.nav-open #cmdAi { display: none; }
+  #cmdAi.buka #cmdAiFab { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { #cmdAiFab::after, .tab-content.active, .cmdai-sorot { animation: none !important; } }
+@media print { #cmdAi { display: none !important; } }
+</style>
+
+<div id="cmdAi" style="display:none;">
+  <div id="cmdAiPanel" role="dialog" aria-label="Asisten AI CMD">
+    <div class="ai-kepala">
+      <div class="av"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"/><path d="M18 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg></div>
+      <div><b>Asisten CMD</b><small><i></i>Mengoreksi pekerjaan Anda</small></div>
+      <button type="button" id="cmdAiBersih" title="Percakapan baru" aria-label="Percakapan baru">&#8635;</button>
+      <button type="button" id="cmdAiTutup" title="Tutup" aria-label="Tutup">&#10005;</button>
+    </div>
+    <div class="ai-konteks">Menu aktif: <b id="cmdAiMenu">-</b></div>
+    <div class="ai-aksi">
+      <button type="button" class="utama" id="cmdAiKoreksi">&#10024; Koreksi halaman ini</button>
+      <button type="button" id="cmdAiHitung">Cek angka hitungan</button>
+      <button type="button" id="cmdAiRingkas">Ringkas hasil</button>
+    </div>
+    <div class="ai-pesan" id="cmdAiPesan"></div>
+    <form class="ai-input" id="cmdAiForm">
+      <textarea id="cmdAiTanya" rows="1" placeholder="Tanya atau minta cek pekerjaan&hellip;"></textarea>
+      <button type="submit" aria-label="Kirim"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/></svg></button>
+    </form>
+  </div>
+  <button type="button" id="cmdAiFab" aria-label="Buka Asisten AI">
+    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 4.6L18.5 9.5l-4.6 1.9L12 16l-1.9-4.6L5.5 9.5l4.6-1.9z"/><path d="M18 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>
+    <span class="nd" id="cmdAiNd">0</span>
+  </button>
+</div>
+
+<script id="cmdAiSkrip">
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var root = $('cmdAi'); if (!root) return;
+  var riwayat = [];            // percakapan untuk konteks AI
+  var peta = {};               // kunci kolom -> elemen (untuk menyorot)
+  var sibuk = false;
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function md(s) {                                  // markdown mini: **tebal**, daftar, paragraf
+    var h = esc(s).replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+    var out = [], ul = false;
+    h.split(/\n/).forEach(function (b) {
+      var m = b.match(/^\s*(?:[-*•]|\d+\.)\s+(.*)$/);
+      if (m) { if (!ul) { out.push('<ul>'); ul = true; } out.push('<li>' + m[1] + '</li>'); }
+      else { if (ul) { out.push('</ul>'); ul = false; } if (b.trim()) out.push('<p>' + b + '</p>'); }
+    });
+    if (ul) out.push('</ul>');
+    return out.join('');
+  }
+
+  /* ---------- konteks halaman aktif ---------- */
+  function tabAktif() { return document.querySelector('.tab-content.active'); }
+  function judulMenu() {
+    var t = tabAktif(), id = t ? t.id : '';
+    var j = (typeof JUDUL_TAB !== 'undefined' && JUDUL_TAB[id]) ? JUDUL_TAB[id][0] : ($('pageTitle') ? $('pageTitle').innerText : id);
+    return { id: id, judul: j || id };
+  }
+  function labelKolom(el) {
+    var f = el.closest('.field, .uc-field, .form-group, label');
+    var l = f && f.querySelector('label');
+    var t = (l && l.innerText) || el.getAttribute('aria-label') || el.placeholder || el.name || el.id || '';
+    return String(t).replace(/\s+/g, ' ').trim().slice(0, 60);
+  }
+  function kumpulKolom() {
+    peta = {};
+    var t = tabAktif(), hasil = [];
+    if (!t) return hasil;
+    var n = 0;
+    t.querySelectorAll('input, select, textarea').forEach(function (el) {
+      if (el.closest('#cmdAi') || el.offsetParent === null) return;
+      var tp = (el.type || '').toLowerCase();
+      if (/^(password|file|hidden|button|submit|reset|image|range)$/.test(tp)) return;
+      if (n >= 90) return;
+      var key = el.id || ('f' + n);
+      peta[key] = el; n++;
+      var v = tp === 'checkbox' || tp === 'radio' ? (el.checked ? 'ya' : 'tidak') : (el.tagName === 'SELECT' ? ((el.options[el.selectedIndex] || {}).text || '') : el.value);
+      hasil.push({ k: key, label: labelKolom(el) || key, tipe: el.tagName === 'SELECT' ? 'pilihan' : tp || 'teks', nilai: String(v).slice(0, 200) });
+    });
+    return hasil;
+  }
+  function teksHasil() {
+    var t = tabAktif(); if (!t) return '';
+    var s = (t.innerText || '').replace(/\n{3,}/g, '\n\n').replace(/[ \t]+/g, ' ');
+    return s.slice(0, 5000);
+  }
+  function konteks() {
+    var m = judulMenu();
+    var role = $('userRole') ? $('userRole').innerText : '';
+    return { menu: m.judul, tabId: m.id, role: role, kolom: kumpulKolom(), teks: teksHasil() };
+  }
+
+  /* ---------- pemeriksaan lokal (instan, tanpa server) ---------- */
+  function angka(v) { var s = String(v).replace(/[^\d,.\-]/g, ''); if (!s) return NaN; if (/,\d{1,2}$/.test(s)) s = s.replace(/\./g, '').replace(',', '.'); else s = s.replace(/[.,]/g, ''); return parseFloat(s); }
+  function periksaLokal(ctx) {
+    var tm = [];
+    ctx.kolom.forEach(function (c) {
+      var lb = c.label.toLowerCase();
+      if (c.tipe === 'number' || /harga|dp|angsuran|tenor|bunga|rate|nilai|jumlah|km|tahun|admin|premi|refund|pokok/.test(lb)) {
+        var v = angka(c.nilai);
+        if (c.nilai !== '' && !isNaN(v) && v < 0) tm.push({ tingkat: 'salah', judul: c.label + ' bernilai negatif', pesan: 'Nilai "' + c.nilai + '" tidak wajar untuk kolom ini.', saran: 'Periksa tanda minus atau salah ketik.', k: c.k });
+        if (/tahun/.test(lb) && !isNaN(v) && v > 0 && (v < 1990 || v > new Date().getFullYear() + 1)) tm.push({ tingkat: 'perhatian', judul: 'Tahun di luar kewajaran', pesan: c.label + ' = ' + c.nilai + '.', saran: 'Pastikan tahun kendaraan benar.', k: c.k });
+        if (/tenor/.test(lb) && !isNaN(v) && v > 0 && (v > 72)) tm.push({ tingkat: 'perhatian', judul: 'Tenor sangat panjang', pesan: c.label + ' = ' + c.nilai + ' (lebih dari 72).', saran: 'Cek apakah ini bulan atau tahun.', k: c.k });
+      }
+    });
+    var kosong = ctx.kolom.filter(function (c) { return c.nilai === '' && c.tipe !== 'checkbox' && c.tipe !== 'radio'; });
+    var terisi = ctx.kolom.length - kosong.length;
+    var sudah = {}; if (terisi > 0 && kosong.length > 0 && kosong.length <= 5) kosong.forEach(function (c) { if (sudah[c.label]) return; sudah[c.label] = 1; tm.push({ tingkat: 'info', judul: c.label + ' masih kosong', pesan: 'Kolom ini belum diisi sementara kolom lain sudah terisi.', saran: 'Lengkapi bila memang diperlukan.', k: c.k }); });
+    if (/NaN|Infinity|undefined|\[object/.test(ctx.teks)) tm.push({ tingkat: 'salah', judul: 'Ada hasil yang rusak di layar', pesan: 'Terdapat tulisan NaN / Infinity / undefined pada hasil hitungan.', saran: 'Biasanya ada kolom angka yang kosong atau salah format. Isi ulang lalu hitung kembali.' });
+    return tm;
+  }
+
+  /* ---------- tampilan pesan ---------- */
+  function gel(kelas, html) { var d = document.createElement('div'); d.className = 'ai-gel ' + kelas; d.innerHTML = html; $('cmdAiPesan').appendChild(d); turun(); return d; }
+  function turun() { var p = $('cmdAiPesan'); p.scrollTop = p.scrollHeight; }
+  var LBL = { salah: 'Perlu diperbaiki', perhatian: 'Perhatian', info: 'Catatan', baik: 'Sudah baik' };
+  function tampilTemuan(arr) {
+    if (!arr || !arr.length) return;
+    var w = document.createElement('div'); w.className = 'ai-temuan';
+    arr.forEach(function (t, i) {
+      var tg = LBL[t.tingkat] ? t.tingkat : 'info';
+      var d = document.createElement('div'); d.className = 'ai-tm ' + tg; d.style.animationDelay = (i * 60) + 'ms';
+      d.innerHTML = '<div class="t"><em>' + LBL[tg] + '</em>' + esc(t.judul || '') + '</div><div>' + esc(t.pesan || '') + '</div>' + (t.saran ? '<div class="s">&#10003; ' + esc(t.saran) + '</div>' : '');
+      if (t.k && peta[t.k]) { var b = document.createElement('button'); b.type = 'button'; b.textContent = 'Tunjukkan kolomnya'; b.onclick = function () { sorot(t.k); }; d.appendChild(b); }
+      w.appendChild(d);
+    });
+    $('cmdAiPesan').appendChild(w); turun();
+    var salah = arr.filter(function (t) { return t.tingkat === 'salah' || t.tingkat === 'perhatian'; }).length;
+    var fab = $('cmdAiFab'); if (salah) { fab.classList.add('ada'); $('cmdAiNd').textContent = salah; } else fab.classList.remove('ada');
+  }
+  function sorot(k) {
+    var el = peta[k]; if (!el) return;
+    document.querySelectorAll('.cmdai-sorot').forEach(function (e) { e.classList.remove('cmdai-sorot'); });
+    if (window.innerWidth <= 700) root.classList.remove('buka');
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.add('cmdai-sorot', 'cmdai-tanda');
+    setTimeout(function () { el.classList.remove('cmdai-sorot'); }, 4200);
+    try { el.focus({ preventScroll: true }); } catch (e) {}
+  }
+
+  /* ---------- panggilan ke server (Apps Script: asistenKoreksi) ---------- */
+  function adaServer() { return window.google && google.script && google.script.run && typeof google.script.run.asistenKoreksi === 'function'; }
+  function panggilServer(mode, pertanyaan, ctx) {
+    return new Promise(function (ok, gagal) {
+      if (!adaServer()) { gagal(new Error('TIDAK_ADA')); return; }
+      var bayar = { mode: mode, pertanyaan: pertanyaan || '', konteks: { menu: ctx.menu, role: ctx.role, kolom: ctx.kolom, teks: ctx.teks }, riwayat: riwayat.slice(-8) };
+      google.script.run.withSuccessHandler(function (r) { ok(r); }).withFailureHandler(function (e) { gagal(e); }).asistenKoreksi(bayar);
+    });
+  }
+  function proses(mode, pertanyaan, labelUser) {
+    if (sibuk) return; sibuk = true;
+    gel('user', esc(labelUser));
+    var ctx = konteks();
+    var ketik = gel('bot', '<div class="ai-ketik"><i></i><i></i><i></i></div>');
+    var lokal = (mode === 'koreksi' || mode === 'hitung') ? periksaLokal(ctx) : [];
+    panggilServer(mode, pertanyaan, ctx).then(function (r) {
+      ketik.remove();
+      if (!r || r.ok === false) throw new Error((r && r.pesan) || 'Jawaban kosong');
+      if (r.teks) gel('bot', md(r.teks));
+      var tm = (r.temuan || []).map(function (t) { if (t.k && !peta[t.k]) t.k = null; return t; });
+      lokal.forEach(function (l) { if (!tm.some(function (t) { return t.k && t.k === l.k && t.judul === l.judul; })) tm.push(l); });
+      tampilTemuan(tm);
+      riwayat.push({ r: 'user', t: pertanyaan || labelUser }); riwayat.push({ r: 'model', t: r.teks || '' });
+    }).catch(function (e) {
+      ketik.remove();
+      var tidakAda = e && e.message === 'TIDAK_ADA';
+      if (lokal.length || mode === 'koreksi' || mode === 'hitung') {
+        gel('bot', '<p><b>Pemeriksaan cepat selesai.</b>' + (tidakAda ? ' Fitur koreksi AI penuh belum aktif di server, jadi yang tampil baru pemeriksaan dasar.' : ' AI sedang tidak bisa dihubungi (' + esc((e && e.message) || e) + '), jadi yang tampil baru pemeriksaan dasar.') + '</p>');
+        if (!lokal.length) tampilTemuan([{ tingkat: 'baik', judul: 'Tidak ada masalah dasar', pesan: 'Tidak ditemukan nilai negatif, kolom janggal, atau hasil rusak.' }]);
+        else tampilTemuan(lokal);
+      } else {
+        gel('bot', '<p>' + (tidakAda ? 'Asisten AI belum tersambung ke server. Pasang file <b>AsistenAI.gs</b> di Apps Script lalu deploy versi baru.' : 'Maaf, AI tidak bisa menjawab sekarang: ' + esc((e && e.message) || e)) + '</p>');
+      }
+    }).then(function () { sibuk = false; });
+  }
+
+  /* ---------- tombol & kejadian ---------- */
+  function buka(b) { root.classList.toggle('buka', b == null ? !root.classList.contains('buka') : b); if (root.classList.contains('buka')) { segarMenu(); setTimeout(function () { $('cmdAiTanya').focus(); }, 80); } }
+  function segarMenu() { $('cmdAiMenu').textContent = judulMenu().judul; }
+  function sapa() {
+    $('cmdAiPesan').innerHTML = '';
+    gel('bot', '<p>Halo! Saya <b>Asisten CMD</b>. Saya membaca isian dan hasil di menu yang sedang Anda buka, lalu memberi tahu kalau ada yang keliru, janggal, atau belum lengkap.</p><p>Tekan <b>Koreksi halaman ini</b> atau tanya langsung.</p>');
+  }
+  $('cmdAiFab').onclick = function () { buka(); };
+  $('cmdAiTutup').onclick = function () { buka(false); };
+  $('cmdAiBersih').onclick = function () { riwayat = []; sapa(); };
+  $('cmdAiKoreksi').onclick = function () { proses('koreksi', 'Periksa seluruh isian dan hasil di halaman ini. Beri tahu yang salah, janggal, atau kurang.', 'Koreksi halaman ini'); };
+  $('cmdAiHitung').onclick = function () { proses('hitung', 'Periksa angka hitungan (harga, DP, angsuran, tenor, refund, selisih) apakah masuk akal dan konsisten.', 'Cek angka hitungan'); };
+  $('cmdAiRingkas').onclick = function () { proses('tanya', 'Ringkas hasil di halaman ini dalam beberapa poin pendek.', 'Ringkas hasil'); };
+  $('cmdAiForm').onsubmit = function (e) { e.preventDefault(); var q = $('cmdAiTanya').value.trim(); if (!q) return; $('cmdAiTanya').value = ''; $('cmdAiTanya').style.height = '42px'; proses('tanya', q, q); };
+  $('cmdAiTanya').addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('cmdAiForm').requestSubmit(); } });
+  $('cmdAiTanya').addEventListener('input', function () { this.style.height = '42px'; this.style.height = Math.min(this.scrollHeight, 110) + 'px'; });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && root.classList.contains('buka')) buka(false); });
+
+  // ikuti pindah menu
+  var asli = window.switchTab;
+  if (typeof asli === 'function') window.switchTab = function () { var r = asli.apply(this, arguments); segarMenu(); $('cmdAiFab').classList.remove('ada'); return r; };
+
+  // tampil hanya setelah login (saat #loginOverlay hilang)
+  function sinkron() {
+    var lg = $('loginOverlay'), tampilLogin = lg && getComputedStyle(lg).display !== 'none' && lg.offsetParent !== null;
+    root.style.display = tampilLogin ? 'none' : '';
+  }
+  sinkron(); setInterval(sinkron, 800); segarMenu(); sapa();
+  window.cmdAi = { buka: buka, konteks: konteks, periksaLokal: periksaLokal };
+})();
+</script>
+<!-- ===================== /ASISTEN AI CMD ===================== -->
+
 </body>
 </html>
