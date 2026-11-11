@@ -3784,7 +3784,10 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <div class="nav-grup" id="grupMarketing"><button type="button" class="tab-btn nav-grup-btn" onclick="grupToggle('grupMarketing')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg><span>MARKETING</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button><div class="nav-grup-isi"><button class="tab-btn" data-tab="tabPembiayaan" id="btnTabPembiayaan" onclick="switchTab('tabPembiayaan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="4" width="3" height="14"/></svg><span>PEMBIAYAAN PERDEALER (NMC)</span></button>
 <button class="tab-btn" data-tab="tabTac" id="btnTabTac" onclick="switchTab('tabTac')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h4"/><path d="M13.5 16.5l1.8 1.8 3.2-3.6"/></svg><span>PERHITUNGAN TAC</span></button>
 <button class="tab-btn" data-tab="tabKpiCmo" id="btnTabKpiCmo" onclick="switchTab('tabKpiCmo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>KPI CMO</span></button>
-<button class="tab-btn" data-tab="tabMobilBaru" id="btnTabMobilBaru" onclick="switchTab('tabMobilBaru')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M3 13l2-5a2 2 0 0 1 1.9-1.4h10.2A2 2 0 0 1 19 8l2 5v4h-3M3 13v4h3"/><circle cx="7.5" cy="17" r="1.8"/><circle cx="16.5" cy="17" r="1.8"/></svg><span>MOBIL BARU (NC)</span></button></div></div>
+<button class="tab-btn" data-tab="tabInvUc" id="btnTabInvUc" onclick="switchTab('tabInvUc')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M3 13l2-5a2 2 0 0 1 1.9-1.4h10.2A2 2 0 0 1 19 8l2 5v4h-3M3 13v4h3"/><circle cx="7.5" cy="17" r="1.8"/><circle cx="16.5" cy="17" r="1.8"/></svg><span>USED CAR (UC)</span></button>
+<button class="tab-btn" data-tab="tabInvUmc" id="btnTabInvUmc" onclick="switchTab('tabInvUmc')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M5.5 17h6l4-7h3M12 10h4M9 6h3l2 4"/></svg><span>USED MOTORCYCLE (UMC)</span></button>
+<button class="tab-btn" data-tab="tabInvDatun" id="btnTabInvDatun" onclick="switchTab('tabInvDatun')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/></svg><span>DATUN</span></button>
+        <button class="tab-btn" data-tab="tabMobilBaru" id="btnTabMobilBaru" onclick="switchTab('tabMobilBaru')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M3 13l2-5a2 2 0 0 1 1.9-1.4h10.2A2 2 0 0 1 19 8l2 5v4h-3M3 13v4h3"/><circle cx="7.5" cy="17" r="1.8"/><circle cx="16.5" cy="17" r="1.8"/></svg><span>MOBIL BARU (NC)</span></button></div></div>
         <div class="nav-grup" id="grupKalkulator"><button type="button" class="tab-btn nav-grup-btn" onclick="grupToggle('grupKalkulator')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h2M12 10h2M16 10h.01M8 14h2M12 14h2M16 14h.01M8 18h2M12 18h2M16 18h.01"/></svg><span>KALKULATOR</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button><div class="nav-grup-isi"><button class="tab-btn" data-tab="tabSorumBekas" id="btnTabSorum" onclick="switchTab('tabSorumBekas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h4M7 12h2M7 16h2"/><path d="M14 12h3M14 16h3"/></svg><span>Used Car</span></button>
 <button class="tab-btn" data-tab="tabDanaTunai" id="btnTabDatun" onclick="switchTab('tabDanaTunai')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/></svg><span>Dana Tunai</span></button>
 <button class="tab-btn" data-tab="tabMotorBekas" id="btnTabMotor" onclick="switchTab('tabMotorBekas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M5.5 17h6l4-7h3M12 10h4M9 6h3l2 4"/></svg><span>Motor Bekas</span></button></div></div>
@@ -4209,6 +4212,30 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     <!-- ==================== TAB: HARGA AYDA ==================== -->
     <!-- ==================== MENU HARGA TERBENTUK (khusus HO) ==================== -->
         <!-- ==================== MOBIL BARU (NC) ==================== -->
+        <div id="tabInvUc" class="tab-content">
+      <div class="mb-nc-kosong">
+        <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M3 13l2-5a2 2 0 0 1 1.9-1.4h10.2A2 2 0 0 1 19 8l2 5v4h-3M3 13v4h3"/><circle cx="7.5" cy="17" r="1.8"/><circle cx="16.5" cy="17" r="1.8"/></svg>
+        <h3>Used Car (UC)</h3>
+        <p>Menunggu data inventory.</p>
+      </div>
+    </div>
+
+    <div id="tabInvUmc" class="tab-content">
+      <div class="mb-nc-kosong">
+        <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M5.5 17h6l4-7h3M12 10h4M9 6h3l2 4"/></svg>
+        <h3>Used Motorcycle (UMC)</h3>
+        <p>Menunggu data inventory.</p>
+      </div>
+    </div>
+
+    <div id="tabInvDatun" class="tab-content">
+      <div class="mb-nc-kosong">
+        <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/></svg>
+        <h3>Datun</h3>
+        <p>Menunggu data inventory.</p>
+      </div>
+    </div>
+
     <div id="tabMobilBaru" class="tab-content">
       <div class="mb-nc-kosong">
         <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M3 13l2-5a2 2 0 0 1 1.9-1.4h10.2A2 2 0 0 1 19 8l2 5v4h-3M3 13v4h3"/><circle cx="7.5" cy="17" r="1.8"/><circle cx="16.5" cy="17" r="1.8"/></svg>
@@ -8379,6 +8406,9 @@ function checkEnter(e) {
 const JUDUL_TAB = {
   tabDashboard:      ["Dashboard", "Ringkasan stock langsung dari Database"],
   tabDataTarikan:    ["Data Tarikan", ""],
+  tabInvUc:          ["Used Car (UC)", ""],
+  tabInvUmc:         ["Used Motorcycle (UMC)", ""],
+  tabInvDatun:       ["Datun", ""],
   tabMobilBaru:      ["Mobil Baru (NC)", ""],
   tabListHarga:      ["List Harga", "Daftar harga memo, tertinggi, terendah, dan peninjauan"],
   tabHargaAyda:      ["Harga AYDA", "Harga tertinggi, terendah, peninjauan, dan surat konfirmasi"],
