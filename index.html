@@ -4279,6 +4279,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
           </div>
           <div class="ht-grid">
             <div><label>Kategori</label><select id="htKat"><option>R2</option><option>R4</option></select></div>
+            <div><label>Status unit</label><select id="htStatusUnit"><option value="LELANG">LELANG</option><option value="READY">READY</option></select></div>
             <div><label>Cabang</label><input id="htCabang"></div>
             <div><label>No. Kontrak</label><input id="htKontrak"></div>
             <div><label>Nama Konsumen</label><input id="htNama"></div>
@@ -4302,7 +4303,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <div class="ht-card">
           <h3>Foto kerusakan &amp; pembanding</h3>
           <div class="ht-row">
-            <div><label>Foto unit / kerusakan (maks. 8)</label><input id="htFile" type="file" accept="image/*" multiple></div>
+            <div><label>Foto unit / kerusakan (maks. 20)</label><input id="htFile" type="file" accept="image/*" multiple></div>
             <div><label>MRP dari sheet MRP (otomatis, boleh diubah)</label><input id="htMrp" inputmode="numeric" placeholder="terisi otomatis dari Type + Tahun"><div id="htMrpInfo" style="font-size:11.5px;color:var(--ht-mut,#64748b);margin-top:4px;line-height:1.35;"></div></div>
             <label style="display:flex;gap:6px;align-items:center;text-transform:none;font-size:12.5px;margin:0;"><input type="checkbox" id="htRiwayat" checked style="width:auto;"> Pakai riwayat harga internal</label>
             <label style="display:flex;gap:6px;align-items:center;text-transform:none;font-size:12.5px;margin:0;"><input type="checkbox" id="htWeb" style="width:auto;"> Cari harga iklan di web</label>
@@ -4562,11 +4563,26 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     $('htFotoList').innerHTML = foto.map(function (f, i) { return '<div><img src="' + f.dataUrl + '" alt=""><button data-i="' + i + '" type="button">&times;</button></div>'; }).join('');
   }
   $('htFile').addEventListener('change', function () {
-    var files = Array.prototype.slice.call(this.files || []).slice(0, 8 - foto.length);
-    Promise.all(files.map(kecilkan)).then(function (r) { r.forEach(function (x) { if (x && foto.length < 8) foto.push(x); }); renderFoto(); });
+    var files = Array.prototype.slice.call(this.files || []).slice(0, 20 - foto.length);
+    Promise.all(files.map(kecilkan)).then(function (r) { r.forEach(function (x) { if (x && foto.length < 20) foto.push(x); }); renderFoto(); });
     this.value = '';
   });
   $('htFotoList').addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) { foto.splice(+b.dataset.i, 1); renderFoto(); } });
+
+  /* ---- ganti oli: wajib untuk unit READY, tidak perlu untuk LELANG ---- */
+  function biayaOli() {
+    var kat = $('htKat').value, t = (aturan && aturan.tarif || []).filter(function (x) { return /OLI/i.test(x.BAGIAN || '') && (!x.KATEGORI || /SEMUA/i.test(x.KATEGORI) || String(x.KATEGORI).toUpperCase() === kat); });
+    return t.length ? angka(t[0].BIAYA) : 0;
+  }
+  function oliSinkron(tanpaRender) {
+    var ready = $('htStatusUnit').value === 'READY', ada = -1;
+    rusak.forEach(function (r, i) { if (/\boli\b/i.test(r.bagian || '')) ada = i; });
+    if (ready && ada < 0) { var b = biayaOli(); rusak.push({ bagian: 'Ganti oli', tingkat: 'ringan', min: b, maks: b, pakai: b || '', catatan: b ? 'Wajib untuk unit READY (tarif acuan HO)' : 'Wajib untuk unit READY - isi biaya' }); }
+    if (!ready && ada >= 0) rusak = rusak.filter(function (r) { return !/\boli\b/i.test(r.bagian || ''); });
+    if (!tanpaRender) { $('htKartuHasil').style.display = ''; renderRusak(); }
+  }
+  $('htStatusUnit').addEventListener('change', function () { muatAturan(false).then(function () { oliSinkron(false); }); });
+  $('htKat').addEventListener('change', function () { if ($('htStatusUnit').value === 'READY') { rusak = rusak.filter(function (r) { return !/\boli\b/i.test(r.bagian || ''); }); oliSinkron(false); } });
 
   /* ---------- AI ---------- */
   function renderRusak() {
@@ -4637,7 +4653,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     var _b = this; if (!_b._mrp) { htMrpIsi(false).then(function () { _b._mrp = true; try { _b.onclick(); } finally { _b._mrp = false; } }); return; }
     if (!$('htType').value.trim() || !$('htTahun').value.trim()) { status('htStatusAI', 'Isi Type dan Tahun dulu.', 'err'); return; }
     var btn = this; btn.disabled = true; status('htStatusAI', 'AI sedang memeriksa foto, riwayat harga, dan menaksir... (bisa 15-40 detik)');
-    var unit = { kategori: $('htKat').value, type: $('htType').value, tahun: $('htTahun').value, warna: $('htWarna').value, odometer: $('htOdo').value, otr: angka($('htOtr').value), os: angka($('htOs').value), kondisi: $('htKondisi').value };
+    var unit = { statusUnit: $('htStatusUnit').value, kategori: $('htKat').value, type: $('htType').value, tahun: $('htTahun').value, warna: $('htWarna').value, odometer: $('htOdo').value, otr: angka($('htOtr').value), os: angka($('htOs').value), kondisi: $('htKondisi').value };
     run('htTaksirAI', { unit: unit, foto: foto, mrpSendiri: angka($('htMrp').value) || null, pakaiRiwayat: $('htRiwayat').checked, webSearch: $('htWeb').checked })
       .then(function (r) { hasilAI = r; tampilHasilAI(r); status('htStatusAI', 'Selesai. Periksa dan koreksi angkanya bila perlu.', 'ok'); })
       .catch(function (e) { status('htStatusAI', e.message, 'err'); })
@@ -4649,7 +4665,8 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     if (foto.length) h += '<div class="ht-info ' + ((f.kurang || []).length ? 'warn' : 'ok') + '"><b>Foto:</b> ' + (f.terbaca != null ? f.terbaca : foto.length) + ' terbaca. Sudut terlihat: ' + esc((f.sudut || []).join(', ') || '-') + '.' + ((f.kurang || []).length ? '<br><b>Belum ada:</b> ' + esc(f.kurang.join(', ')) : ' Kelengkapan baik.') + '</div>';
     else h += '<div class="ht-info warn">Tidak ada foto yang diunggah, jadi kerusakan hanya dinilai dari uraian tertulis.</div>';
     $('htInfoFoto').innerHTML = h;
-    rusak = (r.kerusakan || []).map(function (k) { var mid = Math.round((angka(k.biaya_min) + angka(k.biaya_maks)) / 2); return { bagian: k.bagian || '', tingkat: k.tingkat || 'ringan', min: angka(k.biaya_min), maks: angka(k.biaya_maks), pakai: mid || '', catatan: k.catatan || '' }; });
+    rusak = (r.kerusakan || []).filter(function (k) { return !/\boli\b/i.test(k.bagian || ''); }).map(function (k) { var mid = Math.round((angka(k.biaya_min) + angka(k.biaya_maks)) / 2); return { bagian: k.bagian || '', tingkat: k.tingkat || 'ringan', min: angka(k.biaya_min), maks: angka(k.biaya_maks), pakai: mid || '', catatan: k.catatan || '' }; });
+    oliSinkron(true);
     var p = r.pasar || {}, v = r.validasi_mrp || {}, ket = r.keyakinan || '-';
     var ip = '<div class="ht-hasil"><div><span>Pasar min</span><b>' + rp(p.min) + '</b></div><div><span>Pasar tengah</span><b>' + rp(p.tengah) + '</b></div><div><span>Pasar maks</span><b>' + rp(p.maks) + '</b></div><div><span>Keyakinan AI</span><b>' + esc(ket) + '</b></div><div><span>Pembanding internal</span><b>' + (r.jumlahPembanding || 0) + ' data</b></div></div>';
     if (p.dasar) ip += '<div class="ht-info biru"><b>Dasar taksiran:</b> ' + esc(p.dasar) + '</div>';
