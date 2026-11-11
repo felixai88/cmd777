@@ -4308,33 +4308,39 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
 
       <!-- ===== 1. TAKSIR ===== -->
       <div class="ht-p on" id="htPTaksir">
-        <div class="ht-card">
-          <h3>Data unit</h3>
-          <div class="ht-row" style="margin-bottom:12px;">
-            <div style="flex:1;min-width:220px;"><label>Ketik No. Kontrak / No. Polisi — data unit terisi otomatis dari DATABASE STOCK</label><input id="htCari" placeholder="mis. 20102251202504 atau BL4492NAR"></div>
+        <div class="ht-card ht-unit">
+          <div class="ht-cari">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            <input id="htCari" placeholder="No. Kontrak atau No. Polisi" autocomplete="off">
             <button class="ht-btn abu" id="htBtnCari" type="button">Cari unit</button>
           </div>
-          <div class="ht-grid">
-            <div><label>Kategori</label><select id="htKat"><option>R2</option><option>R4</option></select></div>
-            <div><label>Status unit</label><select id="htStatusUnit"><option value="LELANG">LELANG</option><option value="READY">READY</option></select></div>
-            <div><label>Baterai / aki</label><select id="htBaterai"><option value="NORMAL">Normal</option><option value="MATI">Mati</option></select></div>
-            <div><label>Cabang</label><input id="htCabang"></div>
-            <div><label>No. Kontrak</label><input id="htKontrak"></div>
-            <div><label>Nama Konsumen</label><input id="htNama"></div>
-            <div><label>No. Polisi</label><input id="htNopol"></div>
-            <div><label>Type</label><input id="htType"></div>
-            <div><label>Chasis</label><input id="htChasis"></div>
-            <div><label>Engine</label><input id="htEngine"></div>
-            <div><label>Tahun</label><input id="htTahun" inputmode="numeric"></div>
-            <div><label>Warna</label><input id="htWarna"></div>
-            <div><label>Tgl Tarik</label><input id="htTgl" type="date"></div>
-            <div><label>STNK (berlaku s/d)</label><input id="htStnk" placeholder="tanggal atau T.A"></div>
-            <div><label>Odometer</label><input id="htOdo" placeholder="angka atau T.A"></div>
-            <div><label>OTR Baru (Rp)</label><input id="htOtr" inputmode="numeric"></div>
-            <div><label>O/S (Rp)</label><input id="htOs" inputmode="numeric"></div>
-            <div><label>Pajak + Adm (Rp)</label><input id="htPajak" inputmode="numeric" placeholder="0"></div>
+          <div class="ht-g">
+            <div class="c4"><label>Kategori</label><select id="htKat"><option>R2</option><option>R4</option></select></div>
+            <div class="c4"><label>Status unit</label><select id="htStatusUnit"><option value="LELANG">LELANG</option><option value="READY">READY</option></select></div>
+            <div class="c4"><label>Baterai / aki</label><select id="htBaterai"><option value="NORMAL">Normal</option><option value="MATI">Mati</option></select></div>
           </div>
-          <div style="margin-top:12px;"><label>Kondisi unit (uraian dari BAST gudang)</label>
+          <div class="ht-sek"><div class="ht-sek-j">Identitas</div><div class="ht-g">
+            <div class="c2"><label>Cabang</label><input id="htCabang"></div>
+            <div class="c4"><label>No. Kontrak</label><input id="htKontrak"></div>
+            <div class="c3"><label>No. Polisi</label><input id="htNopol"></div>
+            <div class="c3"><label>Nama Konsumen</label><input id="htNama"></div>
+          </div></div>
+          <div class="ht-sek"><div class="ht-sek-j">Kendaraan</div><div class="ht-g">
+            <div class="c4"><label>Type</label><input id="htType"></div>
+            <div class="c2"><label>Tahun</label><input id="htTahun" inputmode="numeric"></div>
+            <div class="c2"><label>Warna</label><input id="htWarna"></div>
+            <div class="c4"><label>Chasis</label><input id="htChasis"></div>
+            <div class="c6"><label>Engine</label><input id="htEngine"></div>
+            <div class="c6"><label>Odometer</label><input id="htOdo" placeholder="angka atau T.A"></div>
+          </div></div>
+          <div class="ht-sek"><div class="ht-sek-j">Tarikan &amp; nilai</div><div class="ht-g">
+            <div class="c3"><label>Tgl Tarik</label><input id="htTgl" type="date"></div>
+            <div class="c3"><label>STNK (berlaku s/d)</label><input id="htStnk" placeholder="tanggal atau T.A"></div>
+            <div class="c2"><label>OTR Baru (Rp)</label><input id="htOtr" inputmode="numeric"></div>
+            <div class="c2"><label>O/S (Rp)</label><input id="htOs" inputmode="numeric"></div>
+            <div class="c2"><label>Pajak + Adm (Rp)</label><input id="htPajak" inputmode="numeric" placeholder="0"></div>
+          </div></div>
+          <div class="ht-sek"><div class="ht-sek-j">Kondisi unit</div>
             <textarea id="htKondisi" placeholder="mis. KUNCI KONTAK ADA SATU, STNK ADA, SPION TDK ADA, BAN 60%, BODY LECET ..."></textarea></div>
         </div>
 
@@ -4623,9 +4629,9 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     }
     function isi(id, v) { if (v !== '' && v != null) $(id).value = v; }
       isi('htCabang', u.cabang); isi('htKontrak', u.noKontrak); isi('htNopol', u.nopol); isi('htType', u.type); isi('htTahun', u.tahun);
-      isi('htChasis', u.chasis); isi('htEngine', u.engine); isi('htStnk', u.stnk); isi('htTgl', tglIso(u.tglTarik)); isi('htOdo', u.odometer); isi('htOs', angka(u.os) || '');
+      isi('htChasis', u.chasis); isi('htEngine', u.engine); isi('htNama', u.nama); isi('htStnk', u.stnk); isi('htOtr', angka(u.otr) || ''); isi('htTgl', tglIso(u.tglTarik)); isi('htOdo', u.odometer); isi('htOs', angka(u.os) || '');
       if (/R4|MOBIL/i.test(u.kategori)) $('htKat').value = 'R4'; else if (/R2|MOTOR/i.test(u.kategori)) $('htKat').value = 'R2';
-      status('htStatusAI', 'Data unit terisi dari ' + (u.sumber || 'database') + '. Lengkapi OTR baru, kondisi, dan foto.', 'ok'); deprManual = false; hitung(); mrpManual = false; htMrpIsi(true);
+      status('htStatusAI', ''); deprManual = false; hitung(); mrpManual = false; htMrpIsi(true);
     }).catch(function (e) { $('htBtnCari').closest('.ht-card').classList.remove('ht-blur'); status('htStatusAI', e.message, 'err'); });
   };
 
@@ -26563,6 +26569,21 @@ body.cmd-blur .tab-content.active, .ht-blur { filter: blur(5px); opacity: .6; po
 .mb-nc-kosong p { margin: 0; font-size: 13px; }
 body.dark .mb-nc-kosong, body.cmd .mb-nc-kosong { background: #0f1b30; border-color: #2b3a55; color: #94a3b8; }
 body.dark .mb-nc-kosong h3, body.cmd .mb-nc-kosong h3 { color: #f1f5f9; }
+
+/* ---- Data unit: rapi & modern ---- */
+#tabHargaTerbentuk .ht-unit { padding: 20px 22px 22px; }
+#tabHargaTerbentuk .ht-cari { position: relative; display: flex; align-items: center; margin-bottom: 18px; }
+#tabHargaTerbentuk .ht-cari > svg { position: absolute; left: 16px; color: var(--ht-mut); pointer-events: none; }
+#tabHargaTerbentuk .ht-cari input { height: 50px; padding: 0 18px 0 46px; font-size: 16px; font-weight: 600; letter-spacing: .3px; border-radius: 14px; border: 1.5px solid var(--ht-line); }
+#tabHargaTerbentuk .ht-cari input:focus { outline: none; border-color: #4f6df5; box-shadow: 0 0 0 4px rgba(79,109,245,.16); }
+#tabHargaTerbentuk .ht-g { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px 14px; }
+#tabHargaTerbentuk .ht-g .c2 { grid-column: span 2; } #tabHargaTerbentuk .ht-g .c3 { grid-column: span 3; } #tabHargaTerbentuk .ht-g .c4 { grid-column: span 4; } #tabHargaTerbentuk .ht-g .c6 { grid-column: span 6; }
+#tabHargaTerbentuk .ht-sek { margin-top: 16px; padding: 14px 16px 16px; border: 1px solid var(--ht-line); border-radius: 14px; background: color-mix(in srgb, var(--ht-bg2) 45%, transparent); }
+#tabHargaTerbentuk .ht-sek-j { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 11.5px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase; color: var(--ht-tx); }
+#tabHargaTerbentuk .ht-sek-j::before { content: ""; width: 4px; height: 14px; border-radius: 3px; background: linear-gradient(180deg, #4f6df5, #8b5cf6); }
+#tabHargaTerbentuk .ht-unit input:focus, #tabHargaTerbentuk .ht-unit select:focus, #tabHargaTerbentuk .ht-unit textarea:focus { outline: none; border-color: #4f6df5; box-shadow: 0 0 0 3px rgba(79,109,245,.14); }
+@media (max-width: 900px) { #tabHargaTerbentuk .ht-g .c2 { grid-column: span 4; } #tabHargaTerbentuk .ht-g .c3 { grid-column: span 6; } #tabHargaTerbentuk .ht-g .c4 { grid-column: span 6; } }
+@media (max-width: 560px) { #tabHargaTerbentuk .ht-g > div { grid-column: span 12 !important; } }
 /* keterangan kecil di bawah judul halaman dihapus */
 .topbar #pageSub { display: none !important; }
 </style>
