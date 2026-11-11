@@ -3537,7 +3537,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       kcStatus('error','Fungsi <b>fetchKpiCmoList()</b> belum ada di Apps Script. Pastikan file KpiCmo.gs sudah dipasang & deploy ulang.'); return;
     }
     KC.sedangList = true;
-    kcStatus('loading','Memuat daftar CMO...');
+    kcStatus('loading','');
     kcAmbil('fetchKpiCmoList', [kcToken()], function(res){
       KC.sedangList = false;
       if (res && res.ok === false){ kcStatus('error','Server KPI CMO: ' + kcEsc(kcPesanServer(res) || 'gagal memuat daftar CMO')); return; }
@@ -3576,7 +3576,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     if (pr.error){ kcStatus('error', pr.error); return; }
 
     KC.sedang = true;
-    kcStatus('loading','Memuat data KPI CMO...');
+    kcStatus('loading','');
     var hasil = [], i = 0;
     (function lanjut(){
       var p = pr.list[i];
@@ -3587,7 +3587,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
           return;
         }
         hasil.push(res); i++;
-        if (i < pr.list.length){ kcStatus('loading','Memuat data KPI CMO... (' + i + '/' + pr.list.length + ')'); lanjut(); return; }
+        if (i < pr.list.length){ kcStatus('loading',''); lanjut(); return; }
         KC.sedang = false;
         var d = kcNormalisasi(kcGabung(hasil, pr.label));
         if (!d){ kcStatus('error','Data KPI CMO kosong atau format tidak dikenali.'); return; }
@@ -3781,12 +3781,13 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
 <button class="tab-btn" data-tab="tabTarikanJualan" id="btnTab4" onclick="switchTab('tabTarikanJualan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="6" height="12" rx="1"/><rect x="15" y="4" width="6" height="17" rx="1"/></svg><span>TARIKAN</span></button>
 <button class="tab-btn" data-tab="tabLor" id="btnTabLor" onclick="switchTab('tabLor')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg><span>LOR</span></button>
 <button class="tab-btn" data-tab="tabAging" id="btnTabAging" onclick="switchTab('tabAging')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg><span>AGING STOCK</span></button></div></div>
-        <div class="nav-grup" id="grupMarketing"><button type="button" class="tab-btn nav-grup-btn" onclick="grupToggle('grupMarketing')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1zM15.5 8.5a5 5 0 0 1 0 7M18 6a8 8 0 0 1 0 12"/></svg><span>MARKETING</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button><div class="nav-grup-isi"><button class="tab-btn" data-tab="tabPembiayaan" id="btnTabPembiayaan" onclick="switchTab('tabPembiayaan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="4" width="3" height="14"/></svg><span>PEMBIAYAAN PERDEALER (NMC)</span></button>
+        <div class="nav-grup" id="grupMarketing"><button type="button" class="tab-btn nav-grup-btn" onclick="grupToggle('grupMarketing')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg><span>MARKETING</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button><div class="nav-grup-isi"><button class="tab-btn" data-tab="tabPembiayaan" id="btnTabPembiayaan" onclick="switchTab('tabPembiayaan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="4" width="3" height="14"/></svg><span>PEMBIAYAAN PERDEALER (NMC)</span></button>
 <button class="tab-btn" data-tab="tabTac" id="btnTabTac" onclick="switchTab('tabTac')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h4"/><path d="M13.5 16.5l1.8 1.8 3.2-3.6"/></svg><span>PERHITUNGAN TAC</span></button>
 <button class="tab-btn" data-tab="tabKpiCmo" id="btnTabKpiCmo" onclick="switchTab('tabKpiCmo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>KPI CMO</span></button>
-<button class="tab-btn" data-tab="tabSorumBekas" id="btnTabSorum" onclick="switchTab('tabSorumBekas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h4M7 12h2M7 16h2"/><path d="M14 12h3M14 16h3"/></svg><span>USED CAR (UC)</span></button>
-<button class="tab-btn" data-tab="tabMotorBekas" id="btnTabMotor" onclick="switchTab('tabMotorBekas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M5.5 17h6l4-7h3M12 10h4M9 6h3l2 4"/></svg><span>USED MOTORCYCLE (UMC)</span></button>
-<button class="tab-btn" data-tab="tabDanaTunai" id="btnTabDatun" onclick="switchTab('tabDanaTunai')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/></svg><span>DATUN</span></button></div></div>
+<button class="tab-btn" data-tab="tabMobilBaru" id="btnTabMobilBaru" onclick="switchTab('tabMobilBaru')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M3 13l2-5a2 2 0 0 1 1.9-1.4h10.2A2 2 0 0 1 19 8l2 5v4h-3M3 13v4h3"/><circle cx="7.5" cy="17" r="1.8"/><circle cx="16.5" cy="17" r="1.8"/></svg><span>MOBIL BARU (NC)</span></button></div></div>
+        <div class="nav-grup" id="grupKalkulator"><button type="button" class="tab-btn nav-grup-btn" onclick="grupToggle('grupKalkulator')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h2M12 10h2M16 10h.01M8 14h2M12 14h2M16 14h.01M8 18h2M12 18h2M16 18h.01"/></svg><span>KALKULATOR</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button><div class="nav-grup-isi"><button class="tab-btn" data-tab="tabSorumBekas" id="btnTabSorum" onclick="switchTab('tabSorumBekas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h4M7 12h2M7 16h2"/><path d="M14 12h3M14 16h3"/></svg><span>Used Car</span></button>
+<button class="tab-btn" data-tab="tabDanaTunai" id="btnTabDatun" onclick="switchTab('tabDanaTunai')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/></svg><span>Dana Tunai</span></button>
+<button class="tab-btn" data-tab="tabMotorBekas" id="btnTabMotor" onclick="switchTab('tabMotorBekas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M5.5 17h6l4-7h3M12 10h4M9 6h3l2 4"/></svg><span>Motor Bekas</span></button></div></div>
         <button class="tab-btn" data-tab="tabGrafik" id="btnTab3" onclick="switchTab('tabGrafik')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg><span>Grafik &amp; Analisis</span></button>
         <button class="tab-btn" data-tab="tabTipeTahun" id="btnTabTipe" onclick="switchTab('tabTipeTahun')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11M3 14h18"/></svg><span>Tipe &amp; Tahun Tarikan</span></button>
         <button class="tab-btn" data-tab="tabLapMeeting" id="btnTab5" onclick="switchTab('tabLapMeeting')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg><span>Auto Lap Meeting</span></button>
@@ -3883,7 +3884,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
             <option value="R4">R4</option>
           </select>
         </div>
-        <div class="dk-chipbar" id="dkStatus">Memuat data...</div>
+        <div class="dk-chipbar" id="dkStatus"></div>
       </div>
 
       <div class="dk-grid" id="dkKpi"></div>
@@ -4207,6 +4208,15 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
 
     <!-- ==================== TAB: HARGA AYDA ==================== -->
     <!-- ==================== MENU HARGA TERBENTUK (khusus HO) ==================== -->
+        <!-- ==================== MOBIL BARU (NC) ==================== -->
+    <div id="tabMobilBaru" class="tab-content">
+      <div class="mb-nc-kosong">
+        <svg viewBox="0 0 24 24" width="46" height="46" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 17h14M3 13l2-5a2 2 0 0 1 1.9-1.4h10.2A2 2 0 0 1 19 8l2 5v4h-3M3 13v4h3"/><circle cx="7.5" cy="17" r="1.8"/><circle cx="16.5" cy="17" r="1.8"/></svg>
+        <h3>Mobil Baru (NC)</h3>
+        <p>Menunggu data inventory.</p>
+      </div>
+    </div>
+
     <div id="tabHargaTerbentuk" class="tab-content">
       <style>
         #tabHargaTerbentuk { --ht-bg:#fff; --ht-bg2:#f4f7fb; --ht-line:#dfe5ee; --ht-tx:#0f2540; --ht-mut:#64748b; --ht-pri:#2563eb; --ht-ok:#16a34a; --ht-bad:#dc2626; --ht-warn:#d97706; }
@@ -5252,14 +5262,14 @@ body.dark #tabKpiCmo .kci-card.kci-tot,body.cmd #tabKpiCmo .kci-card.kci-tot{bac
         </div>
         <div class="ke-bar">
           <button id="keAjukan" class="btn-excel" disabled>Unduh &amp; Ajukan Terpilih</button>
-          <span class="sisa" id="keTerpilih">Belum ada unit dicentang.</span>
+          <span class="sisa" id="keTerpilih"></span>
         </div>
         <div class="ke-bar" id="keBarMemo" style="display:none">
           <input type="text" id="keMemoMassal" placeholder="Nomor memo untuk unit terpilih"
                  style="padding:8px 10px;border:1px solid #dfe4ea;border-radius:6px;font-size:13px;min-width:230px">
           <button id="keMemoFile" class="ke-mini">Pilih PDF harga</button>
           <button id="keMemoSimpan" class="btn-excel" disabled>Simpan Memo ke Terpilih</button>
-          <span class="sisa" id="keMemoInfo">Satu memo &amp; satu PDF untuk semua unit yang dicentang.</span>
+          <span class="sisa" id="keMemoInfo"></span>
         </div>
         <div id="keStatusBox" class="status"></div>
         <div class="ke-ringkas" id="keRingkas"></div>
@@ -5298,7 +5308,7 @@ body.dark #tabKpiCmo .kci-card.kci-tot,body.cmd #tabKpiCmo .kci-card.kci-tot{bac
 
       <div class="card">
         <h2>Filter Analisis Wilayah, Cabang, Mutasi &amp; Kategori (R2/R4)</h2>
-        <div id="gSumberInfo" style="font-size:11.5px; color:#64748b; margin:-4px 0 10px 0;">Memuat closing terakhir dari DATABASE STOCK&hellip;</div>
+        <div id="gSumberInfo" style="font-size:11.5px; color:#64748b; margin:-4px 0 10px 0;"></div>
         <div class="controls">
           <div class="field">
             <label>Pilih Wilayah</label>
@@ -6028,7 +6038,7 @@ body.dark #tabKpiCmo .kci-card.kci-tot,body.cmd #tabKpiCmo .kci-card.kci-tot{bac
               <option value="2025">2025</option>
             </select>
           </div>
-          <div class="summary" id="lmStatus" style="font-style: italic;">Memuat data laporan meeting...</div>
+          <div class="summary" id="lmStatus" style="font-style: italic;"></div>
         </div>
         <div class="lm-export-actions">
           <button class="btn-excel" id="lmExcelBtn">Download Excel</button>
@@ -7072,7 +7082,6 @@ body.dark #tabKpiCmo .kci-card.kci-tot,body.cmd #tabKpiCmo .kci-card.kci-tot{bac
           <p>Seret foto / screenshot daftar TAC ke sini, tempel dengan <b>Ctrl+V</b>, atau pilih file.</p>
           <button type="button" class="btn-excel" id="tacBtnGambar" style="background:#1d4ed8;">Pilih Gambar</button>
           <button type="button" class="btn-excel" id="tacBtnExcel">Pilih File Excel</button>
-          <small>Gambar dibaca AI lalu dicocokkan dengan ketentuan Maksimal Refund Finco. File Excel dibaca langsung tanpa AI, jadi lebih akurat.</small>
           <input type="file" id="tacFileGambar" accept="image/*" hidden>
           <input type="file" id="tacFileExcel" accept=".xlsx,.xls,.csv" hidden>
           <div class="tac-pratinjau" id="tacPratinjau"><img id="tacPratinjauImg" alt=""><div><b id="tacPratinjauNama"></b><span id="tacPratinjauKet"></span></div></div>
@@ -8370,6 +8379,7 @@ function checkEnter(e) {
 const JUDUL_TAB = {
   tabDashboard:      ["Dashboard", "Ringkasan stock langsung dari Database"],
   tabDataTarikan:    ["Data Tarikan", ""],
+  tabMobilBaru:      ["Mobil Baru (NC)", ""],
   tabListHarga:      ["List Harga", "Daftar harga memo, tertinggi, terendah, dan peninjauan"],
   tabHargaAyda:      ["Harga AYDA", "Harga tertinggi, terendah, peninjauan, dan surat konfirmasi"],
   tabHargaTerbentuk: ["Harga Terbentuk", "Harga pasar dikurangi perbaikan dan depresiasi, siap jadi Excel pengajuan"],
@@ -10406,7 +10416,7 @@ function parseTarikanRowsTJ(rows) {
 function loadTarikanJualanData() {
   tjLoadedCount = 0;
   const statusEl = document.getElementById("tjLoadStatus");
-  if (statusEl) statusEl.innerText = "Memuat data Tarikan & Jualan...";
+  if (statusEl) statusEl.innerText = "";
 
   google.script.run
     .withSuccessHandler(function(rows) {
@@ -12123,7 +12133,7 @@ async function lmBuatPpt() {
   }
   const btn = document.getElementById('lmPptBtn');
   if (btn) { btn.disabled = true; btn.innerText = 'Membuat PPT...'; }
-  lmPptSetStatus('Mengambil data dari Google Sheets...');
+  lmPptSetStatus('');
 
   try {
     const [rawTotal, rawR4, rawR2, rawTarikMobil, rawTarikMotor, rawJualMobil, rawJualMotor] = await Promise.all([
@@ -13270,7 +13280,7 @@ function renderDashboard() {
   if (!wrap) return;
   const statusEl = document.getElementById("dkStatus");
   if (!allData || allData.length === 0) {
-    wrap.innerHTML = '<div class="dk-empty">Menunggu data dari Google Sheets...</div>';
+    wrap.innerHTML = '';
     return;
   }
 
@@ -16482,7 +16492,7 @@ function taParsePeriode(v) {
 
 function loadTarikanAllData() {
   const st = document.getElementById("saStatus");
-  if (st) st.innerText = "Memuat sheet TARIKAN ALL...";
+  if (st) st.innerText = "";
   google.script.run
     .withSuccessHandler(function(rows) {
       taRows = rows || [];
@@ -21647,8 +21657,10 @@ function rkFile(k, f) {
   function haSetStatus(pesan, tipe) {
     var el = document.getElementById("haStatus");
     if (!el) return;
+    if ((tipe || "loading") === "loading") { el.innerText = ""; el.className = "status"; el.style.display = "none"; cmdBlur(true); return; }
+    cmdBlur(false);
     el.innerText = pesan;
-    el.className = "status " + (tipe || "loading");
+    el.className = "status " + tipe;
     el.style.display = tipe === "success" ? "none" : "";   /* keterangan "berhasil mengambil" tidak ditampilkan */
   }
 
@@ -22431,8 +22443,8 @@ function rkFile(k, f) {
     if (tombol) tombol.disabled = pilih.length === 0;
     if (info) {
       info.textContent = pilih.length
-        ? pilih.length + " unit dicentang. Berkasnya akan diunduh jadi satu PDF, lalu ditandai sedang pengajuan."
-        : "Belum ada unit dicentang.";
+        ? pilih.length + " unit dicentang"
+        : "";
     }
     var semua = keEl("keCekSemua");
     if (semua) {
@@ -22454,7 +22466,7 @@ function rkFile(k, f) {
         ? "PDF siap: " + keFileMassal.name + " — diunggah sekali untuk " + pilih.length + " unit."
         : (adaLink && !nomor
             ? "Sebagian unit terpilih sudah punya PDF harga; link itu akan dipakai ulang."
-            : "Satu memo & satu PDF untuk semua unit yang dicentang.");
+            : "");
     }
   }
 
@@ -26516,6 +26528,11 @@ body.dark .topbar #pageSub, body.cmd .topbar #pageSub { color: #aab6cf !importan
 .tab-content.active { transition: filter .3s ease, opacity .3s ease; }
 body.cmd-blur .tab-content.active, .ht-blur { filter: blur(5px); opacity: .6; pointer-events: none; user-select: none; }
 .ht-blur { transition: filter .25s ease, opacity .25s ease; }
+.mb-nc-kosong { max-width: 520px; margin: 70px auto; padding: 40px 28px; text-align: center; border-radius: 18px; background: #fff; border: 1px dashed #cbd5e1; color: #64748b; }
+.mb-nc-kosong h3 { margin: 12px 0 4px; font-size: 18px; color: #0f2540; }
+.mb-nc-kosong p { margin: 0; font-size: 13px; }
+body.dark .mb-nc-kosong, body.cmd .mb-nc-kosong { background: #0f1b30; border-color: #2b3a55; color: #94a3b8; }
+body.dark .mb-nc-kosong h3, body.cmd .mb-nc-kosong h3 { color: #f1f5f9; }
 /* keterangan kecil di bawah judul halaman dihapus */
 .topbar #pageSub { display: none !important; }
 </style>
