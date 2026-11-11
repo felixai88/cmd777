@@ -3772,27 +3772,26 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
 
       <nav class="side-nav">
         <button class="tab-btn active" data-tab="tabDashboard" id="btnTab0" onclick="switchTab('tabDashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Dashboard</span></button>
-        <button class="tab-btn" data-tab="tabDataTarikan" id="btnTab1" onclick="switchTab('tabDataTarikan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10"/></svg><span>Data Tarikan CMD</span></button>
-        <button class="tab-btn" data-tab="tabListHarga" id="btnTab2" onclick="switchTab('tabListHarga')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4L12 22l-9-9V3h10l7.6 7.6a2 2 0 010 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg><span>List Harga</span></button>
-        <button class="tab-btn" data-tab="tabHargaAyda" id="btnTabHargaAyda" onclick="switchTab('tabHargaAyda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h3"/></svg><span>Harga AYDA</span></button>
-        <button class="tab-btn" data-tab="tabHargaTerbentuk" id="btnTabHargaTerbentuk" onclick="switchTab('tabHargaTerbentuk')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 6H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Harga Terbentuk</span></button>
-        <button class="tab-btn" data-tab="tabKelengkapan" id="btnTabKelengkapan" onclick="switchTab('tabKelengkapan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg><span>Kelengkapan Estimasi</span></button>
-        <button class="tab-btn" data-tab="tabBastGudang" id="btnTabBast" onclick="switchTab('tabBastGudang')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-6 9 6v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 21v-7h6v7"/></svg><span>Form BAST Gudang</span></button>
+        <div class="nav-grup" id="grupAyda"><button type="button" class="tab-btn nav-grup-btn" onclick="grupToggle('grupAyda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg><span>AYDA</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button><div class="nav-grup-isi"><button class="tab-btn" data-tab="tabDataTarikan" id="btnTab1" onclick="switchTab('tabDataTarikan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10"/></svg><span>DATA TARIKAN</span></button>
+<button class="tab-btn" data-tab="tabHargaTerbentuk" id="btnTabHargaTerbentuk" onclick="switchTab('tabHargaTerbentuk')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 6H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>HARGA TERBENTUK</span></button>
+<button class="tab-btn" data-tab="tabListHarga" id="btnTab2" onclick="switchTab('tabListHarga')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4L12 22l-9-9V3h10l7.6 7.6a2 2 0 010 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg><span>LIST HARGA</span></button>
+<button class="tab-btn" data-tab="tabHargaAyda" id="btnTabHargaAyda" onclick="switchTab('tabHargaAyda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h3"/></svg><span>HARGA AYDA</span></button>
+<button class="tab-btn" data-tab="tabBastGudang" id="btnTabBast" onclick="switchTab('tabBastGudang')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-6 9 6v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 21v-7h6v7"/></svg><span>BAST GUDANG</span></button>
+<button class="tab-btn" data-tab="tabKelengkapan" id="btnTabKelengkapan" onclick="switchTab('tabKelengkapan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 14l2 2 4-4"/></svg><span>KELENGKAPAN</span></button>
+<button class="tab-btn" data-tab="tabTarikanJualan" id="btnTab4" onclick="switchTab('tabTarikanJualan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="6" height="12" rx="1"/><rect x="15" y="4" width="6" height="17" rx="1"/></svg><span>TARIKAN</span></button>
+<button class="tab-btn" data-tab="tabLor" id="btnTabLor" onclick="switchTab('tabLor')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg><span>LOR</span></button>
+<button class="tab-btn" data-tab="tabAging" id="btnTabAging" onclick="switchTab('tabAging')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg><span>AGING STOCK</span></button></div></div>
+        <div class="nav-grup" id="grupMarketing"><button type="button" class="tab-btn nav-grup-btn" onclick="grupToggle('grupMarketing')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11v2a1 1 0 0 0 1 1h2l5 4V6L6 10H4a1 1 0 0 0-1 1zM15.5 8.5a5 5 0 0 1 0 7M18 6a8 8 0 0 1 0 12"/></svg><span>MARKETING</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button><div class="nav-grup-isi"><button class="tab-btn" data-tab="tabPembiayaan" id="btnTabPembiayaan" onclick="switchTab('tabPembiayaan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="4" width="3" height="14"/></svg><span>PEMBIAYAAN PERDEALER (NMC)</span></button>
+<button class="tab-btn" data-tab="tabTac" id="btnTabTac" onclick="switchTab('tabTac')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h4"/><path d="M13.5 16.5l1.8 1.8 3.2-3.6"/></svg><span>PERHITUNGAN TAC</span></button>
+<button class="tab-btn" data-tab="tabKpiCmo" id="btnTabKpiCmo" onclick="switchTab('tabKpiCmo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>KPI CMO</span></button>
+<button class="tab-btn" data-tab="tabSorumBekas" id="btnTabSorum" onclick="switchTab('tabSorumBekas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h4M7 12h2M7 16h2"/><path d="M14 12h3M14 16h3"/></svg><span>USED CAR (UC)</span></button>
+<button class="tab-btn" data-tab="tabMotorBekas" id="btnTabMotor" onclick="switchTab('tabMotorBekas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M5.5 17h6l4-7h3M12 10h4M9 6h3l2 4"/></svg><span>USED MOTORCYCLE (UMC)</span></button>
+<button class="tab-btn" data-tab="tabDanaTunai" id="btnTabDatun" onclick="switchTab('tabDanaTunai')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/></svg><span>DATUN</span></button></div></div>
         <button class="tab-btn" data-tab="tabGrafik" id="btnTab3" onclick="switchTab('tabGrafik')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/></svg><span>Grafik &amp; Analisis</span></button>
-        <button class="tab-btn" data-tab="tabTarikanJualan" id="btnTab4" onclick="switchTab('tabTarikanJualan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="6" height="12" rx="1"/><rect x="15" y="4" width="6" height="17" rx="1"/></svg><span>Tarikan</span></button>
-        <button class="tab-btn" data-tab="tabLor" id="btnTabLor" onclick="switchTab('tabLor')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg><span>LOR</span></button>
-        <button class="tab-btn" data-tab="tabAging" id="btnTabAging" onclick="switchTab('tabAging')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg><span>Aging Stock</span></button>
         <button class="tab-btn" data-tab="tabTipeTahun" id="btnTabTipe" onclick="switchTab('tabTipeTahun')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11M3 14h18"/></svg><span>Tipe &amp; Tahun Tarikan</span></button>
-        <button class="tab-btn" data-tab="tabPembiayaan" id="btnTabPembiayaan" onclick="switchTab('tabPembiayaan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="4" width="3" height="14"/></svg><span>Pembiayaan Dealer</span></button>
-        <button class="tab-btn" data-tab="tabKpiCmo" id="btnTabKpiCmo" onclick="switchTab('tabKpiCmo')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>KPI CMO</span></button>
-        <button class="tab-btn" data-tab="tabTac" id="btnTabTac" onclick="switchTab('tabTac')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h4"/><path d="M13.5 16.5l1.8 1.8 3.2-3.6"/></svg><span>Perhitungan TAC Dealer</span></button>
         <button class="tab-btn" data-tab="tabLapMeeting" id="btnTab5" onclick="switchTab('tabLapMeeting')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg><span>Auto Lap Meeting</span></button>
         <button class="tab-btn" data-tab="tabStockAyda" id="btnTab6" onclick="switchTab('tabStockAyda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></svg><span>Stock AYDA (Meeting)</span></button>
-        <div class="nav-grup" id="grupKalkulator"><button type="button" class="tab-btn nav-grup-btn" id="btnGrupKalkulator" onclick="grupKalkulatorToggle()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M8 6h8M8 10h2M12 10h2M16 10h.01M8 14h2M12 14h2M16 14h.01M8 18h2M12 18h2M16 18h.01"/></svg><span>KALKULATOR</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button><div class="nav-grup-isi"><button class="tab-btn" data-tab="tabSorumBekas" id="btnTabSorum" onclick="switchTab('tabSorumBekas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 8h4M7 12h2M7 16h2"/><path d="M14 12h3M14 16h3"/></svg><span>Used Car</span></button>
-        <button class="tab-btn" data-tab="tabDanaTunai" id="btnTabDatun" onclick="switchTab('tabDanaTunai')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/></svg><span>Dana Tunai</span></button>
-        <button class="tab-btn" data-tab="tabMotorBekas" id="btnTabMotor" onclick="switchTab('tabMotorBekas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17" r="3.5"/><circle cx="18.5" cy="17" r="3.5"/><path d="M5.5 17h6l4-7h3M12 10h4M9 6h3l2 4"/></svg><span>Motor Bekas</span></button></div></div>
         <button class="tab-btn" data-tab="tabGabungBerkas" id="btnTabGabung" onclick="switchTab('tabGabungBerkas')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="m9 15 2 2 4-4"/></svg><span>GABUNG BERKAS</span></button>
-        
         <button class="tab-btn" data-tab="tabKelolaUser" id="btnTabUser" onclick="switchTab('tabKelolaUser')" style="display:none;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c1-3.5 3.6-5.5 6.5-5.5s5.5 2 6.5 5.5"/><path d="M18 8v6M15 11h6"/></svg><span>KELOLA PENGGUNA</span></button>
       </nav>
 
@@ -3838,7 +3837,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       <div class="peta-banner" id="petaJangkauan">
         <div class="peta-teks">
           <span class="peta-pill"></span>
-          <h3>SUMATERA<br>BAGIAN UTARA</h3>
+          <h3>WILAYAH<br>SUMATERA</h3>
           <ul class="peta-daftar">
             <li><i class="pi-aceh-pin"></i>Aceh</li>
             <li><i class="pi-sumut-pin"></i>Sumatera Utara</li>
@@ -4275,7 +4274,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <div class="ht-card">
           <h3>Data unit</h3>
           <div class="ht-row" style="margin-bottom:12px;">
-            <div style="flex:1;min-width:220px;"><label>Ketik No. Kontrak / No. Polisi — data unit terisi otomatis dari sheet HARGA</label><input id="htCari" placeholder="mis. 20102251202504 atau BL4492NAR"></div>
+            <div style="flex:1;min-width:220px;"><label>Ketik No. Kontrak / No. Polisi — data unit terisi otomatis dari DATABASE STOCK</label><input id="htCari" placeholder="mis. 20102251202504 atau BL4492NAR"></div>
             <button class="ht-btn abu" id="htBtnCari" type="button">Cari unit</button>
           </div>
           <div class="ht-grid">
@@ -4307,7 +4306,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
           <div class="ht-row">
             <div><label>Foto unit / kerusakan (tanpa batas)</label><input id="htFile" type="file" accept="image/*" multiple></div>
             <div><label>MRP dari sheet MRP (otomatis, boleh diubah)</label><input id="htMrp" inputmode="numeric" placeholder="terisi otomatis dari Type + Tahun"><div id="htMrpInfo" style="font-size:11.5px;color:var(--ht-mut,#64748b);margin-top:4px;line-height:1.35;"></div></div>
-            <div class="ht-info biru" style="margin:0;align-self:end;"><b>Selalu aktif:</b> riwayat harga internal + pencarian harga iklan di web</div>
+            
           </div>
           <div class="ht-foto" id="htFotoList"></div>
           <div class="ht-row" style="margin-top:14px;"><button class="ht-btn" id="htBtnAI" type="button">&#10024; Taksir dengan AI</button></div>
@@ -4393,13 +4392,13 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
 
       <!-- ===== 4. ATURAN ===== -->
       <div class="ht-p" id="htPAturan">
-        <div class="ht-info biru">Isi tabel di bawah dengan aturan HO. <b>Depresiasi</b> dijumlahkan dari semua baris yang cocok: baris berkondisi <b>NORMAL</b> (umur) selalu dihitung, baris <b>LAKA RINGAN / LAKA BERAT / TYPE HIGH</b> ikut ditambahkan bila unit termasuk kondisi itu. Baris berkondisi <b>SEMUA</b> berlaku selalu. Selama tabel kosong, depresiasi bernilai 0 dan Anda bisa mengisinya manual per unit.</div>
-        <div class="ht-card"><h3>Aturan depresiasi</h3>
-          <div class="ht-wrap"><table><thead><tr><th>Kategori</th><th>Umur min (thn)</th><th>Umur maks (thn)</th><th>Kondisi</th><th>Dasar</th><th>Tipe</th><th>Nilai</th><th>Catatan</th><th></th></tr></thead><tbody id="htAtDepr"></tbody></table></div>
+        
+        <div class="ht-card"><h3>Depresiasi per type</h3>
+          <div class="ht-wrap"><table><thead><tr><th>Kategori</th><th>Type (kata kunci)</th><th>Umur min (thn)</th><th>Umur maks (thn)</th><th>Kondisi</th><th>Dasar</th><th>Tipe</th><th>Nilai</th><th>Catatan</th><th></th></tr></thead><tbody id="htAtDepr"></tbody></table></div>
           <div class="ht-row" style="margin-top:8px;"><button class="ht-btn abu kecil" data-tambah="depr" type="button">+ Tambah aturan</button></div></div>
-        <div class="ht-card"><h3>Range nego (harga terendah = harga terbentuk &minus; range nego)</h3>
-          <div class="ht-wrap"><table><thead><tr><th>Kategori</th><th>Tipe</th><th>Nilai</th><th>Catatan</th><th></th></tr></thead><tbody id="htAtNego"></tbody></table></div>
-          <div class="ht-row" style="margin-top:8px;"><button class="ht-btn abu kecil" data-tambah="nego" type="button">+ Tambah aturan</button></div></div>
+        <div class="ht-card"><h3>Range nego</h3>
+          <div class="ht-wrap"><table><thead><tr><th>Kategori</th><th>Kondisi</th><th>Harga di atas (Rp)</th><th>Harga s.d. (Rp)</th><th>Tipe</th><th>Nilai</th><th>Catatan</th><th></th></tr></thead><tbody id="htAtNego"></tbody></table></div>
+          <div class="ht-row" style="margin-top:8px;"><button class="ht-btn abu kecil" data-tambah="nego" type="button">+ Tambah aturan</button> <button class="ht-btn abu kecil" id="htBtnContohNego" type="button">Isi rentang contoh</button></div></div>
         <div class="ht-card"><h3>Tarif perbaikan acuan untuk AI (opsional)</h3>
           <div class="ht-wrap"><table><thead><tr><th>Kategori</th><th>Bagian</th><th>Tingkat</th><th>Biaya (Rp)</th><th>Catatan</th><th></th></tr></thead><tbody id="htAtTarif"></tbody></table></div>
           <div class="ht-row" style="margin-top:8px;"><button class="ht-btn abu kecil" data-tambah="tarif" type="button">+ Tambah tarif</button></div></div>
@@ -4450,11 +4449,11 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
   function sel(opts, v, cls) { return '<select data-k="' + cls + '">' + opts.map(function (o) { return '<option' + (String(v) === o ? ' selected' : '') + '>' + o + '</option>'; }).join('') + '</select>'; }
   function renderAturan() {
     $('htAtDepr').innerHTML = aturan.depresiasi.map(function (r, i) {
-      return '<tr data-t="depr" data-i="' + i + '"><td>' + sel(['SEMUA', 'R2', 'R4'], r.KATEGORI || 'SEMUA', 'KATEGORI') + '</td><td><input data-k="UMUR_MIN" value="' + esc(r.UMUR_MIN) + '" size="3"></td><td><input data-k="UMUR_MAX" value="' + esc(r.UMUR_MAX) + '" size="3"></td><td>' + sel(KOND, r.KONDISI || 'NORMAL', 'KONDISI') + '</td><td>' + sel(['PASAR', 'OTR'], r.DASAR || 'PASAR', 'DASAR') + '</td><td>' + sel(['PERSEN', 'RUPIAH'], r.TIPE || 'PERSEN', 'TIPE') + '</td><td><input data-k="NILAI" value="' + esc(r.NILAI) + '"></td><td><input data-k="CATATAN" value="' + esc(r.CATATAN) + '"></td><td><button class="ht-btn merah kecil" data-hapus="1" type="button">&times;</button></td></tr>';
-    }).join('') || '<tr><td colspan="9" style="color:var(--ht-mut)">Belum ada aturan. Klik "+ Tambah aturan".</td></tr>';
+      return '<tr data-t="depr" data-i="' + i + '"><td>' + sel(['SEMUA', 'R2', 'R4'], r.KATEGORI || 'SEMUA', 'KATEGORI') + '</td><td><input data-k="TYPE_UNIT" value="' + esc(r.TYPE_UNIT) + '" placeholder="kosong = semua type" size="14"></td><td><input data-k="UMUR_MIN" value="' + esc(r.UMUR_MIN) + '" size="3"></td><td><input data-k="UMUR_MAX" value="' + esc(r.UMUR_MAX) + '" size="3"></td><td>' + sel(KOND, r.KONDISI || 'NORMAL', 'KONDISI') + '</td><td>' + sel(['PASAR', 'OTR'], r.DASAR || 'PASAR', 'DASAR') + '</td><td>' + sel(['PERSEN', 'RUPIAH'], r.TIPE || 'PERSEN', 'TIPE') + '</td><td><input data-k="NILAI" value="' + esc(r.NILAI) + '"></td><td><input data-k="CATATAN" value="' + esc(r.CATATAN) + '"></td><td><button class="ht-btn merah kecil" data-hapus="1" type="button">&times;</button></td></tr>';
+    }).join('') || '<tr><td colspan="10" style="color:var(--ht-mut)">Belum ada aturan.</td></tr>';
     $('htAtNego').innerHTML = aturan.nego.map(function (r, i) {
-      return '<tr data-t="nego" data-i="' + i + '"><td>' + sel(['SEMUA', 'R2', 'R4'], r.KATEGORI || 'SEMUA', 'KATEGORI') + '</td><td>' + sel(['PERSEN', 'RUPIAH'], r.TIPE || 'PERSEN', 'TIPE') + '</td><td><input data-k="NILAI" value="' + esc(r.NILAI) + '"></td><td><input data-k="CATATAN" value="' + esc(r.CATATAN) + '"></td><td><button class="ht-btn merah kecil" data-hapus="1" type="button">&times;</button></td></tr>';
-    }).join('') || '<tr><td colspan="5" style="color:var(--ht-mut)">Belum ada aturan nego.</td></tr>';
+      return '<tr data-t="nego" data-i="' + i + '"><td>' + sel(['SEMUA', 'R2', 'R4'], r.KATEGORI || 'SEMUA', 'KATEGORI') + '</td><td>' + sel(['NORMAL', 'LAKA RINGAN', 'LAKA BERAT'], r.KONDISI || 'NORMAL', 'KONDISI') + '</td><td><input data-k="HARGA_MIN" value="' + esc(r.HARGA_MIN) + '" size="10"></td><td><input data-k="HARGA_MAKS" value="' + esc(r.HARGA_MAKS) + '" size="10"></td><td>' + sel(['RUPIAH', 'PERSEN'], r.TIPE || (r.KONDISI && r.KONDISI !== 'NORMAL' ? 'PERSEN' : 'RUPIAH'), 'TIPE') + '</td><td><input data-k="NILAI" value="' + esc(r.NILAI) + '"></td><td><input data-k="CATATAN" value="' + esc(r.CATATAN) + '"></td><td><button class="ht-btn merah kecil" data-hapus="1" type="button">&times;</button></td></tr>';
+    }).join('') || '<tr><td colspan="8" style="color:var(--ht-mut)">Belum ada aturan nego.</td></tr>';
     $('htAtTarif').innerHTML = aturan.tarif.map(function (r, i) {
       return '<tr data-t="tarif" data-i="' + i + '"><td>' + sel(['SEMUA', 'R2', 'R4'], r.KATEGORI || 'SEMUA', 'KATEGORI') + '</td><td><input data-k="BAGIAN" value="' + esc(r.BAGIAN) + '"></td><td>' + sel(['RINGAN', 'SEDANG', 'BERAT'], r.TINGKAT || 'RINGAN', 'TINGKAT') + '</td><td><input data-k="BIAYA" value="' + esc(r.BIAYA) + '"></td><td><input data-k="CATATAN" value="' + esc(r.CATATAN) + '"></td><td><button class="ht-btn merah kecil" data-hapus="1" type="button">&times;</button></td></tr>';
     }).join('') || '<tr><td colspan="6" style="color:var(--ht-mut)">Belum ada tarif.</td></tr>';
@@ -4473,6 +4472,13 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     var h = e.target.closest('[data-hapus]');
     if (h) { bacaAturanDariLayar(); var tr = h.closest('tr'); var tipe = tr.dataset.t; aturan[tipe === 'depr' ? 'depresiasi' : tipe].splice(+tr.dataset.i, 1); renderAturan(); }
   });
+  $('htBtnContohNego').onclick = function () {
+    bacaAturanDariLayar();
+    var r = [['', '7500000'], ['7500000', '15000000'], ['15000000', '25000000'], ['25000000', '']];
+    r.forEach(function (x) { aturan.nego.push({ KATEGORI: 'SEMUA', KONDISI: 'NORMAL', HARGA_MIN: x[0], HARGA_MAKS: x[1], TIPE: 'RUPIAH', NILAI: '' }); });
+    ['LAKA RINGAN', 'LAKA BERAT'].forEach(function (k) { aturan.nego.push({ KATEGORI: 'SEMUA', KONDISI: k, HARGA_MIN: '', HARGA_MAKS: '', TIPE: 'PERSEN', NILAI: '' }); });
+    renderAturan();
+  };
   $('htBtnSimpanAturan').onclick = function () {
     bacaAturanDariLayar(); status('htStatusAturan', 'Menyimpan...');
     run('htSimpanAturan', aturan).then(function () { status('htStatusAturan', 'Aturan tersimpan di server.', 'ok'); hitung(); })
@@ -4486,40 +4492,60 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
 
   /* ---------- mesin hitung ---------- */
   function umurUnit() { var t = angka($('htTahun').value); return t ? (new Date().getFullYear() - t) : 0; }
-  function hitungDepresiasi(kat, umur, laka, high, pasar, otr) {
+  function kataType(t) { return String(t || '').toUpperCase().split(/[^A-Z0-9]+/).filter(function (w) { return w.length >= 2; }); }
+  function cocokType(kunci, tipeUnit) {
+    var k = kataType(kunci); if (!k.length) return null;          /* null = aturan umum */
+    var u = ' ' + kataType(tipeUnit).join(' ') + ' ';
+    return k.every(function (w) { return u.indexOf(' ' + w + ' ') >= 0 || (w.length >= 4 && u.indexOf(w) >= 0); });
+  }
+  function hitungDepresiasi(kat, umur, laka, high, pasar, otr, tipeUnit) {
     var aktif = ['SEMUA', 'NORMAL']; if (laka === 'ringan') aktif.push('LAKA RINGAN'); if (laka === 'berat') aktif.push('LAKA BERAT'); if (high) aktif.push('TYPE HIGH');
-    var total = 0, dipakai = 0;
+    var umum = [], khusus = [];
     aturan.depresiasi.forEach(function (r) {
       var k = String(r.KATEGORI || 'SEMUA').toUpperCase(); if (k !== 'SEMUA' && k !== kat) return;
       if (aktif.indexOf(String(r.KONDISI || 'NORMAL').toUpperCase()) < 0) return;
       var mn = r.UMUR_MIN === '' || r.UMUR_MIN == null ? -1e9 : angka(r.UMUR_MIN), mx = r.UMUR_MAX === '' || r.UMUR_MAX == null ? 1e9 : angka(r.UMUR_MAX);
       if (umur < mn || umur > mx) return;
-      var nilai = angka(r.NILAI); if (!nilai) return;
-      var dasar = String(r.DASAR || 'PASAR').toUpperCase() === 'OTR' ? otr : pasar;
-      total += String(r.TIPE || 'PERSEN').toUpperCase() === 'RUPIAH' ? nilai : dasar * nilai / 100; dipakai++;
+      if (!angka(r.NILAI)) return;
+      var ct = cocokType(r.TYPE_UNIT, tipeUnit);
+      if (ct === null) umum.push(r); else if (ct) khusus.push(r);
     });
-    return { nilai: total, dipakai: dipakai };
+    var pakai = khusus.length ? khusus : umum, total = 0;
+    pakai.forEach(function (r) {
+      var nilai = angka(r.NILAI), dasar = String(r.DASAR || 'PASAR').toUpperCase() === 'OTR' ? otr : pasar;
+      total += String(r.TIPE || 'PERSEN').toUpperCase() === 'RUPIAH' ? nilai : dasar * nilai / 100;
+    });
+    return { nilai: total, dipakai: pakai.length, khusus: khusus.length > 0 };
   }
-  function hitungNego(kat, terbentuk) {
-    for (var i = 0; i < aturan.nego.length; i++) {
-      var r = aturan.nego[i], k = String(r.KATEGORI || 'SEMUA').toUpperCase(); if (k !== 'SEMUA' && k !== kat) continue;
-      var n = angka(r.NILAI); if (!n) continue;
-      return String(r.TIPE || 'PERSEN').toUpperCase() === 'RUPIAH' ? n : terbentuk * n / 100;
+  function hitungNego(kat, terbentuk, laka) {
+    var kond = laka === 'ringan' ? 'LAKA RINGAN' : laka === 'berat' ? 'LAKA BERAT' : 'NORMAL';
+    function cari(kk) {
+      for (var i = 0; i < aturan.nego.length; i++) {
+        var r = aturan.nego[i], k = String(r.KATEGORI || 'SEMUA').toUpperCase(); if (k !== 'SEMUA' && k !== kat) continue;
+        if (String(r.KONDISI || 'NORMAL').toUpperCase() !== kk) continue;
+        var mn = angka(r.HARGA_MIN), mx = angka(r.HARGA_MAKS);
+        if (mn && terbentuk <= mn) continue;
+        if (mx && terbentuk > mx) continue;
+        var n = angka(r.NILAI); if (!n) continue;
+        return String(r.TIPE || 'RUPIAH').toUpperCase() === 'PERSEN' ? terbentuk * n / 100 : n;
+      }
+      return null;
     }
-    return 0;
+    var v = cari(kond); if (v === null && kond !== 'NORMAL') v = cari('NORMAL');
+    return v || 0;
   }
   var deprManual = false;
   function hitung(dariInputDepr) {
     var kat = $('htKat').value, pasar = angka($('htPasar').value), pajak = angka($('htPajak2').value), perb = angka($('htPerbaikan').value), otr = angka($('htOtr').value), os = angka($('htOs').value);
     var info = '';
     if (!dariInputDepr) {
-      var d = hitungDepresiasi(kat, umurUnit(), $('htLaka').value, $('htHigh').value === '1', pasar, otr);
+      var d = hitungDepresiasi(kat, umurUnit(), $('htLaka').value, $('htHigh').value === '1', pasar, otr, $('htType').value);
       if (!deprManual) $('htDepr').value = d.nilai ? Math.round(d.nilai) : '';
-      info = d.dipakai ? '<div class="ht-info ok">Depresiasi dihitung dari ' + d.dipakai + ' aturan (umur unit ' + umurUnit() + ' thn).</div>' : '<div class="ht-info warn">Belum ada aturan depresiasi yang cocok (tabel di menu 4 masih kosong atau tidak ada baris untuk umur/kondisi ini). Isi depresiasi manual atau lengkapi aturan.</div>';
+      info = d.dipakai ? '<div class="ht-info ok">Depresiasi dari ' + d.dipakai + ' aturan' + (d.khusus ? ' khusus type ini' : '') + ' (umur ' + umurUnit() + ' thn).</div>' : '<div class="ht-info warn">Belum ada aturan depresiasi yang cocok (tabel di menu 4 masih kosong atau tidak ada baris untuk umur/kondisi ini). Isi depresiasi manual atau lengkapi aturan.</div>';
       $('htInfoAturan').innerHTML = info;
     }
     var depr = angka($('htDepr').value), biaya = pajak + perb;
-    var terbentuk = Math.max(0, pasar - biaya - depr), nego = hitungNego(kat, terbentuk), terendah = Math.max(0, terbentuk - nego);
+    var terbentuk = Math.max(0, pasar - biaya - depr), nego = hitungNego(kat, terbentuk, $('htLaka').value), terendah = Math.max(0, terbentuk - nego);
     $('htOPasar').textContent = rp(pasar); $('htOBiaya').textContent = rp(biaya); $('htODepr').textContent = rp(depr);
     $('htOTerbentuk').textContent = rp(terbentuk); $('htOTerendah').textContent = nego ? rp(terendah) + ' (nego ' + rp(nego) + ')' : 'aturan nego kosong';
     $('htOLor').textContent = os ? (((terbentuk - os) / os) * 100).toFixed(1) + '%' : '-';
@@ -4528,7 +4554,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
   ['htPasar', 'htPajak2', 'htPerbaikan'].forEach(function (id) { $(id).addEventListener('input', function () { hitung(); }); });
   $('htDepr').addEventListener('input', function () { deprManual = true; hitung(true); });
   ['htLaka', 'htHigh'].forEach(function (id) { $(id).addEventListener('change', function () { deprManual = false; hitung(); }); });
-  ['htKat', 'htTahun', 'htOtr', 'htOs'].forEach(function (id) { $(id).addEventListener('input', function () { deprManual = false; hitung(); }); });
+  ['htKat', 'htTahun', 'htOtr', 'htOs', 'htType'].forEach(function (id) { $(id).addEventListener('input', function () { deprManual = false; hitung(); }); });
   $('htPajak').addEventListener('input', function () { $('htPajak2').value = $('htPajak').value; hitung(); });
 
   /* ---------- cari unit ---------- */
@@ -4544,15 +4570,26 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
   $('htCari').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); cariOtomatis(true); } });
   $('htCari').addEventListener('change', function () { cariOtomatis(false); });
   $('htBtnCari').onclick = function () {
-    var k = $('htCari').value.trim(); if (!k) return; status('htStatusAI', 'Mencari unit...');
+    var k = $('htCari').value.trim(); if (!k) return; var kartu = $('htBtnCari').closest('.ht-card'); status('htStatusAI', ''); kartu.classList.add('ht-blur');
     run('htCariUnit', k).then(function (u) {
+      kartu.classList.remove('ht-blur');
       if (!u) { status('htStatusAI', 'Unit tidak ditemukan di DATABASE STOCK maupun sheet HARGA. Isi manual saja.', 'err'); return; }
-      function isi(id, v) { if (v !== '' && v != null) $(id).value = v; }
+      function tglIso(v) {
+      v = String(v == null ? '' : v).trim(); if (!v) return '';
+      var m = v.match(/^(\d{4})-(\d{1,2})-(\d{1,2})/); if (m) return m[1] + '-' + ('0' + m[2]).slice(-2) + '-' + ('0' + m[3]).slice(-2);
+      var bln = { jan: 1, feb: 2, mar: 3, apr: 4, mei: 5, may: 5, jun: 6, jul: 7, agu: 8, aug: 8, ags: 8, sep: 9, okt: 10, oct: 10, nov: 11, des: 12, dec: 12 };
+      m = v.match(/^(\d{1,2})[\/\-. ]([A-Za-z]{3})[A-Za-z]*[\/\-. ](\d{2,4})/);
+      if (m && bln[m[2].toLowerCase()]) { var y = +m[3]; if (y < 100) y += 2000; return y + '-' + ('0' + bln[m[2].toLowerCase()]).slice(-2) + '-' + ('0' + m[1]).slice(-2); }
+      m = v.match(/^(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{2,4})/);
+      if (m) { var yy = +m[3]; if (yy < 100) yy += 2000; return yy + '-' + ('0' + m[2]).slice(-2) + '-' + ('0' + m[1]).slice(-2); }
+      return '';
+    }
+    function isi(id, v) { if (v !== '' && v != null) $(id).value = v; }
       isi('htCabang', u.cabang); isi('htKontrak', u.noKontrak); isi('htNopol', u.nopol); isi('htType', u.type); isi('htTahun', u.tahun);
-      isi('htChasis', u.chasis); isi('htEngine', u.engine); isi('htStnk', u.stnk); isi('htOdo', u.odometer); isi('htOs', angka(u.os) || '');
+      isi('htChasis', u.chasis); isi('htEngine', u.engine); isi('htStnk', u.stnk); isi('htTgl', tglIso(u.tglTarik)); isi('htOdo', u.odometer); isi('htOs', angka(u.os) || '');
       if (/R4|MOBIL/i.test(u.kategori)) $('htKat').value = 'R4'; else if (/R2|MOTOR/i.test(u.kategori)) $('htKat').value = 'R2';
       status('htStatusAI', 'Data unit terisi dari ' + (u.sumber || 'database') + '. Lengkapi OTR baru, kondisi, dan foto.', 'ok'); deprManual = false; hitung(); mrpManual = false; htMrpIsi(true);
-    }).catch(function (e) { status('htStatusAI', e.message, 'err'); });
+    }).catch(function (e) { $('htBtnCari').closest('.ht-card').classList.remove('ht-blur'); status('htStatusAI', e.message, 'err'); });
   };
 
   /* ---------- foto ---------- */
@@ -4653,7 +4690,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     if (!tipe || !tahun) return Promise.resolve();
     if (mrpManual && !paksa) return Promise.resolve();
     var motor = /MOTOR|R2|SEPEDA/i.test($('htKat').value || ''), token = ++mrpToken;
-    htMrpInfo('Mencari di sheet ' + (motor ? 'MRP MOTOR BEKAS' : 'MRP SORUM BEKAS') + '...');
+    htMrpInfo('');
     return htMrpData(motor).then(function (data) {
       if (token !== mrpToken) return;
       if (!data) { htMrpInfo('Sheet MRP belum bisa dimuat. Isi manual bila perlu.', true); return; }
@@ -8332,7 +8369,7 @@ function checkEnter(e) {
 
 const JUDUL_TAB = {
   tabDashboard:      ["Dashboard", "Ringkasan stock langsung dari Database"],
-  tabDataTarikan:    ["Data Tarikan CMD", "Detail unit tarikan lengkap dengan status harga"],
+  tabDataTarikan:    ["Data Tarikan", ""],
   tabListHarga:      ["List Harga", "Daftar harga memo, tertinggi, terendah, dan peninjauan"],
   tabHargaAyda:      ["Harga AYDA", "Harga tertinggi, terendah, peninjauan, dan surat konfirmasi"],
   tabHargaTerbentuk: ["Harga Terbentuk", "Harga pasar dikurangi perbaikan dan depresiasi, siap jadi Excel pengajuan"],
@@ -8430,9 +8467,17 @@ const JENIS_COLORS = {
 };
 const PALETTE = ["#0f2540", "#1f7a4d", "#c9781f", "#a32222", "#3b82f6", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981", "#06b6d4", "#64748b"];
 
+var _cmdBlurT = null;
+function cmdBlur(on) {
+  document.body.classList.toggle('cmd-blur', !!on);
+  clearTimeout(_cmdBlurT);
+  if (on) _cmdBlurT = setTimeout(function () { document.body.classList.remove('cmd-blur'); }, 45000);   /* pengaman */
+}
 function setStatus(message, type) {
   const status = document.getElementById("status");
   if (window.cmdAutoSenyap && (type === "loading" || type === "success")) return;   /* auto refresh: tanpa banner */
+  if (type === "loading") { status.innerText = ""; status.className = "status"; status.style.display = "none"; cmdBlur(true); return; }
+  cmdBlur(false);
   status.innerText = message;
   status.className = "status " + type;
   status.style.display = type === "success" ? "none" : "";   /* pesan "Berhasil mengambil ..." tidak perlu tampil */
@@ -8975,7 +9020,7 @@ if(exBtn) {
     const belumSemua = totalSemua - sudahSemua;
 
     const aoa = [
-      ["REKAP STATUS HARGA - DATA TARIKAN CMD"],
+      ["REKAP STATUS HARGA - DATA TARIKAN"],
       ["Cabang", cabang],
       ["Kategori", kategori],
       ["Tahun Tarik", tahun],
@@ -12154,7 +12199,7 @@ async function lmBuatPpt() {
 function loadLapMeetingData() {
   lmPopulateFilters();
   const statusEl = document.getElementById("lmStatus");
-  if (statusEl) statusEl.innerText = "Mengambil data Laporan Meeting dari Google Sheets...";
+  if (statusEl) statusEl.innerText = "";
 
   google.script.run
     .withSuccessHandler(function(result) {
@@ -26462,7 +26507,17 @@ body.dark .topbar #pageSub, body.cmd .topbar #pageSub { color: #aab6cf !importan
 .nav-grup-btn .chev { margin-left: auto; width: 14px; height: 14px; transition: transform .2s; flex: 0 0 auto; }
 .nav-grup.buka .nav-grup-btn .chev { transform: rotate(90deg); }
 .nav-grup-btn.induk-aktif { box-shadow: inset 3px 0 0 #6366f1; }
-.nav-grup-isi .tab-btn { font-size: 12.5px; }
+.nav-grup-isi .tab-btn span { white-space: normal; line-height: 1.2; font-size: 11.5px; letter-spacing: 0; }
+.nav-grup-isi .tab-btn { height: auto; min-height: 38px; padding-top: 7px; padding-bottom: 7px; }
+#htPAturan select { min-width: 104px; }
+
+
+/* loading = konten memburam, tanpa teks */
+.tab-content.active { transition: filter .3s ease, opacity .3s ease; }
+body.cmd-blur .tab-content.active, .ht-blur { filter: blur(5px); opacity: .6; pointer-events: none; user-select: none; }
+.ht-blur { transition: filter .25s ease, opacity .25s ease; }
+/* keterangan kecil di bawah judul halaman dihapus */
+.topbar #pageSub { display: none !important; }
 </style>
 
 <div id="cmdAi" style="display:none;">
@@ -26673,17 +26728,15 @@ body.dark .topbar #pageSub, body.cmd .topbar #pageSub { color: #aab6cf !importan
 
 <script id="grupKalkulatorSkrip">
 (function () {
-  var g = function () { return document.getElementById('grupKalkulator'); };
-  window.grupKalkulatorToggle = function () { var e = g(); if (e) e.classList.toggle('buka'); };
+  window.grupToggle = function (id) { var e = document.getElementById(id); if (e) e.classList.toggle('buka'); };
   function sinkron() {
-    var e = g(); if (!e) return;
-    var anak = Array.prototype.slice.call(e.querySelectorAll('.nav-grup-isi .tab-btn'));
-    var tampil = anak.some(function (b) { return getComputedStyle(b).display !== 'none'; });
-    e.style.display = tampil ? '' : 'none';
-    var aktif = anak.some(function (b) { return b.classList.contains('active'); });
-    var btn = document.getElementById('btnGrupKalkulator'); btn.classList.toggle('induk-aktif', aktif);
-    btn.classList.remove('active');
-    if (aktif) e.classList.add('buka');
+    Array.prototype.forEach.call(document.querySelectorAll('.nav-grup'), function (e) {
+      var anak = Array.prototype.slice.call(e.querySelectorAll('.nav-grup-isi .tab-btn'));
+      e.style.display = anak.some(function (b) { return getComputedStyle(b).display !== 'none'; }) ? '' : 'none';
+      var aktif = anak.some(function (b) { return b.classList.contains('active'); });
+      var btn = e.querySelector('.nav-grup-btn'); btn.classList.toggle('induk-aktif', aktif); btn.classList.remove('active');
+      if (aktif) e.classList.add('buka');
+    });
   }
   var asli = window.switchTab;
   if (typeof asli === 'function') window.switchTab = function () { var r = asli.apply(this, arguments); sinkron(); return r; };
