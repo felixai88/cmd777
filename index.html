@@ -23,7 +23,7 @@
   var API_URL = "https://script.google.com/macros/s/AKfycbyHq_BImTkC5CzRBZMg0bboLhMXb5OX4QB0zZ_ApcfSupfzGQDvZ8OQl9Jl5MIsGlKc8w/exec";
 
   /* fungsi server yang boleh dipanggil — harus sama dengan daftar di Api.gs */
-  var FUNGSI = ["loginUser", "cekSesi", "logoutUser", "gantiPassword", "daftarUser", "tambahUser", "resetPasswordUser", "ubahStatusUser", "fetchSheetCSV", "fetchJualanCSV", "fetchTarikanCSV", "fetchLapMeetingCSV", "fetchTarikanAllCSV", "fetchStockTahunan", "bacaSheetAman", "getPeriodeMrp", "getPeriodeMrpSorum", "getMrpSorumBekas", "getMatriksRangka", "bacaStnk", "bacaAppraisal", "catatVerifikasi", "fetchHargaAyda", "getDataPembiayaan", "bacaTacDealer", "ajukanPengajuanHarga", "ambilBerkasDrive", "fetchKelengkapanEstimasi", "fetchPengajuanHarga", "simpanBastLengkap", "simpanGabunganEstimasi", "simpanKeteranganEstimasi", "simpanMemoHarga", "simpanMemoMassal", "unggahBerkasEstimasi", "getDaftarCabang", "fetchKpiCmoList", "fetchKpiCmoDetail", "simpanAktivitas", "simpanProspek", "updateStatusProspek", "fetchAktivitasList", "fetchProspekList", "fetchKpiCmoRekap", "asistenKoreksi", "htAmbilAturan", "htSimpanAturan", "htCariUnit", "htTaksirAI", "htSimpanUnit", "htDaftar", "htHapus"];
+  var FUNGSI = ["fetchSisaStockAyda", "simpanHargaTerjual", "fetchStockLive", "loginUser", "cekSesi", "logoutUser", "gantiPassword", "daftarUser", "tambahUser", "resetPasswordUser", "ubahStatusUser", "fetchSheetCSV", "fetchJualanCSV", "fetchTarikanCSV", "fetchLapMeetingCSV", "fetchTarikanAllCSV", "fetchStockTahunan", "bacaSheetAman", "getPeriodeMrp", "getPeriodeMrpSorum", "getMrpSorumBekas", "getMatriksRangka", "bacaStnk", "bacaAppraisal", "catatVerifikasi", "fetchHargaAyda", "getDataPembiayaan", "bacaTacDealer", "ajukanPengajuanHarga", "ambilBerkasDrive", "fetchKelengkapanEstimasi", "fetchPengajuanHarga", "simpanBastLengkap", "simpanGabunganEstimasi", "simpanKeteranganEstimasi", "simpanMemoHarga", "simpanMemoMassal", "unggahBerkasEstimasi", "getDaftarCabang", "fetchKpiCmoList", "fetchKpiCmoDetail", "simpanAktivitas", "simpanProspek", "updateStatusProspek", "fetchAktivitasList", "fetchProspekList", "fetchKpiCmoRekap", "asistenKoreksi", "htAmbilAturan", "htSimpanAturan", "htCariUnit", "htTaksirAI", "htSimpanUnit", "htDaftar", "htHapus"];
 
   function panggil(nama, args, ok, gagal, obj) {
     fetch(API_URL, {
@@ -5277,6 +5277,82 @@ body.dark #tabKpiCmo .kci-card.kci-tot,body.cmd #tabKpiCmo .kci-card.kci-tot{bac
             body.cmd #tabKpiCmo .kc-box-pct{color:#fff;}
             /* ==================== AKHIR KPI CMO ==================== */
       </style>
+
+            <!-- ===== SISA STOCK AYDA (DATABASE STOCK) + INPUT HARGA TERJUAL (HO, 1x) ===== -->
+      <style>
+        #ssCard .ss-lock { color:#15803d; font-weight:600; white-space:nowrap; }
+        #ssCard .ss-lock small { color:#6b7a90; font-weight:400; }
+        #ssCard .ss-chip { display:inline-block; border-radius:999px; padding:2px 10px; font-size:11.5px; font-weight:700; white-space:nowrap; }
+        #ssCard .ss-terjual { background:#dcfce7; color:#166534; }
+        #ssCard .ss-belum { background:#f1f5f9; color:#64748b; font-weight:600; }
+        #ssCard .ss-ket { font-size:11.5px; color:#64748b; margin-top:3px; max-width:200px; white-space:normal; }
+        body.dark #ssCard .ss-terjual { background:#14532d; color:#bbf7d0; }
+        body.dark #ssCard .ss-belum { background:#1e293b; color:#94a3b8; }
+        #ssCard .ss-btn { border:1px solid #1d4ed8; background:#fff; color:#1d4ed8; border-radius:6px; padding:3px 10px; font-size:12px; cursor:pointer; }
+        #ssCard .ss-btn.ok { background:#1d4ed8; color:#fff; }
+        #ssCard .ss-btn.no { border-color:#9aa6b5; color:#64748b; }
+        #ssCard .ss-btn:disabled { opacity:.5; cursor:wait; }
+        #ssCard .ss-in { padding:4px 6px; font-size:12px; border:1px solid #c5cdd8; border-radius:6px; width:120px; margin-bottom:4px; display:block; }
+        #ssCard .ss-edit-on { background:#b45309 !important; color:#fff !important; }
+        #ssCard tr.ss-edit-row td { background:#fffbeb; }
+        body.dark #ssCard tr.ss-edit-row td { background:#2a2410; }
+        body.dark #ssCard .ss-lock { color:#4ade80; }
+        body.dark #ssCard .ss-btn { background:transparent; color:#7dabff; border-color:#7dabff; }
+        body.dark #ssCard .ss-btn.ok { background:#2f5fd0; color:#fff; }
+        body.dark #ssCard .ss-in { background:#16233a; border-color:#22334f; color:#e2e8f0; }
+      </style>
+      <div class="card" id="ssCard">
+        <h2>Sisa Stock AYDA &mdash; sheet DATABASE STOCK</h2>
+        <div class="controls">
+          <div class="field">
+            <label>Bulan (kolom B)</label>
+            <select id="ssBulan">
+              <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
+              <option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option>
+              <option value="7">Juli</option><option value="8">Agustus</option><option value="9" selected>September</option>
+              <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Cabang</label>
+            <select id="ssCabang"><option value="">Semua Cabang</option></select>
+          </div>
+          <div class="field">
+            <label>Harga Terjual</label>
+            <select id="ssStatusF">
+              <option value="">Semua</option>
+              <option value="BELUM">Belum diisi</option>
+              <option value="SUDAH">Sudah diisi</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Cari Kontrak / Plat / Chasis</label>
+            <input type="text" id="ssCari" placeholder="Ketik...">
+          </div>
+          <div class="summary">Total: <strong id="ssTotal">0</strong></div>
+        </div>
+        <div class="actions">
+          <button id="ssMuat" class="btn-excel">Muat Sisa Stock</button>
+          <button id="ssEditBtn" class="btn-pdf" style="display:none;">Mode Edit Harga Terjual: OFF</button>
+          <button id="ssExcel" class="btn-excel">Download Excel</button>
+          <span class="hint" id="ssHint">Hanya blok terbaru di DATABASE STOCK yang kolom B (bulan)-nya = bulan terpilih.</span>
+        </div>
+        <div id="ssStatusBox" class="status"></div>
+        <div class="ha-ringkas" id="ssRingkas" style="margin-top:12px;"></div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>CABANG</th><th>NOMOR KONTRAK</th><th>PLAT</th><th>TIPE</th><th>THN</th>
+                <th>CHASIS</th><th>ENGINE</th><th>TGL TARIK</th><th>MUTASI</th><th>KONDISI</th>
+                <th>OS</th><th>HARGA TERTINGGI</th><th>HARGA TERENDAH</th><th>PENINJAUAN 1</th><th>PENINJAUAN 2</th><th>PENINJAUAN 3</th><th>TGL TERJUAL</th><th>HARGA TERJUAL</th><th>KETERANGAN</th>
+              </tr>
+            </thead>
+            <tbody id="ssBody"><tr><td colspan="19" class="empty">Menunggu data...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <!-- ===== AKHIR SISA STOCK AYDA ===== -->
 
       <div class="card">
         <h2>Filter Harga AYDA</h2>
@@ -22268,6 +22344,225 @@ function rkFile(k, f) {
 })();
 
 </script>
+
+<script>
+/* ==========================================================
+   SISA STOCK AYDA (sheet DATABASE STOCK) + INPUT HARGA TERJUAL
+   - Menampilkan unit yang masih jadi stock pada akhir bulan terpilih (default: September).
+   - Role HO: mode edit untuk mengisi HARGA TERJUAL. Hanya BISA 1 KALI per unit;
+     setelah terisi, baris terkunci (dijaga lagi di server: simpanHargaTerjual).
+   ========================================================== */
+(function () {
+  "use strict";
+  var ssData = [], ssMuatStatus = "belum", ssEdit = false, ssBaris = -1, ssSibuk = false;
+
+  function $(id) { return document.getElementById(id); }
+  function esc(v) { return (typeof escapeHtml === "function") ? escapeHtml(v) : String(v == null ? "" : v); }
+  function ssHO() { try { return String(currentLoginRole || "").toUpperCase() === "HO"; } catch (e) { return false; } }
+  function rp(n) { return (n === null || n === undefined || n === "" || isNaN(Number(n))) ? "-" : Number(n).toLocaleString("id-ID"); }
+
+  function ssPesan(teks, tipe) {
+    var el = $("ssStatusBox"); if (!el) return;
+    if (!teks) { el.style.display = "none"; el.textContent = ""; return; }
+    el.style.display = ""; el.className = "status " + (tipe || "loading"); el.textContent = teks;
+  }
+
+  function ssFilter() {
+    var cab = ($("ssCabang") || {}).value || "";
+    var st = ($("ssStatusF") || {}).value || "";
+    var cari = (($("ssCari") || {}).value || "").toLowerCase().trim();
+    var hasil = [];
+    ssData.forEach(function (r, i) {
+      if (cab && r.cabang !== cab) return;
+      if (st === "BELUM" && r.hargaTerjual) return;
+      if (st === "SUDAH" && !r.hargaTerjual) return;
+      if (cari && (r.kontrak + " " + r.nopol + " " + r.chasis + " " + r.engine + " " + r.tipe).toLowerCase().indexOf(cari) < 0) return;
+      hasil.push({ r: r, i: i });
+    });
+    return hasil;
+  }
+
+  function ssIsiCabang() {
+    var sel = $("ssCabang"); if (!sel) return;
+    var lama = sel.value, set = {};
+    ssData.forEach(function (r) { if (r.cabang) set[r.cabang] = true; });
+    var daftar = Object.keys(set).sort();
+    sel.innerHTML = '<option value="">Semua Cabang</option>' +
+      daftar.map(function (c) { return '<option value="' + esc(c) + '">' + esc(c) + '</option>'; }).join("");
+    sel.value = daftar.indexOf(lama) >= 0 ? lama : "";
+  }
+
+  function ssSelTerjual(item) {
+    var r = item.r, i = item.i;
+    if (r.hargaTerjual) return '<span class="ss-lock">Rp ' + rp(r.hargaTerjual) + ' <small>&#128274; terkunci</small></span>';
+    if (r.live === false) return '<span class="ha-kosong" title="Arsip closing bulan lama">arsip</span>';
+    if (!(ssEdit && ssHO())) return '<span class="ha-kosong">-</span>';
+    if (ssBaris === i) {
+      var hariIni = new Date(); var iso = hariIni.getFullYear() + "-" + ("0" + (hariIni.getMonth() + 1)).slice(-2) + "-" + ("0" + hariIni.getDate()).slice(-2);
+      return '<input id="ssInH" class="ss-in" type="text" inputmode="numeric" placeholder="Harga terjual">' +
+        '<input id="ssInT" class="ss-in" type="date" value="' + iso + '" title="Tanggal terjual">' +
+        '<input id="ssInK" class="ss-in" type="text" maxlength="300" placeholder="Keterangan (opsional)" style="width:170px;">' +
+        '<button class="ss-btn ok" data-aksi="simpan" data-i="' + i + '"' + (ssSibuk ? " disabled" : "") + '>Simpan</button> ' +
+        '<button class="ss-btn no" data-aksi="batal"' + (ssSibuk ? " disabled" : "") + '>Batal</button>';
+    }
+    return '<button class="ss-btn" data-aksi="input" data-i="' + i + '">Input harga</button>';
+  }
+
+  function ssRender() {
+    var tb = $("ssBody"); if (!tb) return;
+    var data = ssFilter();
+    if ($("ssTotal")) $("ssTotal").textContent = data.length.toLocaleString("id-ID");
+
+    var os = 0, sudah = 0;
+    data.forEach(function (x) { var n = Number(x.r.os); if (!isNaN(n)) os += n; if (x.r.hargaTerjual) sudah++; });
+    if ($("ssRingkas")) $("ssRingkas").innerHTML =
+      '<div class="ha-pil">Unit: <b>' + data.length.toLocaleString("id-ID") + '</b></div>' +
+      '<div class="ha-pil">Total OS: <b>Rp ' + Math.round(os).toLocaleString("id-ID") + '</b></div>' +
+      '<div class="ha-pil">Harga terjual terisi: <b>' + sudah.toLocaleString("id-ID") + '</b></div>' +
+      '<div class="ha-pil">Belum diisi: <b>' + (data.length - sudah).toLocaleString("id-ID") + '</b></div>';
+
+    if (!data.length) {
+      tb.innerHTML = '<tr><td colspan="19" class="empty">' + (ssMuatStatus === "siap" ? "Tidak ada sisa stock" : "Menunggu data...") + '</td></tr>';
+      return;
+    }
+    tb.innerHTML = data.map(function (x) {
+      var r = x.r;
+      return '<tr' + (ssBaris === x.i ? ' class="ss-edit-row"' : '') + '>' +
+        '<td>' + esc(r.cabang) + '</td><td>' + esc(r.kontrak) + '</td><td>' + esc(r.nopol) + '</td>' +
+        '<td>' + esc(r.tipe) + '</td><td>' + esc(r.thnUnit) + '</td><td>' + esc(r.chasis) + '</td>' +
+        '<td>' + esc(r.engine) + '</td><td>' + esc(r.tglTarik) + '</td><td>' + esc(r.mutasi) + '</td>' +
+        '<td>' + esc(r.kondisi) + '</td>' +
+        '<td class="ha-num">' + rp(r.os) + '</td><td class="ha-num">' + rp(r.hTertinggi) + '</td>' +
+        '<td class="ha-num">' + rp(r.hTerendah) + '</td>' +
+        '<td class="ha-num">' + rp(r.pen1) + '</td><td class="ha-num">' + rp(r.pen2) + '</td><td class="ha-num">' + rp(r.pen3) + '</td><td>' + (r.tglTerjual ? esc(r.tglTerjual) : '<span class="ha-kosong">-</span>') + '</td>' +
+        '<td class="ha-num">' + ssSelTerjual(x) + '</td>' +
+        '<td>' + (r.hargaTerjual ? '<span class="ss-chip ss-terjual">TERJUAL</span>' + (r.ket ? '<div class="ss-ket">' + esc(r.ket) + '</div>' : '')
+                                 : '<span class="ss-chip ss-belum">Belum terjual</span>') + '</td></tr>';
+    }).join("");
+  }
+
+  var ssAutoInit = false, ssAutoBulan = false;
+  function ssMuat() {
+    if (ssMuatStatus === "muat") return;
+    if (typeof google === "undefined" || !google.script || !google.script.run || typeof google.script.run.fetchSisaStockAyda !== "function") {
+      ssMuatStatus = "gagal";
+      ssPesan("Fungsi fetchSisaStockAyda() belum ada di Apps Script. Tambahkan StockSisa.gs dan deploy ulang.", "error");
+      return;
+    }
+    if (!ssAutoInit) { ssAutoInit = true; ssAutoBulan = true; $("ssBulan").value = String(new Date().getMonth() + 1); }
+    var bulan = parseInt($("ssBulan").value, 10);
+    ssMuatStatus = "muat"; ssBaris = -1;
+    ssPesan("Mengambil sisa stock dari DATABASE STOCK...", "loading");
+    google.script.run
+      .withSuccessHandler(function (res) {
+        ssData = (res && res.rows) || [];
+        ssMuatStatus = "siap";
+        ssIsiCabang(); ssRender();
+        var info = "Stock bulan " + ((res && res.periode) || "") + ": " + ssData.length.toLocaleString("id-ID") + " unit.";
+        if (res && res.barisAwal > 0) info += " (baris " + res.barisAwal + "\u2013" + res.barisAkhir + " di sheet)";
+        if (res && res.jumlahSold > 0) info += " Termasuk " + res.jumlahSold + " unit terjual (dari sheet SOLD).";
+        /* buka otomatis di bulan berjalan; kalau blok bulan ini belum ada, mundur ke bulan lalu */
+        if (ssAutoBulan && ssData.length === 0) {
+          ssAutoBulan = false;
+          var bm = parseInt($("ssBulan").value, 10) - 1; if (bm < 1) bm = 12;
+          $("ssBulan").value = String(bm);
+          ssMuat();
+          return;
+        }
+        ssAutoBulan = false;
+        ssPesan(info, "success");
+      })
+      .withFailureHandler(function (err) {
+        ssMuatStatus = "gagal";
+        ssPesan("Gagal mengambil data: " + (err && err.message ? err.message : err), "error");
+      })
+      .fetchSisaStockAyda(bulan);
+  }
+
+  function ssSimpan(i) {
+    if (ssSibuk) return;
+    var r = ssData[i]; if (!r) return;
+    var angka = Number(String(($("ssInH") || {}).value || "").replace(/[^0-9]/g, ""));
+    var tgl = ($("ssInT") || {}).value || "";
+    var ket = (($("ssInK") || {}).value || "").trim();
+    if (!angka || angka <= 0) { alert("Isi harga terjual dengan angka yang benar."); return; }
+    if (!confirm("Simpan harga terjual Rp " + angka.toLocaleString("id-ID") + " untuk kontrak " + r.kontrak + "?\n\nHarga terjual hanya bisa diisi 1 kali dan TIDAK bisa diubah lagi setelah disimpan.")) return;
+
+    ssSibuk = true; ssRender();
+    google.script.run
+      .withSuccessHandler(function (res) {
+        ssSibuk = false; ssBaris = -1;
+        r.hargaTerjual = (res && res.hargaTerjual) || angka;
+        if (res && res.tglTerjual) r.tglTerjual = res.tglTerjual;
+        if (res && res.ket) r.ket = res.ket;
+        ssRender();
+        ssPesan("Harga terjual kontrak " + r.kontrak + " tersimpan dan terkunci.", "success");
+      })
+      .withFailureHandler(function (err) {
+        ssSibuk = false;
+        var m = err && err.message ? err.message : String(err);
+        ssPesan("Gagal menyimpan: " + m, "error");
+        if (/sudah diisi/i.test(m)) { ssBaris = -1; ssMuatStatus = "belum"; ssMuat(); } else { ssRender(); }
+      })
+      .simpanHargaTerjual({ row: r.row, kontrak: r.kontrak, chasis: r.chasis, harga: angka, tglTerjual: tgl, ket: ket });
+  }
+
+  function ssExcel() {
+    var data = ssFilter();
+    if (!data.length) { alert("Tidak ada data untuk diunduh."); return; }
+    var aoa = [["CABANG","NOMOR KONTRAK","PLAT","TIPE","THN","CHASIS","ENGINE","TGL TARIK","MUTASI","KONDISI","OS","HARGA TERTINGGI","HARGA TERENDAH","PENINJAUAN 1","PENINJAUAN 2","PENINJAUAN 3","TGL TERJUAL","HARGA TERJUAL","STATUS","KETERANGAN"]];
+    data.forEach(function (x) { var r = x.r;
+      aoa.push([r.cabang, r.kontrak, r.nopol, r.tipe, r.thnUnit, r.chasis, r.engine, r.tglTarik, r.mutasi, r.kondisi, r.os, r.hTertinggi, r.hTerendah, r.pen1, r.pen2, r.pen3, r.tglTerjual, r.hargaTerjual, r.hargaTerjual ? "TERJUAL" : "Belum terjual", r.ket]); });
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), "SISA STOCK");
+    var b = $("ssBulan"); XLSX.writeFile(wb, "Sisa Stock AYDA " + b.options[b.selectedIndex].text + ".xlsx");
+  }
+
+  function ssAturEditBtn() {
+    var b = $("ssEditBtn"); if (!b) return;
+    b.style.display = ssHO() ? "" : "none";
+    b.textContent = "Mode Edit Harga Terjual: " + (ssEdit ? "ON" : "OFF");
+    b.classList.toggle("ss-edit-on", ssEdit);
+  }
+
+  function ssPasang() {
+    if ($("ssMuat")) $("ssMuat").addEventListener("click", function () { ssMuatStatus = "belum"; ssMuat(); });
+    if ($("ssExcel")) $("ssExcel").addEventListener("click", ssExcel);
+    ["ssCabang", "ssStatusF"].forEach(function (id) { if ($(id)) $(id).addEventListener("change", ssRender); });
+    if ($("ssCari")) $("ssCari").addEventListener("input", ssRender);
+    if ($("ssEditBtn")) $("ssEditBtn").addEventListener("click", function () {
+      if (!ssHO()) return;
+      ssEdit = !ssEdit; ssBaris = -1; ssAturEditBtn(); ssRender();
+    });
+    var tb = $("ssBody");
+    if (tb) {
+      tb.addEventListener("click", function (e) {
+        var t = e.target.closest ? e.target.closest("button[data-aksi]") : null; if (!t || !ssHO()) return;
+        var aksi = t.getAttribute("data-aksi"), i = parseInt(t.getAttribute("data-i"), 10);
+        if (aksi === "input") { ssBaris = i; ssRender(); var f = $("ssInH"); if (f) f.focus(); }
+        else if (aksi === "batal") { ssBaris = -1; ssRender(); }
+        else if (aksi === "simpan") ssSimpan(i);
+      });
+      tb.addEventListener("input", function (e) {
+        if (e.target && e.target.id === "ssInH") {
+          var d = e.target.value.replace(/[^0-9]/g, "");
+          e.target.value = d ? Number(d).toLocaleString("id-ID") : "";
+        }
+      });
+    }
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", ssPasang); else ssPasang();
+
+  /* ikut dipanggil saat tab Harga AYDA dibuka */
+  var haLama = window.haRender;
+  window.haRender = function () {
+    ssAturEditBtn();
+    if (ssMuatStatus === "belum") ssMuat();
+    if (typeof haLama === "function") haLama();
+  };
+})();
+</script>
+
 
 <script>
 /* ==========================================================
