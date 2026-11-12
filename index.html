@@ -4356,7 +4356,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
           <h3>Hasil AI</h3>
           <div id="htInfoFoto"></div>
           <div class="ht-wrap"><table><thead><tr><th>Bagian rusak</th><th>Tingkat</th><th class="r">Biaya min</th><th class="r">Biaya maks</th><th class="r">Tafsiran AI (Rp)</th><th class="r">Tafsiran biaya perbaikan HO (Rp)</th><th>Catatan AI</th><th></th></tr></thead><tbody id="htRusak"></tbody></table></div>
-          <div class="ht-row" style="margin-top:8px;"><button class="ht-btn abu kecil" id="htBtnTambahRusak" type="button">+ Tambah baris perbaikan</button></div>
+          <div class="ht-row" style="margin-top:8px;"><button class="ht-btn abu kecil" id="htBtnTambahRusak" type="button">+ Tambah baris perbaikan</button> <button class="ht-btn kecil" id="htBtnRincianPdf" type="button">Unduh kerusakan (PDF)</button> <button class="ht-btn abu kecil" id="htBtnRincianXls" type="button">Unduh kerusakan (Excel)</button></div>
           <div id="htInfoPasar"></div>
           <details><summary>Riwayat harga pembanding yang dipakai</summary><div id="htPembanding"></div></details>
         </div>
@@ -4409,12 +4409,13 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
           <div class="ht-row" style="margin-bottom:10px;">
             <button class="ht-btn hijau" id="htBtnXlsGab" type="button">Unduh Excel gabungan</button>
             <button class="ht-btn" id="htBtnPdfGab" type="button">Unduh PDF analisa (dicentang)</button>
+            <button class="ht-btn abu" id="htBtnRincianGab" type="button">Unduh rincian kerusakan (Excel)</button>
             <button class="ht-btn abu" id="htBtnXlsSemuaSatuan" type="button">Unduh Excel satuan (semua dicentang)</button>
             <button class="ht-btn abu" id="htBtnSimpanSemua" type="button">Simpan semua ke Report</button>
             <button class="ht-btn merah kecil" id="htBtnKosongkan" type="button">Kosongkan daftar</button>
           </div>
           <div class="ht-status" id="htStatusDaftar"></div>
-          <div class="ht-wrap"><table><thead><tr><th><input type="checkbox" id="htPilihSemua" checked style="width:auto;"></th><th>No</th><th>No. Polisi</th><th>Type</th><th>Thn</th><th class="r">Pasar</th><th class="r">Biaya</th><th class="r">Depresiasi</th><th class="r">Harga terbentuk</th><th></th></tr></thead><tbody id="htDaftarBody"></tbody><tfoot id="htDaftarFoot"></tfoot></table></div>
+          <div class="ht-wrap"><table><thead><tr><th><input type="checkbox" id="htPilihSemua" checked style="width:auto;"></th><th>No</th><th>No. Polisi</th><th>Type</th><th>Thn</th><th>Kerusakan &rarr; tafsiran biaya HO</th><th class="r">Pasar</th><th class="r">Biaya</th><th class="r">Depresiasi</th><th class="r">Harga terbentuk</th><th></th></tr></thead><tbody id="htDaftarBody"></tbody><tfoot id="htDaftarFoot"></tfoot></table></div>
         </div>
       </div>
 
@@ -4863,10 +4864,10 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
   function renderDaftar() {
     $('htJmlDaftar').textContent = daftar.length;
     $('htDaftarBody').innerHTML = daftar.map(function (u, i) {
-      return '<tr data-i="' + i + '"><td><input type="checkbox" data-pilih="1" ' + (u.pilih !== false ? 'checked' : '') + ' style="width:auto;"></td><td>' + (i + 1) + '</td><td>' + esc(u.nopol) + '</td><td>' + esc(u.type) + '</td><td>' + esc(u.tahun) + '</td><td class="r">' + num(u.pasar) + '</td><td class="r">' + num(u.pajak + u.perbaikan) + '</td><td class="r">' + num(u.depresiasi) + '</td><td class="r"><b>' + num(u.terbentuk) + '</b></td><td style="white-space:nowrap"><button class="ht-btn abu kecil" data-pdf="1" type="button">PDF</button> <button class="ht-btn abu kecil" data-xls="1" type="button">Excel</button> <button class="ht-btn merah kecil" data-hapus="1" type="button">&times;</button></td></tr>';
-    }).join('') || '<tr><td colspan="10" style="color:var(--ht-mut)">Daftar kosong. Taksir unit di menu 1 lalu masukkan ke sini.</td></tr>';
+      return '<tr data-i="' + i + '"><td><input type="checkbox" data-pilih="1" ' + (u.pilih !== false ? 'checked' : '') + ' style="width:auto;"></td><td>' + (i + 1) + '</td><td>' + esc(u.nopol) + '</td><td>' + esc(u.type) + '</td><td>' + esc(u.tahun) + '</td><td style="font-size:11.5px;min-width:190px;">' + ((u.rusak || []).filter(function (k) { return k.bagian; }).map(function (k) { return esc(k.bagian) + ' <b>' + num(k.ho) + '</b>'; }).join('<br>') || '<span style="color:var(--ht-mut)">-</span>') + '</td><td class="r">' + num(u.pasar) + '</td><td class="r">' + num(u.pajak + u.perbaikan) + '</td><td class="r">' + num(u.depresiasi) + '</td><td class="r"><b>' + num(u.terbentuk) + '</b></td><td style="white-space:nowrap"><button class="ht-btn abu kecil" data-pdf="1" type="button">PDF</button> <button class="ht-btn abu kecil" data-xls="1" type="button">Excel</button> <button class="ht-btn merah kecil" data-hapus="1" type="button">&times;</button></td></tr>';
+    }).join('') || '<tr><td colspan="11" style="color:var(--ht-mut)">Daftar kosong. Taksir unit di menu 1 lalu masukkan ke sini.</td></tr>';
     var pilih = daftar.filter(function (u) { return u.pilih !== false; });
-    $('htDaftarFoot').innerHTML = pilih.length ? '<tr><td colspan="5"><b>TOTAL ' + pilih.length + ' unit dicentang</b></td><td class="r"><b>' + num(sum(pilih, 'pasar')) + '</b></td><td class="r"><b>' + num(sum(pilih, 'pajak') + sum(pilih, 'perbaikan')) + '</b></td><td class="r"><b>' + num(sum(pilih, 'depresiasi')) + '</b></td><td class="r"><b>' + num(sum(pilih, 'terbentuk')) + '</b></td><td></td></tr>' : '';
+    $('htDaftarFoot').innerHTML = pilih.length ? '<tr><td colspan="6"><b>TOTAL ' + pilih.length + ' unit dicentang</b></td><td class="r"><b>' + num(sum(pilih, 'pasar')) + '</b></td><td class="r"><b>' + num(sum(pilih, 'pajak') + sum(pilih, 'perbaikan')) + '</b></td><td class="r"><b>' + num(sum(pilih, 'depresiasi')) + '</b></td><td class="r"><b>' + num(sum(pilih, 'terbentuk')) + '</b></td><td></td></tr>' : '';
   }
   function sum(a, k) { return a.reduce(function (s, x) { return s + (+x[k] || 0); }, 0); }
   $('htDaftarBody').addEventListener('click', function (e) {
@@ -4971,7 +4972,10 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       doc.save(String(nama || 'Analisa Harga Terbentuk').replace(/[\\/:*?"<>|]/g, '-') + '.pdf'); status(statusId, 'PDF diunduh.', 'ok');
     } catch (e) { status(statusId, 'PDF gagal: ' + e.message, 'err'); }
   }
+  $('htBtnRincianPdf').onclick = function () { var u = ambilUnit(); buatPdf([u], 'Kerusakan ' + (u.nopol || u.noKontrak || 'unit'), 'htStatusAI'); };
+  $('htBtnRincianXls').onclick = function () { var u = ambilUnit(); buatExcelRincian([u], 'Kerusakan ' + (u.nopol || u.noKontrak || 'unit'), 'htStatusAI'); };
   $('htBtnPdfTaksir').onclick = function () { var u = ambilUnit(); if (!u.nopol && !u.noKontrak && !u.type) { status('htStatusSimpan', 'Isi data unit dulu.', 'err'); return; } buatPdf([u], 'Analisa ' + (u.nopol || u.noKontrak || 'unit'), 'htStatusSimpan'); };
+  $('htBtnRincianGab').onclick = function () { var p = daftar.filter(function (u) { return u.pilih !== false; }); if (!p.length) { status('htStatusDaftar', 'Centang minimal satu unit.', 'err'); return; } buatExcelRincian(p, 'Rincian Kerusakan ' + ($('htSuratNo').value || $('htSuratKat').value), 'htStatusDaftar'); };
   $('htBtnPdfGab').onclick = function () { var p = daftar.filter(function (u) { return u.pilih !== false; }); if (!p.length) { status('htStatusDaftar', 'Centang minimal satu unit.', 'err'); return; } buatPdf(p, 'Analisa Harga Terbentuk ' + ($('htSuratNo').value || $('htSuratKat').value), 'htStatusDaftar'); };
   $('htBtnPdfReport').onclick = function () { var d = saring(); if (!d.length) { status('htStatusReport', 'Tidak ada data.', 'err'); return; } buatPdf(d.map(unitDariRow), 'Analisa Harga Terbentuk Report', 'htStatusReport'); };
   $('htReportBody').addEventListener('click', function (e) { var b = e.target.closest('[data-pdfid]'); if (!b) return; var r = reportData.filter(function (x) { return x.ID === b.dataset.pdfid; })[0]; if (r) buatPdf([unitDariRow(r)], 'Analisa ' + (r.NOPOL || r.ID), 'htStatusReport'); });
@@ -4986,6 +4990,38 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     status('htStatusDaftar', 'Menyusun Excel...');
     muatExcelJS().then(function () { return tulisExcel(units, nama); })
       .then(function () { status('htStatusDaftar', 'Excel diunduh.', 'ok'); }).catch(function (e) { status('htStatusDaftar', e.message, 'err'); });
+  }
+  /* sheet RINCIAN KERUSAKAN: tiap unit, kerusakan -> biaya AI -> tafsiran biaya perbaikan HO */
+  function tambahSheetRincian(wb, units) {
+    var ws = wb.addWorksheet('RINCIAN KERUSAKAN'), tipis = { style: 'thin', color: { argb: 'FF000000' } }, garis = { top: tipis, left: tipis, bottom: tipis, right: tipis };
+    [5, 14, 22, 30, 11, 20, 18, 22, 36].forEach(function (w, i) { ws.getColumn(i + 1).width = w; });
+    ws.getCell('A1').value = 'RINCIAN KERUSAKAN & BIAYA PERBAIKAN'; ws.getCell('A1').font = { bold: true, size: 13 };
+    var H = ['NO', 'NO POLISI', 'TYPE', 'BAGIAN RUSAK', 'TINGKAT', 'KISARAN BIAYA AI', 'BIAYA TAKSIRAN AI', 'TAFSIRAN BIAYA PERBAIKAN HO', 'CATATAN AI'], hr = 3;
+    H.forEach(function (t, i) { var c = ws.getCell(hr, i + 1); c.value = t; c.font = { bold: true, size: 9, color: { argb: 'FFFFFFFF' } }; c.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }; c.border = garis; c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: i === 6 ? 'FF4338CA' : i === 7 ? 'FFB45309' : 'FF0F2540' } }; });
+    ws.getRow(hr).height = 32; var r = hr + 1, no = 0;
+    units.forEach(function (u) {
+      var rs = u.rusak && u.rusak.length ? u.rusak : [{ bagian: '(tidak ada kerusakan / rincian tidak tersimpan)', tingkat: '', min: 0, maks: 0, ai: 0, ho: 0, catatan: '' }], awal = r;
+      rs.forEach(function (k) {
+        no++; var v = [no, u.nopol, u.type, k.bagian, k.tingkat, (k.min || k.maks) ? (+k.min).toLocaleString('id-ID') + ' - ' + (+k.maks).toLocaleString('id-ID') : '', +k.ai || 0, +k.ho || 0, k.catatan || ''];
+        v.forEach(function (x, i) { var c = ws.getCell(r, i + 1); c.value = x; c.border = garis; c.font = { size: 10 }; c.alignment = { horizontal: i === 3 || i === 8 ? 'left' : 'center', vertical: 'middle', wrapText: true }; if (i === 6 || i === 7) c.numFmt = '#,##0'; if (i === 7) c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF3C7' } }; if (i === 6) c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEEF2FF' } }; });
+        r++;
+      });
+      ws.mergeCells('A' + r + ':F' + r); var t = ws.getCell('A' + r); t.value = 'TOTAL ' + (u.nopol || ''); t.font = { bold: true }; t.alignment = { horizontal: 'right' };
+      ['G', 'H'].forEach(function (L) { var c = ws.getCell(L + r); c.value = { formula: 'SUM(' + L + awal + ':' + L + (r - 1) + ')' }; c.numFmt = '#,##0'; c.font = { bold: true }; c.alignment = { horizontal: 'center' }; });
+      for (var cc = 1; cc <= 9; cc++) { var z = ws.getCell(r, cc); z.border = garis; z.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEDEDED' } }; }
+      r += 2;
+    });
+    ws.pageSetup = { orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 0 };
+  }
+  function buatExcelRincian(units, nama, statusId) {
+    status(statusId, 'Menyusun Excel rincian kerusakan...');
+    muatExcelJS().then(function () {
+      var wb = new ExcelJS.Workbook(); tambahSheetRincian(wb, units);
+      return wb.xlsx.writeBuffer().then(function (buf) {
+        var a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }));
+        a.download = String(nama).replace(/[\\/:*?"<>|]/g, '-') + '.xlsx'; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500);
+      });
+    }).then(function () { status(statusId, 'Rincian kerusakan diunduh.', 'ok'); }).catch(function (e) { status(statusId, e.message, 'err'); });
   }
   function tulisExcel(units, nama) {
     var kat = units.length === 1 ? units[0].kategori : $('htSuratKat').value, r4 = kat === 'R4';
@@ -5075,6 +5111,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     ws.getRow(tr0 + 4).height = 20; ws.getRow(tr0 + 5).height = 30;
     ws.pageSetup = { orientation: 'landscape', paperSize: 8, fitToPage: true, fitToWidth: 1, fitToHeight: 0, margins: { left: .3, right: .3, top: .4, bottom: .4, header: .2, footer: .2 } };
     ws.pageSetup.printArea = 'A1:AA' + (tr0 + 6);
+    tambahSheetRincian(wb, units);
     return wb.xlsx.writeBuffer().then(function (buf) {
       var blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), a = document.createElement('a');
       a.href = URL.createObjectURL(blob); a.download = nama.replace(/[\\/:*?"<>|]/g, '-') + '.xlsx'; document.body.appendChild(a); a.click();
