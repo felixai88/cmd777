@@ -4342,9 +4342,9 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
 
         <div class="ht-card">
           <h3>Foto kerusakan &amp; pembanding</h3>
-          <div class="ht-row">
-            <div><label>Foto unit / kerusakan (tanpa batas)</label><input id="htFile" type="file" accept="image/*" multiple></div>
-            <div><label>MRP dari sheet MRP (otomatis, boleh diubah)</label><input id="htMrp" inputmode="numeric" placeholder="terisi otomatis dari Type + Tahun"><div id="htMrpInfo" style="font-size:11.5px;color:var(--ht-mut,#64748b);margin-top:4px;line-height:1.35;"></div></div>
+          <div class="ht-row" style="align-items:flex-start;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;">
+            <div><label>Foto unit / kerusakan</label><input id="htFile" type="file" accept="image/*" multiple></div>
+            <div><label>MRP sheet (Rp, otomatis)</label><input id="htMrp" inputmode="numeric" placeholder="terisi otomatis dari Type + Tahun"><div id="htMrpInfo" style="font-size:11.5px;color:var(--ht-mut,#64748b);margin-top:4px;line-height:1.35;"></div></div>
             
           </div>
           <div class="ht-foto" id="htFotoList"></div>
@@ -4355,7 +4355,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <div class="ht-card" id="htKartuHasil" style="display:none;">
           <h3>Hasil AI</h3>
           <div id="htInfoFoto"></div>
-          <div class="ht-wrap"><table><thead><tr><th>Bagian rusak</th><th>Tingkat</th><th class="r">Biaya min</th><th class="r">Biaya maks</th><th class="r">Tafsiran AI (Rp)</th><th class="r">Tafsiran kerusakan HO (Rp)</th><th>Catatan AI</th><th></th></tr></thead><tbody id="htRusak"></tbody></table></div>
+          <div class="ht-wrap"><table><thead><tr><th>Bagian rusak</th><th>Tingkat</th><th class="r">Biaya min</th><th class="r">Biaya maks</th><th class="r">Tafsiran AI (Rp)</th><th class="r">Tafsiran biaya perbaikan HO (Rp)</th><th>Catatan AI</th><th></th></tr></thead><tbody id="htRusak"></tbody></table></div>
           <div class="ht-row" style="margin-top:8px;"><button class="ht-btn abu kecil" id="htBtnTambahRusak" type="button">+ Tambah baris perbaikan</button></div>
           <div id="htInfoPasar"></div>
           <details><summary>Riwayat harga pembanding yang dipakai</summary><div id="htPembanding"></div></details>
@@ -4385,6 +4385,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
             <div><span>Potensi LOR vs O/S</span><b id="htOLor">-</b></div>
           </div>
           <div class="ht-row">
+            <button class="ht-btn" id="htBtnPdfTaksir" type="button">Unduh PDF hasil analisa</button>
             <button class="ht-btn hijau" id="htBtnTambah" type="button">+ Masukkan ke Daftar Pengajuan</button>
             <button class="ht-btn abu" id="htBtnSimpanLangsung" type="button">Simpan ke Report saja</button>
           </div>
@@ -4466,6 +4467,17 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function angka(v) { if (typeof v === 'number') return isFinite(v) ? v : 0; var s = String(v == null ? '' : v).replace(/[^\d,.\-]/g, ''); if (!s) return 0; if (/,\d{1,2}$/.test(s)) s = s.replace(/\./g, '').replace(',', '.'); else s = s.replace(/[.,]/g, ''); var n = parseFloat(s); return isNaN(n) ? 0 : n; }
   function rp(n) { return (n == null || n === '' || isNaN(n)) ? '-' : 'Rp ' + Math.round(n).toLocaleString('id-ID'); }
+  /* kolom rupiah tampil bersatuan ribuan: 24.750.000 */
+  var ID_UANG = ['htOtr', 'htOs', 'htMrp', 'htPajak', 'htPajak2', 'htPasar', 'htPerbaikan', 'htDepr'];
+  function ribuan(v) { var r = String(v == null ? '' : v).replace(/\D/g, ''); return r ? r.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : ''; }
+  function fmtUang() { ID_UANG.forEach(function (id) { var e = $(id); if (!e || e === document.activeElement) return; var raw = String(e.value || ''); if (!raw) return; var n = angka(raw); var f = n ? ribuan(Math.round(n)) : raw; if (f !== raw) e.value = f; }); }
+  function pasangRibuan(e) {
+    e.addEventListener('input', function () {
+      var pos = this.selectionStart, sebelum = this.value.slice(0, pos).replace(/\D/g, '').length, f = ribuan(this.value);
+      if (f !== this.value) { this.value = f; var c = 0, i = 0; for (; i < f.length && c < sebelum; i++) if (/\d/.test(f[i])) c++; try { this.setSelectionRange(i, i); } catch (x) { } }
+    });
+  }
+  setTimeout(function () { ID_UANG.forEach(function (id) { if ($(id)) pasangRibuan($(id)); }); }, 0);
   function num(n) { return Math.round(n || 0).toLocaleString('id-ID'); }
   function status(id, t, jenis) { var e = $(id); if (!e) return; e.textContent = t || ''; e.style.color = jenis === 'err' ? '#dc2626' : jenis === 'ok' ? '#16a34a' : ''; }
   function run(fn) {
@@ -4594,6 +4606,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     $('htOPasar').textContent = rp(pasar); $('htOBiaya').textContent = rp(biaya); $('htODepr').textContent = rp(depr);
     $('htOTerbentuk').textContent = rp(terbentuk); $('htOTerendah').textContent = nego ? rp(terendah) + ' (nego ' + rp(nego) + ')' : 'aturan nego kosong';
     $('htOLor').textContent = os ? (((terbentuk - os) / os) * 100).toFixed(1) + '%' : '-';
+    fmtUang();
     var ai = hitungAI(kat, pajak);
     $('htOHO').textContent = rp(terbentuk); $('htOHOinfo').textContent = 'pasar ' + rp(pasar) + ' - biaya ' + rp(biaya) + ' - depresiasi ' + rp(depr);
     $('htOAI').textContent = ai ? rp(ai.terbentuk) : 'belum ada taksiran AI';
@@ -4641,7 +4654,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       if (m) { var yy = +m[3]; if (yy < 100) yy += 2000; return yy + '-' + ('0' + m[2]).slice(-2) + '-' + ('0' + m[1]).slice(-2); }
       return '';
     }
-    function isi(id, v) { if (v !== '' && v != null) $(id).value = v; }
+    function isi(id, v) { if (v !== '' && v != null) $(id).value = v; fmtUang(); }
       isi('htCabang', u.cabang); isi('htKontrak', u.noKontrak); isi('htNopol', u.nopol); isi('htType', u.type); isi('htTahun', u.tahun);
       isi('htChasis', u.chasis); isi('htEngine', u.engine); isi('htNama', u.nama); isi('htStnk', u.stnk); isi('htOtr', angka(u.otr) || ''); isi('htTgl', tglIso(u.tglTarik)); isi('htOdo', u.odometer); isi('htOs', angka(u.os) || '');
       if (/R4|MOBIL/i.test(u.kategori)) $('htKat').value = 'R4'; else if (/R2|MOTOR/i.test(u.kategori)) $('htKat').value = 'R2';
@@ -4683,7 +4696,29 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     var kat = $('htKat').value, t = (aturan && aturan.tarif || []).filter(function (x) { return /BATERAI|AKI|ACCU/i.test(x.BAGIAN || '') && (!x.KATEGORI || /SEMUA/i.test(x.KATEGORI) || String(x.KATEGORI).toUpperCase() === kat); });
     return t.length ? angka(t[0].BIAYA) : 0;
   }
+  /* biaya mesin dari uraian kondisi unit (aturan HO) */
+  function mesinAturan() {
+    var k = String($('htKondisi').value || '').toUpperCase(), kat = $('htKat').value, high = $('htHigh').value === '1';
+    var mati = /MESIN\s*(MATI|BONGKAR|TDK\s*HIDUP|TIDAK\s*HIDUP)|BONGKAR\s*MESIN|MATI\s*MESIN/.test(k), kasar = /MESIN\s*KASAR|KASAR\s*MESIN/.test(k);
+    if (kat === 'R4') return mati ? { bagian: 'Mesin mati / bongkar mesin', min: 5000000, maks: 15000000, pakai: 10000000 } : null;
+    if (!mati && !kasar) return null;
+    var nama = mati ? 'Mesin mati' : 'Mesin kasar';
+    if (high) return { bagian: nama + ' (type high)', min: 1000000, maks: 1500000, pakai: 1250000 };
+    return mati ? { bagian: nama, min: 1000000, maks: 1000000, pakai: 1000000 } : { bagian: nama, min: 700000, maks: 700000, pakai: 700000 };
+  }
+  function mesinSinkron() {
+    var a = mesinAturan(), ada = rusak.filter(function (r) { return r._mesin; })[0];
+    if (!a) { rusak = rusak.filter(function (r) { return !r._mesin; }); return; }
+    if (ada && ada.bagian === a.bagian) return;
+    rusak = rusak.filter(function (r) { return !r._mesin && !/\bmesin\b/i.test(r.bagian || ''); });
+    rusak.push({ bagian: a.bagian, tingkat: 'berat', min: a.min, maks: a.maks, ai: a.pakai, pakai: a.pakai, catatan: 'Aturan HO dari kondisi unit', _mesin: true });
+  }
+  var mesinKunci = '';
+  function mesinCek() { var a = mesinAturan(), k = a ? a.bagian : ''; if (k === mesinKunci) return; mesinKunci = k; oliSinkron(false); }
+  var tMesin = null; $('htKondisi').addEventListener('input', function () { clearTimeout(tMesin); tMesin = setTimeout(mesinCek, 500); });
+  ['htKat', 'htHigh'].forEach(function (id) { $(id).addEventListener('change', mesinCek); });
   function oliSinkron(tanpaRender) {
+    mesinSinkron();
     var ready = $('htStatusUnit').value === 'READY', ada = -1;
     rusak.forEach(function (r, i) { if (/\boli\b/i.test(r.bagian || '')) ada = i; });
     if (ready && ada < 0) { var b = biayaOli(); rusak.push({ bagian: 'Ganti oli', tingkat: 'ringan', min: b, maks: b, ai: b, pakai: b || '', catatan: 'Unit READY: ganti oli Rp150.000 (tetap)' }); }
@@ -4702,12 +4737,13 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
   /* ---------- AI ---------- */
   function renderRusak() {
     $('htRusak').innerHTML = rusak.map(function (r, i) {
-      return '<tr data-i="' + i + '"><td><input data-k="bagian" value="' + esc(r.bagian) + '"></td><td>' + sel(['ringan', 'sedang', 'berat'], r.tingkat || 'ringan', 'tingkat') + '</td><td class="r">' + num(r.min) + '</td><td class="r">' + num(r.maks) + '</td><td class="r">' + num(r.ai) + '</td><td><input data-k="pakai" value="' + esc(r.pakai) + '" style="text-align:right"></td><td>' + esc(r.catatan) + '</td><td><button class="ht-btn merah kecil" data-hapus="1" type="button">&times;</button></td></tr>';
+      return '<tr data-i="' + i + '"><td><input data-k="bagian" value="' + esc(r.bagian) + '"></td><td>' + sel(['ringan', 'sedang', 'berat'], r.tingkat || 'ringan', 'tingkat') + '</td><td class="r">' + num(r.min) + '</td><td class="r">' + num(r.maks) + '</td><td class="r">' + num(r.ai) + '</td><td><input data-k="pakai" inputmode="numeric" value="' + esc(ribuan(r.pakai)) + '" style="text-align:right"></td><td>' + esc(r.catatan) + '</td><td><button class="ht-btn merah kecil" data-hapus="1" type="button">&times;</button></td></tr>';
     }).join('') || '<tr><td colspan="8" style="color:var(--ht-mut)">Tidak ada kerusakan terdeteksi. Tambahkan baris bila perlu.</td></tr>';
     jumlahRusak();
   }
   function jumlahRusak() { var t = rusak.reduce(function (s, r) { return s + angka(r.pakai); }, 0); $('htPerbaikan').value = t || ''; hitung(); }
-  $('htRusak').addEventListener('input', function (e) { var tr = e.target.closest('tr'); if (!tr) return; var r = rusak[+tr.dataset.i]; r[e.target.dataset.k] = e.target.value; if (e.target.dataset.k === 'pakai') jumlahRusak(); });
+  $('htRusak').addEventListener('input', function (e) { if (e.target.dataset.k === 'pakai') { var el = e.target, pos = el.selectionStart, sb = el.value.slice(0, pos).replace(/\D/g, '').length, f = ribuan(el.value); if (f !== el.value) { el.value = f; var c = 0, i = 0; for (; i < f.length && c < sb; i++) if (/\d/.test(f[i])) c++; try { el.setSelectionRange(i, i); } catch (x) { } } }
+    var tr = e.target.closest('tr'); if (!tr) return; var r = rusak[+tr.dataset.i]; r[e.target.dataset.k] = e.target.value; if (e.target.dataset.k === 'pakai') jumlahRusak(); });
   $('htRusak').addEventListener('click', function (e) { var h = e.target.closest('[data-hapus]'); if (h) { rusak.splice(+h.closest('tr').dataset.i, 1); renderRusak(); } });
   $('htBtnTambahRusak').onclick = function () { rusak.push({ bagian: '', tingkat: 'ringan', min: 0, maks: 0, ai: 0, pakai: '', catatan: '' }); $('htKartuHasil').style.display = ''; renderRusak(); };
 
@@ -4894,7 +4930,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     var rb = rs.map(function (r, i) { tAI += +r.ai || 0; tHO += +r.ho || 0; return [i + 1, T(r.bagian), T(r.tingkat), (r.min || r.maks) ? num(r.min) + ' - ' + num(r.maks) : '-', num(r.ai), num(r.ho), T(r.catatan)]; });
     if (!rb.length) rb = [[{ content: ada(u.aiPerbaikan) || u.perbaikan ? 'Rincian kerusakan tidak tersimpan pada record ini (hanya total biaya).' : 'Tidak ada kerusakan tercatat.', colSpan: 7, styles: { textColor: [100, 116, 139], halign: 'center' } }]];
     var foot = rs.length ? [[{ content: 'TOTAL BIAYA PERBAIKAN', colSpan: 4, styles: { halign: 'right' } }, { content: num(tAI), styles: { halign: 'right' } }, { content: num(tHO), styles: { halign: 'right' } }, '']] : [];
-    doc.autoTable({ startY: y, head: [['No', 'Bagian rusak', 'Tingkat', 'Kisaran biaya AI', 'Biaya taksiran AI (Rp)', 'Tafsiran kerusakan HO (Rp)', 'Catatan AI']], body: rb, foot: foot, theme: 'grid',
+    doc.autoTable({ startY: y, head: [['No', 'Bagian rusak', 'Tingkat', 'Kisaran biaya AI', 'Biaya taksiran AI (Rp)', 'Tafsiran biaya perbaikan HO (Rp)', 'Catatan AI']], body: rb, foot: foot, theme: 'grid',
       styles: { fontSize: 8, cellPadding: 1.6, lineColor: [203, 213, 225], lineWidth: 0.15, valign: 'middle' }, headStyles: { fillColor: [15, 37, 64], textColor: 255, fontSize: 7.5, halign: 'center' }, footStyles: { fillColor: [241, 245, 249], textColor: 0, fontStyle: 'bold' },
       columnStyles: { 0: { cellWidth: 9, halign: 'center' }, 1: { cellWidth: 38 }, 2: { cellWidth: 17, halign: 'center' }, 3: { cellWidth: 29, halign: 'right' }, 4: { cellWidth: 25, halign: 'right' }, 5: { cellWidth: 27, halign: 'right' }, 6: {} }, margin: { left: M, right: M },
       didParseCell: function (h) { if (h.column.index === 4 && h.section !== 'head') h.cell.styles.fillColor = [238, 242, 255]; if (h.column.index === 5) { if (h.section === 'head') h.cell.styles.fillColor = [180, 83, 9]; else { h.cell.styles.fillColor = [254, 243, 199]; h.cell.styles.fontStyle = 'bold'; } } if (h.column.index === 4 && h.section === 'head') h.cell.styles.fillColor = [67, 56, 202]; } });
@@ -4935,6 +4971,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
       doc.save(String(nama || 'Analisa Harga Terbentuk').replace(/[\\/:*?"<>|]/g, '-') + '.pdf'); status(statusId, 'PDF diunduh.', 'ok');
     } catch (e) { status(statusId, 'PDF gagal: ' + e.message, 'err'); }
   }
+  $('htBtnPdfTaksir').onclick = function () { var u = ambilUnit(); if (!u.nopol && !u.noKontrak && !u.type) { status('htStatusSimpan', 'Isi data unit dulu.', 'err'); return; } buatPdf([u], 'Analisa ' + (u.nopol || u.noKontrak || 'unit'), 'htStatusSimpan'); };
   $('htBtnPdfGab').onclick = function () { var p = daftar.filter(function (u) { return u.pilih !== false; }); if (!p.length) { status('htStatusDaftar', 'Centang minimal satu unit.', 'err'); return; } buatPdf(p, 'Analisa Harga Terbentuk ' + ($('htSuratNo').value || $('htSuratKat').value), 'htStatusDaftar'); };
   $('htBtnPdfReport').onclick = function () { var d = saring(); if (!d.length) { status('htStatusReport', 'Tidak ada data.', 'err'); return; } buatPdf(d.map(unitDariRow), 'Analisa Harga Terbentuk Report', 'htStatusReport'); };
   $('htReportBody').addEventListener('click', function (e) { var b = e.target.closest('[data-pdfid]'); if (!b) return; var r = reportData.filter(function (x) { return x.ID === b.dataset.pdfid; })[0]; if (r) buatPdf([unitDariRow(r)], 'Analisa ' + (r.NOPOL || r.ID), 'htStatusReport'); });
