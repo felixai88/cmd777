@@ -4928,13 +4928,13 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     doc.autoTable({ startY: y, body: body, theme: 'grid', styles: { fontSize: 8, cellPadding: 1.6, lineColor: [203, 213, 225], lineWidth: 0.15 }, columnStyles: { 0: { cellWidth: 30 }, 1: { cellWidth: 61 }, 2: { cellWidth: 32 }, 3: { cellWidth: 61 } }, margin: { left: M, right: M } });
     y = doc.lastAutoTable.finalY + 7; judul('2. KERUSAKAN & BIAYA PERBAIKAN');
     var rs = u.rusak || [], tAI = 0, tHO = 0;
-    var rb = rs.map(function (r, i) { tAI += +r.ai || 0; tHO += +r.ho || 0; return [i + 1, T(r.bagian), T(r.tingkat), (r.min || r.maks) ? num(r.min) + ' - ' + num(r.maks) : '-', num(r.ai), num(r.ho), T(r.catatan)]; });
-    if (!rb.length) rb = [[{ content: ada(u.aiPerbaikan) || u.perbaikan ? 'Rincian kerusakan tidak tersimpan pada record ini (hanya total biaya).' : 'Tidak ada kerusakan tercatat.', colSpan: 7, styles: { textColor: [100, 116, 139], halign: 'center' } }]];
-    var foot = rs.length ? [[{ content: 'TOTAL BIAYA PERBAIKAN', colSpan: 4, styles: { halign: 'right' } }, { content: num(tAI), styles: { halign: 'right' } }, { content: num(tHO), styles: { halign: 'right' } }, '']] : [];
-    doc.autoTable({ startY: y, head: [['No', 'Bagian rusak', 'Tingkat', 'Kisaran biaya AI', 'Biaya taksiran AI (Rp)', 'Tafsiran biaya perbaikan HO (Rp)', 'Catatan AI']], body: rb, foot: foot, theme: 'grid',
-      styles: { fontSize: 8, cellPadding: 1.6, lineColor: [203, 213, 225], lineWidth: 0.15, valign: 'middle' }, headStyles: { fillColor: [15, 37, 64], textColor: 255, fontSize: 7.5, halign: 'center' }, footStyles: { fillColor: [241, 245, 249], textColor: 0, fontStyle: 'bold' },
-      columnStyles: { 0: { cellWidth: 9, halign: 'center' }, 1: { cellWidth: 38 }, 2: { cellWidth: 17, halign: 'center' }, 3: { cellWidth: 29, halign: 'right' }, 4: { cellWidth: 25, halign: 'right' }, 5: { cellWidth: 27, halign: 'right' }, 6: {} }, margin: { left: M, right: M },
-      didParseCell: function (h) { if (h.column.index === 4 && h.section !== 'head') h.cell.styles.fillColor = [238, 242, 255]; if (h.column.index === 5) { if (h.section === 'head') h.cell.styles.fillColor = [180, 83, 9]; else { h.cell.styles.fillColor = [254, 243, 199]; h.cell.styles.fontStyle = 'bold'; } } if (h.column.index === 4 && h.section === 'head') h.cell.styles.fillColor = [67, 56, 202]; } });
+    var rb = rs.map(function (r, i) { tAI += +r.ai || 0; tHO += +r.ho || 0; return [i + 1, T(r.bagian), T(r.tingkat), (r.min || r.maks) ? num(r.min) + ' - ' + num(r.maks) : '-', num(r.ai), num(r.ho), '', T(r.catatan)]; });
+    if (!rb.length) rb = [[{ content: ada(u.aiPerbaikan) || u.perbaikan ? 'Rincian kerusakan tidak tersimpan pada record ini (hanya total biaya).' : 'Tidak ada kerusakan tercatat.', colSpan: 8, styles: { textColor: [100, 116, 139], halign: 'center' } }]];
+    var foot = rs.length ? [[{ content: 'TOTAL BIAYA PERBAIKAN', colSpan: 4, styles: { halign: 'right' } }, { content: num(tAI), styles: { halign: 'right' } }, { content: num(tHO), styles: { halign: 'right' } }, '', '']] : [];
+    doc.autoTable({ startY: y, head: [['No', 'Bagian rusak', 'Tingkat', 'Kisaran biaya AI', 'Biaya taksiran AI (Rp)', 'Tafsiran biaya perbaikan HO (Rp)', 'Revisi biaya perbaikan HO (tulis manual)', 'Catatan AI']], body: rb, foot: foot, theme: 'grid',
+      styles: { fontSize: 8, cellPadding: 1.6, lineColor: [203, 213, 225], lineWidth: 0.15, valign: 'middle', minCellHeight: 9 }, headStyles: { fillColor: [15, 37, 64], textColor: 255, fontSize: 7, halign: 'center' }, footStyles: { fillColor: [241, 245, 249], textColor: 0, fontStyle: 'bold' },
+      columnStyles: { 0: { cellWidth: 8, halign: 'center' }, 1: { cellWidth: 32 }, 2: { cellWidth: 15, halign: 'center' }, 3: { cellWidth: 25, halign: 'right' }, 4: { cellWidth: 21, halign: 'right' }, 5: { cellWidth: 23, halign: 'right' }, 6: { cellWidth: 30, halign: 'right' }, 7: { fontSize: 7 } }, margin: { left: M, right: M },
+      didParseCell: function (h) { if (h.column.index === 4 && h.section !== 'head') h.cell.styles.fillColor = [238, 242, 255]; if (h.column.index === 5) { if (h.section === 'head') h.cell.styles.fillColor = [180, 83, 9]; else { h.cell.styles.fillColor = [254, 243, 199]; h.cell.styles.fontStyle = 'bold'; } } if (h.column.index === 6) { if (h.section === 'head') h.cell.styles.fillColor = [15, 118, 110]; else { h.cell.styles.fillColor = [255, 255, 255]; h.cell.styles.lineColor = [100, 116, 139]; h.cell.styles.lineWidth = 0.3; } } if (h.column.index === 4 && h.section === 'head') h.cell.styles.fillColor = [67, 56, 202]; } });
     y = doc.lastAutoTable.finalY + 7;
     if (y > 215) { doc.addPage(); y = 16; }
     judul('3. PERBANDINGAN HARGA TERBENTUK: TAKSIRAN AI vs TAFSIRAN HO');
@@ -4994,21 +4994,21 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
   /* sheet RINCIAN KERUSAKAN: tiap unit, kerusakan -> biaya AI -> tafsiran biaya perbaikan HO */
   function tambahSheetRincian(wb, units) {
     var ws = wb.addWorksheet('RINCIAN KERUSAKAN'), tipis = { style: 'thin', color: { argb: 'FF000000' } }, garis = { top: tipis, left: tipis, bottom: tipis, right: tipis };
-    [5, 14, 22, 30, 11, 20, 18, 22, 36].forEach(function (w, i) { ws.getColumn(i + 1).width = w; });
+    [5, 14, 22, 30, 11, 20, 18, 22, 24, 36].forEach(function (w, i) { ws.getColumn(i + 1).width = w; });
     ws.getCell('A1').value = 'RINCIAN KERUSAKAN & BIAYA PERBAIKAN'; ws.getCell('A1').font = { bold: true, size: 13 };
-    var H = ['NO', 'NO POLISI', 'TYPE', 'BAGIAN RUSAK', 'TINGKAT', 'KISARAN BIAYA AI', 'BIAYA TAKSIRAN AI', 'TAFSIRAN BIAYA PERBAIKAN HO', 'CATATAN AI'], hr = 3;
-    H.forEach(function (t, i) { var c = ws.getCell(hr, i + 1); c.value = t; c.font = { bold: true, size: 9, color: { argb: 'FFFFFFFF' } }; c.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }; c.border = garis; c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: i === 6 ? 'FF4338CA' : i === 7 ? 'FFB45309' : 'FF0F2540' } }; });
+    var H = ['NO', 'NO POLISI', 'TYPE', 'BAGIAN RUSAK', 'TINGKAT', 'KISARAN BIAYA AI', 'BIAYA TAKSIRAN AI', 'TAFSIRAN BIAYA PERBAIKAN HO', 'REVISI BIAYA PERBAIKAN HO (TULIS MANUAL)', 'CATATAN AI'], hr = 3;
+    H.forEach(function (t, i) { var c = ws.getCell(hr, i + 1); c.value = t; c.font = { bold: true, size: 9, color: { argb: 'FFFFFFFF' } }; c.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }; c.border = garis; c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: i === 6 ? 'FF4338CA' : i === 7 ? 'FFB45309' : i === 8 ? 'FF0F766E' : 'FF0F2540' } }; });
     ws.getRow(hr).height = 32; var r = hr + 1, no = 0;
     units.forEach(function (u) {
       var rs = u.rusak && u.rusak.length ? u.rusak : [{ bagian: '(tidak ada kerusakan / rincian tidak tersimpan)', tingkat: '', min: 0, maks: 0, ai: 0, ho: 0, catatan: '' }], awal = r;
       rs.forEach(function (k) {
-        no++; var v = [no, u.nopol, u.type, k.bagian, k.tingkat, (k.min || k.maks) ? (+k.min).toLocaleString('id-ID') + ' - ' + (+k.maks).toLocaleString('id-ID') : '', +k.ai || 0, +k.ho || 0, k.catatan || ''];
-        v.forEach(function (x, i) { var c = ws.getCell(r, i + 1); c.value = x; c.border = garis; c.font = { size: 10 }; c.alignment = { horizontal: i === 3 || i === 8 ? 'left' : 'center', vertical: 'middle', wrapText: true }; if (i === 6 || i === 7) c.numFmt = '#,##0'; if (i === 7) c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF3C7' } }; if (i === 6) c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEEF2FF' } }; });
+        no++; var v = [no, u.nopol, u.type, k.bagian, k.tingkat, (k.min || k.maks) ? (+k.min).toLocaleString('id-ID') + ' - ' + (+k.maks).toLocaleString('id-ID') : '', +k.ai || 0, +k.ho || 0, '', k.catatan || ''];
+        v.forEach(function (x, i) { var c = ws.getCell(r, i + 1); c.value = x; c.border = garis; c.font = { size: 10 }; c.alignment = { horizontal: i === 3 || i === 9 ? 'left' : 'center', vertical: 'middle', wrapText: true }; if (i === 6 || i === 7 || i === 8) c.numFmt = '#,##0'; if (i === 7) c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFEF3C7' } }; if (i === 6) c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEEF2FF' } }; });
         r++;
       });
       ws.mergeCells('A' + r + ':F' + r); var t = ws.getCell('A' + r); t.value = 'TOTAL ' + (u.nopol || ''); t.font = { bold: true }; t.alignment = { horizontal: 'right' };
-      ['G', 'H'].forEach(function (L) { var c = ws.getCell(L + r); c.value = { formula: 'SUM(' + L + awal + ':' + L + (r - 1) + ')' }; c.numFmt = '#,##0'; c.font = { bold: true }; c.alignment = { horizontal: 'center' }; });
-      for (var cc = 1; cc <= 9; cc++) { var z = ws.getCell(r, cc); z.border = garis; z.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEDEDED' } }; }
+      ['G', 'H', 'I'].forEach(function (L) { var c = ws.getCell(L + r); c.value = { formula: 'SUM(' + L + awal + ':' + L + (r - 1) + ')' }; c.numFmt = '#,##0'; c.font = { bold: true }; c.alignment = { horizontal: 'center' }; });
+      for (var cc = 1; cc <= 10; cc++) { var z = ws.getCell(r, cc); z.border = garis; z.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFEDEDED' } }; }
       r += 2;
     });
     ws.pageSetup = { orientation: 'landscape', fitToPage: true, fitToWidth: 1, fitToHeight: 0 };
@@ -8687,10 +8687,18 @@ const JENIS_COLORS = {
 const PALETTE = ["#0f2540", "#1f7a4d", "#c9781f", "#a32222", "#3b82f6", "#8b5cf6", "#ec4899", "#f59e0b", "#10b981", "#06b6d4", "#64748b"];
 
 var _cmdBlurT = null;
+/* loading = kerangka (skeleton) berkilau, bukan blur */
 function cmdBlur(on) {
   document.body.classList.toggle('cmd-blur', !!on);
   clearTimeout(_cmdBlurT);
-  if (on) _cmdBlurT = setTimeout(function () { document.body.classList.remove('cmd-blur'); }, 45000);   /* pengaman */
+  var lama = document.getElementById('cmdSkel'); if (lama) lama.remove();
+  if (!on) { document.querySelectorAll('.sk-host').forEach(function (e) { e.classList.remove('sk-host'); }); return; }
+  _cmdBlurT = setTimeout(function () { cmdBlur(false); }, 45000);   /* pengaman */
+  var t = document.querySelector('.tab-content.active'); if (!t) return;
+  var bg = getComputedStyle(document.body).backgroundColor; if (!bg || bg === 'rgba(0, 0, 0, 0)') bg = '#fff';
+  var ov = document.createElement('div'); ov.id = 'cmdSkel'; ov.style.background = bg;
+  var h = ''; for (var i = 0; i < 12; i++) h += '<div class="sk-r"><i class="sk-c"></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="sk-c"></i></div>';
+  ov.innerHTML = h; t.classList.add('sk-host'); t.appendChild(ov);
 }
 function setStatus(message, type) {
   const status = document.getElementById("status");
@@ -26735,8 +26743,16 @@ body.dark .topbar #pageSub, body.cmd .topbar #pageSub { color: #aab6cf !importan
 
 /* loading = konten memburam, tanpa teks */
 .tab-content.active { transition: filter .3s ease, opacity .3s ease; }
-body.cmd-blur .tab-content.active, .ht-blur { filter: blur(5px); opacity: .6; pointer-events: none; user-select: none; }
-.ht-blur { transition: filter .25s ease, opacity .25s ease; }
+body.cmd-blur .tab-content.active { pointer-events: none; user-select: none; }
+.sk-host { position: relative; min-height: 480px; }
+#cmdSkel { position: absolute; inset: 0; z-index: 60; overflow: hidden; border-radius: 12px; padding: 4px 0; }
+#cmdSkel .sk-r { display: grid; grid-template-columns: 18px 100px 1.3fr 2fr 1.1fr 1fr .5fr .8fr 18px; gap: 16px; align-items: center; height: 48px; padding: 0 14px; border-bottom: 1px solid color-mix(in srgb, currentColor 8%, transparent); }
+#cmdSkel i, .ht-blur::after { display: block; height: 18px; border-radius: 6px; background: linear-gradient(90deg, color-mix(in srgb, currentColor 8%, transparent) 25%, color-mix(in srgb, currentColor 16%, transparent) 50%, color-mix(in srgb, currentColor 8%, transparent) 75%); background-size: 220% 100%; animation: skShimmer 1.3s linear infinite; }
+#cmdSkel i.sk-c { width: 18px; height: 18px; border-radius: 50%; }
+@keyframes skShimmer { from { background-position: 120% 0; } to { background-position: -120% 0; } }
+.ht-blur { position: relative; pointer-events: none; user-select: none; }
+.ht-blur > * { visibility: hidden; }
+.ht-blur::after { content: ""; position: absolute; inset: 18px; height: auto; border-radius: 10px; -webkit-mask-image: repeating-linear-gradient(to bottom, #000 0 38px, transparent 38px 52px); mask-image: repeating-linear-gradient(to bottom, #000 0 38px, transparent 38px 52px); }
 .mb-nc-kosong { max-width: 520px; margin: 70px auto; padding: 40px 28px; text-align: center; border-radius: 18px; background: #fff; border: 1px dashed #cbd5e1; color: #64748b; }
 .mb-nc-kosong h3 { margin: 12px 0 4px; font-size: 18px; color: #0f2540; }
 .mb-nc-kosong p { margin: 0; font-size: 13px; }
