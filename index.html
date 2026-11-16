@@ -7,8 +7,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="TOOLS CMD">
-<title>FELIX Dashboard</title>
+<meta name="apple-mobile-web-app-title" content="Dashboard">
+<title>Dashboard</title>
 <!-- ================= VERSI GITHUB =================
      Di GitHub Pages tidak ada google.script.run. Blok ini membuat pengganti yang
      mengirim setiap panggilan ke Apps Script (Api.gs -> doPost) lewat internet,
@@ -23,7 +23,7 @@
   var API_URL = "https://script.google.com/macros/s/AKfycbyHq_BImTkC5CzRBZMg0bboLhMXb5OX4QB0zZ_ApcfSupfzGQDvZ8OQl9Jl5MIsGlKc8w/exec";
 
   /* fungsi server yang boleh dipanggil — harus sama dengan daftar di Api.gs */
-  var FUNGSI = ["fetchSisaStockAyda", "simpanHargaTerjual", "fetchStockLive", "loginUser", "cekSesi", "logoutUser", "gantiPassword", "daftarUser", "tambahUser", "resetPasswordUser", "ubahStatusUser", "fetchSheetCSV", "fetchJualanCSV", "fetchTarikanCSV", "fetchLapMeetingCSV", "fetchTarikanAllCSV", "fetchStockTahunan", "bacaSheetAman", "getPeriodeMrp", "getPeriodeMrpSorum", "getMrpSorumBekas", "getMatriksRangka", "bacaStnk", "bacaAppraisal", "catatVerifikasi", "fetchHargaAyda", "getDataPembiayaan", "bacaTacDealer", "ajukanPengajuanHarga", "ambilBerkasDrive", "fetchKelengkapanEstimasi", "fetchPengajuanHarga", "simpanBastLengkap", "simpanGabunganEstimasi", "simpanKeteranganEstimasi", "simpanMemoHarga", "simpanMemoMassal", "unggahBerkasEstimasi", "getDaftarCabang", "fetchKpiCmoList", "fetchKpiCmoDetail", "simpanAktivitas", "simpanProspek", "updateStatusProspek", "fetchAktivitasList", "fetchProspekList", "fetchKpiCmoRekap", "asistenKoreksi", "htAmbilAturan", "htSimpanAturan", "htCariUnit", "htTaksirAI", "htSimpanUnit", "htDaftar", "htHapus"];
+  var FUNGSI = ["fetchSisaStockAyda", "simpanHargaTerjual", "fetchStockLive", "loginUser", "cekSesi", "logoutUser", "gantiPassword", "daftarUser", "tambahUser", "resetPasswordUser", "ubahStatusUser", "fetchSheetCSV", "fetchJualanCSV", "fetchTarikanCSV", "fetchLapMeetingCSV", "fetchTarikanAllCSV", "fetchStockTahunan", "bacaSheetAman", "getPeriodeMrp", "getPeriodeMrpSorum", "getMrpSorumBekas", "getMatriksRangka", "bacaStnk", "bacaAppraisal", "catatVerifikasi", "fetchHargaAyda", "getDataPembiayaan", "bacaTacDealer", "ajukanPengajuanHarga", "ambilBerkasDrive", "fetchKelengkapanEstimasi", "fetchPengajuanHarga", "simpanBastLengkap", "simpanGabunganEstimasi", "simpanKeteranganEstimasi", "simpanMemoHarga", "simpanMemoMassal", "unggahBerkasEstimasi", "getDaftarCabang", "fetchKpiCmoList", "fetchKpiCmoDetail", "simpanAktivitas", "simpanProspek", "updateStatusProspek", "fetchAktivitasList", "fetchProspekList", "fetchKpiCmoRekap", "asistenKoreksi", "htAmbilAturan", "htSimpanAturan", "htCariUnit", "htTaksirAI", "htSimpanUnit", "htDaftar", "htHapus", "bidderCariBanyak"];
 
   function panggil(nama, args, ok, gagal, obj) {
     fetch(API_URL, {
@@ -3774,6 +3774,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
         <button class="tab-btn active" data-tab="tabDashboard" id="btnTab0" onclick="switchTab('tabDashboard')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg><span>Dashboard</span></button>
         <div class="nav-grup" id="grupAyda"><button type="button" class="tab-btn nav-grup-btn" onclick="grupToggle('grupAyda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg><span>AYDA</span><svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button><div class="nav-grup-isi"><button class="tab-btn" data-tab="tabDataTarikan" id="btnTab1" onclick="switchTab('tabDataTarikan')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 10h18M9 10v10"/></svg><span>DATA TARIKAN</span></button>
 <button class="tab-btn" data-tab="tabHargaTerbentuk" id="btnTabHargaTerbentuk" onclick="switchTab('tabHargaTerbentuk')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="M17 6H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>HARGA TERBENTUK</span></button>
+<button class="tab-btn" data-tab="tabPenawaran" id="btnTabPenawaran" onclick="switchTab('tabPenawaran')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M8 13h8M8 17h5"/></svg><span>PENAWARAN BIDDER</span></button>
 <button class="tab-btn" data-tab="tabListHarga" id="btnTab2" onclick="switchTab('tabListHarga')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.6 13.4L12 22l-9-9V3h10l7.6 7.6a2 2 0 010 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg><span>LIST HARGA</span></button>
 <button class="tab-btn" data-tab="tabHargaAyda" id="btnTabHargaAyda" onclick="switchTab('tabHargaAyda')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h3"/></svg><span>HARGA AYDA</span></button>
 <button class="tab-btn" data-tab="tabBastGudang" id="btnTabBast" onclick="switchTab('tabBastGudang')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-6 9 6v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M9 21v-7h6v7"/></svg><span>BAST GUDANG</span></button>
@@ -5160,6 +5161,235 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
 })();
 </script>
     </div>
+
+    <!-- ===== PENAWARAN BIDDER (HO) ===== -->
+    <div id="tabPenawaran" class="tab-content">
+      <style>
+        #tabPenawaran { --pb-bg:#fff; --pb-bg2:#f4f7fb; --pb-line:#dfe5ee; --pb-tx:#0f2540; --pb-mut:#64748b; }
+        body.dark #tabPenawaran { --pb-bg:#101c30; --pb-bg2:#16233a; --pb-line:#22334f; --pb-tx:#e2e8f0; --pb-mut:#94a3b8; }
+        body.cmd #tabPenawaran { --pb-bg:#241713; --pb-bg2:#2a1a15; --pb-line:#45291f; --pb-tx:#f3e6da; --pb-mut:#c9b3a2; }
+        #tabPenawaran * { box-sizing:border-box; }
+        #tabPenawaran .pb-card { background:var(--pb-bg); border:1px solid var(--pb-line); border-radius:16px; padding:16px 18px; margin-bottom:14px; color:var(--pb-tx); }
+        #tabPenawaran .pb-card h3 { margin:0 0 12px; font-size:14px; letter-spacing:.3px; }
+        #tabPenawaran .pb-g { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:10px; }
+        #tabPenawaran label { display:block; font-size:11px; font-weight:700; color:var(--pb-mut); margin-bottom:4px; text-transform:uppercase; letter-spacing:.3px; }
+        #tabPenawaran input, #tabPenawaran textarea { width:100%; padding:9px 10px; border:1px solid var(--pb-line); border-radius:10px; background:var(--pb-bg2); color:var(--pb-tx); font:inherit; font-size:13px; }
+        #tabPenawaran textarea { min-height:78px; resize:vertical; }
+        #tabPenawaran .pb-btn { border:0; border-radius:10px; padding:10px 16px; font-weight:800; font-size:13px; cursor:pointer; color:#fff; background:linear-gradient(135deg,#1d4ed8,#4f46e5); white-space:nowrap; }
+        #tabPenawaran .pb-btn.hijau { background:linear-gradient(135deg,#16a34a,#1f7a4d); }
+        #tabPenawaran .pb-btn.merah { background:linear-gradient(135deg,#dc2626,#b91c1c); }
+        #tabPenawaran .pb-btn.abu { background:var(--pb-bg2); color:var(--pb-tx); border:1px solid var(--pb-line); }
+        #tabPenawaran .pb-btn[disabled] { opacity:.55; cursor:wait; }
+        #tabPenawaran .pb-row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:10px; }
+        #tabPenawaran .pb-st { font-size:12.5px; margin-top:8px; min-height:18px; }
+        #tabPenawaran .pb-wrap { overflow:auto; border:1px solid var(--pb-line); border-radius:12px; }
+        #tabPenawaran table { border-collapse:collapse; width:100%; min-width:1250px; font-size:12px; }
+        #tabPenawaran th { background:#0f2540; color:#fff; padding:8px 7px; font-size:10.5px; letter-spacing:.3px; text-align:center; white-space:nowrap; }
+        #tabPenawaran td { padding:5px 7px; border-top:1px solid var(--pb-line); white-space:nowrap; color:var(--pb-tx); }
+        #tabPenawaran td.r { text-align:right; } #tabPenawaran td.c { text-align:center; }
+        #tabPenawaran td input { padding:6px 8px; font-size:12px; min-width:110px; text-align:right; }
+        #tabPenawaran tfoot td { font-weight:800; background:var(--pb-bg2); }
+        #tabPenawaran .pb-ttd { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; }
+        #tabPenawaran .pb-ttd > div { border:1px solid var(--pb-line); border-radius:12px; padding:10px; background:var(--pb-bg2); }
+        #tabPenawaran .pb-ttd b { display:block; font-size:12px; margin-bottom:6px; }
+        #tabPenawaran .pb-ttd input { margin-bottom:6px; }
+      </style>
+      <div class="pb-card">
+        <h3>Data bidder</h3>
+        <div class="pb-g">
+          <div><label>Nama bidder</label><input id="pbNama" type="text" autocomplete="off"></div>
+          <div><label>Alamat</label><input id="pbAlamat" type="text" autocomplete="off"></div>
+          <div><label>No. KTP / SIM</label><input id="pbKtp" type="text" autocomplete="off"></div>
+          <div><label>Nama showroom</label><input id="pbShowroom" type="text" autocomplete="off"></div>
+          <div><label>Alamat showroom</label><input id="pbAlamatShowroom" type="text" autocomplete="off" placeholder="-"></div>
+          <div><label>No. telepon / HP</label><input id="pbTelp" type="text" autocomplete="off"></div>
+          <div><label>Kota memo</label><input id="pbKota" type="text" autocomplete="off" value="LHOKSEUMAWE"></div>
+          <div><label>Tanggal memo</label><input id="pbTanggal" type="date"></div>
+        </div>
+      </div>
+      <div class="pb-card">
+        <h3>Unit lelang &middot; harga HO dari DATABASE STOCK kolom AM</h3>
+        <label>No. kontrak / No. polisi (satu per baris, boleh tempel banyak sekaligus)</label>
+        <textarea id="pbDaftar" placeholder="BL4609KBJ&#10;20102250500986&#10;BL6164NAT"></textarea>
+        <div class="pb-row"><button class="pb-btn" id="pbBtnAmbil" type="button">Ambil unit</button><span class="pb-st" id="pbStatusAmbil"></span></div>
+        <div class="pb-wrap" style="margin-top:12px;"><table>
+          <thead><tr><th>NO</th><th>NO. POL</th><th>NAMA</th><th>TYPE</th><th>TAHUN</th><th>TGL TARIK</th><th>OD</th><th>NOMOR MESIN</th><th>NOMOR RANGKA</th><th>NO KONTRAK</th><th>STNK</th><th>HARGA HO</th><th>PENAWARAN BIDDER</th><th>HARGA DISETUJUI</th><th></th></tr></thead>
+          <tbody id="pbBody"><tr><td colspan="15" style="text-align:center;color:var(--pb-mut);padding:18px;">Belum ada unit.</td></tr></tbody>
+          <tfoot id="pbFoot"></tfoot>
+        </table></div>
+      </div>
+      <div class="pb-card">
+        <h3>Tanda tangan</h3>
+        <div class="pb-ttd">
+          <div><b>Penawar</b><input id="pbT0n" type="text" placeholder="(otomatis: nama bidder)" disabled></div>
+          <div><b>Diperiksa oleh (1)</b><input id="pbT1n" type="text" placeholder="Nama"><input id="pbT1j" type="text" placeholder="Jabatan"></div>
+          <div><b>Diperiksa oleh (2)</b><input id="pbT2n" type="text" placeholder="Nama"><input id="pbT2j" type="text" placeholder="Jabatan"></div>
+          <div><b>Diketahui</b><input id="pbT3n" type="text" placeholder="Nama"><input id="pbT3j" type="text" placeholder="Jabatan"></div>
+          <div><b>Disetujui oleh</b><input id="pbT4n" type="text" placeholder="Nama"><input id="pbT4j" type="text" placeholder="Jabatan"></div>
+        </div>
+      </div>
+      <div class="pb-card">
+        <div class="pb-row" style="margin-top:0;">
+          <button class="pb-btn hijau" id="pbBtnXls" type="button">Unduh Excel</button>
+          <button class="pb-btn" id="pbBtnPdf" type="button">Unduh PDF</button>
+          <button class="pb-btn merah" id="pbBtnReset" type="button">Kosongkan semua</button>
+          <span class="pb-st" id="pbStatus"></span>
+        </div>
+      </div>
+    </div>
+<script>
+(function () {
+  var KEY = 'pbState1';
+  var KET = ['Peserta yang mengikuti lelang Wajib menyetor Jaminan / DP',
+    'Minimal jaminan / DP-nya adalah sebesar Rp. 1.000.000,- (u/ S.Motor) s/d Rp. 2.000.000,- (u/ Mobil)',
+    'Jika pada saat peserta lelang sudah deal harga dengan pihak PT. CAPELLA MULTIDANA, maka dari sejak tanggal di nyatakan deal, maksimal waktu untuk menyelesaikan pembayaran adalah 2 hari ke depan.',
+    'Jika dalam 2 hari kedepan peserta tidak menyelesaikan segala pembayarannya, maka unit-unit yang sudah deal dengan pihak PT. CAPELLA MULTIDANA akan di alihkan / di jual ke orang lain dan jaminan / DP menjadi hangus.'];
+  var TTD_DEF = [['AIDIL', 'ADMIN AYDA'], ['ZULFAHMI EFFENDI', 'KC HEAD'], ['RIDWAN', 'ACEH & SUMUT AREA HEAD'], ['JOVIE', 'USED VEHICLE & DATUN SPV']];
+  var F = ['pbNama', 'pbAlamat', 'pbKtp', 'pbShowroom', 'pbAlamatShowroom', 'pbTelp', 'pbKota', 'pbTanggal'];
+  var T = ['pbT1n', 'pbT1j', 'pbT2n', 'pbT2j', 'pbT3n', 'pbT3j', 'pbT4n', 'pbT4j'];
+  var units = [];
+  function $(i) { return document.getElementById(i); }
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function bolehHO() { return typeof currentLoginRole !== 'undefined' && currentLoginRole === 'HO'; }
+  function st(id, t, k) { var e = $(id); if (!e) return; e.textContent = t || ''; e.style.color = k === 'err' ? '#dc2626' : k === 'ok' ? '#16a34a' : ''; }
+  function rp(n) { n = Number(n); return n ? n.toLocaleString('id-ID') : ''; }
+  function angka(s) { var n = Number(String(s == null ? '' : s).replace(/[^0-9]/g, '')); return n || 0; }
+  function tglObj(v) { if (!v) return null; var d = new Date(v); if (isNaN(d)) { var m = String(v).match(/(\d{1,2})[\/\-.](\d{1,2})[\/\-.](\d{4})/); if (m) d = new Date(+m[3], +m[2] - 1, +m[1]); } return isNaN(d) ? null : d; }
+  function tglTxt(v) { var d = tglObj(v); if (!d) return String(v || ''); return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear(); }
+  function od(v) { var d = tglObj(v); if (!d) return ''; var n = new Date(); n.setHours(0, 0, 0, 0); d.setHours(0, 0, 0, 0); return Math.round((n - d) / 864e5); }
+  function simpan() { try { var o = { u: units, f: {}, t: {} }; F.forEach(function (i) { o.f[i] = $(i).value; }); T.forEach(function (i) { o.t[i] = $(i).value; }); localStorage.setItem(KEY, JSON.stringify(o)); } catch (e) {} }
+  function muat() {
+    var o = null; try { o = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) {}
+    T.forEach(function (i, k) { $(i).value = TTD_DEF[k >> 1][k & 1]; });
+    $('pbTanggal').value = new Date().toISOString().slice(0, 10);
+    if (o) { units = o.u || []; Object.keys(o.f || {}).forEach(function (i) { if ($(i)) $(i).value = o.f[i]; }); Object.keys(o.t || {}).forEach(function (i) { if ($(i)) $(i).value = o.t[i]; }); }
+  }
+  function render() {
+    var b = $('pbBody'), f = $('pbFoot');
+    if (!units.length) { b.innerHTML = '<tr><td colspan="15" style="text-align:center;color:var(--pb-mut);padding:18px;">Belum ada unit.</td></tr>'; f.innerHTML = ''; return; }
+    b.innerHTML = units.map(function (u, i) {
+      return '<tr><td class="c">' + (i + 1) + '</td><td>' + esc(u.nopol) + '</td><td>' + esc(u.nama) + '</td><td>' + esc(u.type) + '</td><td class="c">' + esc(u.tahun) + '</td><td class="c">' + esc(tglTxt(u.tglTarik)) + '</td><td class="c">' + od(u.tglTarik) + '</td><td>' + esc(u.noMesin) + '</td><td>' + esc(u.noRangka) + '</td><td>' + esc(u.noKontrak) + '</td><td class="c">' + esc(/^\d{4}-|^\d{1,2}[\/\-]/.test(String(u.stnk)) ? tglTxt(u.stnk) : u.stnk) + '</td><td class="r">' + rp(u.harga) + '</td>' +
+        '<td><input data-i="' + i + '" data-k="tawar" inputmode="numeric" value="' + rp(u.tawar) + '"></td><td><input data-i="' + i + '" data-k="setuju" inputmode="numeric" value="' + rp(u.setuju) + '"></td><td class="c"><button class="pb-btn merah" style="padding:4px 9px" data-del="' + i + '" type="button">×</button></td></tr>';
+    }).join('');
+    hitungFoot();
+  }
+  function hitungFoot() {
+    var a = 0, b = 0, c = 0; units.forEach(function (u) { a += u.harga || 0; b += u.tawar || 0; c += u.setuju || 0; });
+    $('pbFoot').innerHTML = '<tr><td colspan="11" style="text-align:right">JUMLAH</td><td class="r">' + rp(a) + '</td><td class="r">' + rp(b) + '</td><td class="r">' + rp(c) + '</td><td></td></tr>';
+  }
+  function ambil() {
+    if (!bolehHO()) { st('pbStatusAmbil', 'Menu ini hanya untuk akun HO.', 'err'); return; }
+    var teks = $('pbDaftar').value; if (!teks.trim()) { st('pbStatusAmbil', 'Isi dulu no. kontrak / no. polisi.', 'err'); return; }
+    var btn = $('pbBtnAmbil'); btn.disabled = true; st('pbStatusAmbil', 'Mengambil dari DATABASE STOCK...');
+    google.script.run.withSuccessHandler(function (r) {
+      btn.disabled = false;
+      if (!r || r.error) { st('pbStatusAmbil', (r && r.error) || 'Gagal mengambil data.', 'err'); return; }
+      var tambah = 0;
+      (r.unit || []).forEach(function (x) {
+        if (units.some(function (u) { return u.noKontrak && u.noKontrak === x.noKontrak; })) return;
+        units.push({ nopol: x.nopol, nama: x.nama, type: x.type, tahun: x.tahun, tglTarik: x.tglTarik, noMesin: x.noMesin, noRangka: x.noRangka, noKontrak: x.noKontrak, stnk: x.stnk, harga: Number(x.hargaHO) || angka(x.hargaHOteks), tawar: 0, setuju: 0 }); tambah++;
+      });
+      var kosong = (r.unit || []).filter(function (x) { return !(Number(x.hargaHO) || angka(x.hargaHOteks)); }).length;
+      var msg = tambah + ' unit ditambahkan' + (r.hilang && r.hilang.length ? '; tidak ditemukan: ' + r.hilang.join(', ') : '') + (kosong ? '; ' + kosong + ' unit harga HO (kolom AM) kosong' : '') + '.';
+      st('pbStatusAmbil', msg, r.hilang && r.hilang.length || kosong ? 'err' : 'ok');
+      render(); simpan();
+    }).withFailureHandler(function (e) { btn.disabled = false; st('pbStatusAmbil', (e && e.message) || String(e), 'err'); }).bidderCariBanyak(teks);
+  }
+  function info() {
+    var v = function (i) { return $(i).value.trim(); };
+    return { nama: v('pbNama'), alamat: v('pbAlamat'), ktp: v('pbKtp'), showroom: v('pbShowroom'), alamatSr: v('pbAlamatShowroom') || '-', telp: v('pbTelp'), kota: v('pbKota'), tgl: $('pbTanggal').value,
+      ttd: [[v('pbT1n'), v('pbT1j')], [v('pbT2n'), v('pbT2j')], [v('pbT3n'), v('pbT3j')], [v('pbT4n'), v('pbT4j')]] };
+  }
+  function tglPanjang(iso) { var d = tglObj(iso) || new Date(); return d.getFullYear(); }
+  function barisKota(i) { return (i.kota || '') + '        ' + tglPanjang(i.tgl); }
+  function cek() { if (!bolehHO()) { st('pbStatus', 'Menu ini hanya untuk akun HO.', 'err'); return false; } if (!units.length) { st('pbStatus', 'Belum ada unit.', 'err'); return false; } return true; }
+  function muatExcelJS() {
+    if (window.ExcelJS) return Promise.resolve();
+    return new Promise(function (ok, gagal) { var s = document.createElement('script'); s.src = 'https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js'; s.onload = ok; s.onerror = function () { gagal(new Error('Gagal memuat ExcelJS (cek internet).')); }; document.head.appendChild(s); });
+  }
+  function simpanBlob(blob, nama) { var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nama; document.body.appendChild(a); a.click(); setTimeout(function () { URL.revokeObjectURL(a.href); a.remove(); }, 1500); }
+  function namaFile(ext) { var n = ($('pbNama').value || 'BIDDER').trim().replace(/[^A-Za-z0-9 _-]/g, '').replace(/\s+/g, '_') || 'BIDDER'; return 'PENAWARAN_BIDDER_' + n + '.' + ext; }
+
+  function tulisExcel() {
+    var inf = info(), wb = new ExcelJS.Workbook(), ws = wb.addWorksheet('PENAWARAN BIDDER', { pageSetup: { orientation: 'landscape', paperSize: 9, fitToPage: true, fitToWidth: 1, fitToHeight: 0 } });
+    var tp = { style: 'thin', color: { argb: 'FF000000' } }, gr = { top: tp, left: tp, bottom: tp, right: tp };
+    [2, 4, 12, 22, 18, 8, 14, 8, 20, 16, 17, 12, 15, 17, 15].forEach(function (w, i) { ws.getColumn(i + 1).width = w; });
+    ws.getCell('B2').value = 'PENAWARAN BIDDER'; ws.getCell('B2').font = { bold: true, size: 14 };
+    [['Nama BIDDER', inf.nama], ['Alamat', inf.alamat], ['No KTP / SIM', inf.ktp], ['Nama Showroom', inf.showroom], ['Alamat Showroom', inf.alamatSr], ['No tlpn / HP', inf.telp]].forEach(function (p, k) {
+      var r = 4 + k; ws.mergeCells(r, 2, r, 3); ws.getCell(r, 2).value = p[0]; ws.getCell(r, 5).value = ': ' + p[1]; ws.getCell(r, 4).value = ''; });
+    ws.getCell('N4').value = barisKota(inf); ws.getCell('N4').font = { bold: true };
+    var H = ['NO', 'NO.POL', 'NAMA', 'TYPE', 'TAHUN', 'TANGGAL TARIK', 'OD', 'NOMOR MESIN', 'NOMOR RANGKA', 'NO KONTRAK', 'STNK', 'HARGA', 'PENAWARAN BIDDER', 'HARGA DISETUJUI'];
+    H.forEach(function (h, i) { var c = ws.getCell(11, 2 + i); c.value = h; c.font = { bold: true }; c.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }; c.border = gr; c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD9E1F2' } }; });
+    var r0 = 12;
+    units.forEach(function (u, i) {
+      var r = r0 + i, tg = tglObj(u.tglTarik), sd = (/^\d{4}-|^\d{1,2}[\/\-]/.test(String(u.stnk)) ? tglObj(u.stnk) : null);
+      var vals = [i + 1, u.nopol, u.nama, u.type, Number(u.tahun) || u.tahun, tg || u.tglTarik, tg ? { formula: 'TODAY()-G' + r, result: od(u.tglTarik) } : '', u.noMesin, u.noRangka, u.noKontrak, sd || u.stnk || '', u.harga || '', u.tawar || '', u.setuju || ''];
+      vals.forEach(function (v, k) { var c = ws.getCell(r, 2 + k); c.value = v; c.border = gr; c.alignment = { horizontal: k >= 11 ? 'right' : (k === 1 || k === 2 || k === 3 || k === 7 || k === 8 ? 'left' : 'center'), vertical: 'middle' };
+        if (k === 5 || k === 10) { if (v instanceof Date) c.numFmt = 'dd/mm/yyyy'; } if (k >= 11) c.numFmt = '#,##0'; });
+    });
+    var rl = r0 + units.length - 1, rj = rl + 1;
+    ws.getCell(rj, 12).value = 'JUMLAH'; ws.getCell(rj, 12).font = { bold: true }; ws.getCell(rj, 12).alignment = { horizontal: 'right' };
+    [13, 14, 15].forEach(function (cn) { var L = ws.getColumn(cn).letter, c = ws.getCell(rj, cn); c.value = { formula: 'SUM(' + L + r0 + ':' + L + rl + ')' }; c.font = { bold: true }; c.numFmt = '#,##0'; c.border = gr; });
+    var rt = rj + 2;
+    ws.getCell(rt, 3).value = 'Penawar'; ws.mergeCells(rt, 5, rt, 11); ws.getCell(rt, 5).value = 'Diperiksa oleh,'; ws.getCell(rt, 12).value = 'Diketahui'; ws.getCell(rt, 14).value = 'Disetujui Oleh ';
+    [3, 5, 12, 14].forEach(function (cn) { ws.getCell(rt, cn).font = { bold: true }; });
+    var rn = rt + 5;
+    ws.getCell(rn - 1, 3).value = '(Tanda Tangan & Nama Jelas)'; ws.getCell(rn - 1, 3).font = { italic: true, size: 9 };
+    ws.getCell(rn, 3).value = inf.nama; ws.getCell(rn, 5).value = inf.ttd[0][0]; ws.getCell(rn + 1, 5).value = inf.ttd[0][1];
+    ws.getCell(rn, 9).value = inf.ttd[1][0]; ws.getCell(rn + 1, 9).value = inf.ttd[1][1]; ws.getCell(rn, 12).value = inf.ttd[2][0]; ws.getCell(rn + 1, 12).value = inf.ttd[2][1]; ws.getCell(rn, 14).value = inf.ttd[3][0]; ws.getCell(rn + 1, 14).value = inf.ttd[3][1];
+    [3, 5, 9, 12, 14].forEach(function (cn) { ws.getCell(rn, cn).font = { bold: true, underline: true }; });
+    var rk = rn + 3; ws.getCell(rk, 2).value = '-'; ws.getCell(rk, 3).value = 'Ketentuan-ketentuan peserta lelang :'; ws.getCell(rk, 3).font = { bold: true };
+    KET.forEach(function (t, i) { ws.getCell(rk + 1 + i, 2).value = '-'; ws.mergeCells(rk + 1 + i, 3, rk + 1 + i, 12); ws.getCell(rk + 1 + i, 3).value = t; ws.getCell(rk + 1 + i, 3).alignment = { wrapText: true, vertical: 'top' }; ws.getRow(rk + 1 + i).height = t.length > 110 ? 30 : 16; });
+    return wb.xlsx.writeBuffer().then(function (buf) { simpanBlob(new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }), namaFile('xlsx')); });
+  }
+  function tulisPdf() {
+    var J = window.jspdf && window.jspdf.jsPDF; if (!J) throw new Error('jsPDF belum termuat.');
+    var inf = info(), doc = new J({ orientation: 'landscape', unit: 'mm', format: 'a4' }), W = doc.internal.pageSize.getWidth(), M = 10;
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(14); doc.text('PENAWARAN BIDDER', M, 14);
+    doc.setFontSize(9.5);
+    [['Nama BIDDER', inf.nama], ['Alamat', inf.alamat], ['No KTP / SIM', inf.ktp], ['Nama Showroom', inf.showroom], ['Alamat Showroom', inf.alamatSr], ['No tlpn / HP', inf.telp]].forEach(function (p, k) {
+      doc.setFont('helvetica', 'normal'); doc.text(p[0], M, 21 + k * 5); doc.text(': ' + (p[1] || ''), M + 36, 21 + k * 5); });
+    doc.setFont('helvetica', 'bold'); doc.text(barisKota(inf), W - M, 21, { align: 'right' });
+    var a = 0, b = 0, c = 0; units.forEach(function (u) { a += u.harga || 0; b += u.tawar || 0; c += u.setuju || 0; });
+    var body = units.map(function (u, i) { return [i + 1, u.nopol, u.nama, u.type, u.tahun, tglTxt(u.tglTarik), od(u.tglTarik), u.noMesin, u.noRangka, u.noKontrak, /^\d{4}-|^\d{1,2}[\/\-]/.test(String(u.stnk)) ? tglTxt(u.stnk) : (u.stnk || ''), rp(u.harga), rp(u.tawar), rp(u.setuju)]; });
+    doc.autoTable({ startY: 53, margin: { left: M, right: M }, head: [['NO', 'NO.POL', 'NAMA', 'TYPE', 'TAHUN', 'TGL TARIK', 'OD', 'NOMOR MESIN', 'NOMOR RANGKA', 'NO KONTRAK', 'STNK', 'HARGA', 'PENAWARAN BIDDER', 'HARGA DISETUJUI']], body: body,
+      foot: [[{ content: 'JUMLAH', colSpan: 11, styles: { halign: 'right' } }, rp(a), rp(b), rp(c)]], theme: 'grid', showFoot: 'lastPage',
+      styles: { fontSize: 7, cellPadding: 1.4, lineColor: [0, 0, 0], lineWidth: 0.15, textColor: 0, valign: 'middle' }, headStyles: { fillColor: [217, 225, 242], textColor: 0, halign: 'center', fontStyle: 'bold' }, footStyles: { fillColor: [244, 247, 251], textColor: 0, fontStyle: 'bold' },
+      columnStyles: { 0: { halign: 'center', cellWidth: 7 }, 4: { halign: 'center' }, 5: { halign: 'center' }, 6: { halign: 'center' }, 10: { halign: 'center' }, 11: { halign: 'right' }, 12: { halign: 'right' }, 13: { halign: 'right' } } });
+    var y = doc.lastAutoTable.finalY + 8, H = doc.internal.pageSize.getHeight();
+    if (y + 62 > H) { doc.addPage(); y = 16; }
+    doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+    var xs = [M + 8, M + 70, M + 150, M + 205];
+    doc.text('Penawar', xs[0], y); doc.text('Diperiksa oleh,', xs[1], y); doc.text('Diketahui', xs[2], y); doc.text('Disetujui Oleh', xs[3], y);
+    var yn = y + 24; doc.setFont('helvetica', 'italic'); doc.setFontSize(7.5); doc.text('(Tanda Tangan & Nama Jelas)', xs[0], yn - 4);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+    doc.text(inf.nama || '', xs[0], yn); doc.text(inf.ttd[0][0], xs[1], yn); doc.text(inf.ttd[1][0], xs[1] + 40, yn); doc.text(inf.ttd[2][0], xs[2], yn); doc.text(inf.ttd[3][0], xs[3], yn);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
+    doc.text(inf.ttd[0][1], xs[1], yn + 4); doc.text(inf.ttd[1][1], xs[1] + 40, yn + 4); doc.text(inf.ttd[2][1], xs[2], yn + 4); doc.text(inf.ttd[3][1], xs[3], yn + 4);
+    var yk = yn + 12; doc.setFont('helvetica', 'bold'); doc.text('- Ketentuan-ketentuan peserta lelang :', M, yk); doc.setFont('helvetica', 'normal');
+    var yy = yk + 5; KET.forEach(function (t) { var ls = doc.splitTextToSize(t, W - 2 * M - 6); doc.text('-', M, yy); doc.text(ls, M + 5, yy); yy += ls.length * 4; });
+    doc.save(namaFile('pdf'));
+  }
+  function aksi(fn, ok) { if (!cek()) return; st('pbStatus', 'Menyusun file...'); Promise.resolve().then(fn).then(function () { st('pbStatus', ok, 'ok'); }).catch(function (e) { st('pbStatus', e.message || String(e), 'err'); }); }
+
+  document.addEventListener('DOMContentLoaded', init); if (document.readyState !== 'loading') init();
+  var sudah = false;
+  function init() {
+    if (sudah || !$('pbBody')) return; sudah = true; muat(); render();
+    $('pbBtnAmbil').onclick = ambil;
+    $('pbBtnXls').onclick = function () { aksi(function () { return muatExcelJS().then(tulisExcel); }, 'Excel diunduh.'); };
+    $('pbBtnPdf').onclick = function () { aksi(tulisPdf, 'PDF diunduh.'); };
+    $('pbBtnReset').onclick = function () { if (confirm('Kosongkan semua data penawaran?')) { units = []; F.forEach(function (i) { if (i !== 'pbKota') $(i).value = ''; }); $('pbTanggal').value = new Date().toISOString().slice(0, 10); $('pbDaftar').value = ''; T.forEach(function (i, k) { $(i).value = TTD_DEF[k >> 1][k & 1]; }); render(); simpan(); } };
+    $('pbBody').addEventListener('input', function (e) { var t = e.target; if (t.dataset && t.dataset.k) { var n = angka(t.value); units[+t.dataset.i][t.dataset.k] = n; var p = t.selectionStart; t.value = rp(n); hitungFoot(); simpan(); } });
+    $('pbBody').addEventListener('click', function (e) { var d = e.target.getAttribute && e.target.getAttribute('data-del'); if (d != null) { units.splice(+d, 1); render(); simpan(); } });
+    F.concat(T).forEach(function (i) { $(i).addEventListener('input', simpan); });
+    $('pbT0n').value = '';
+    $('pbNama').addEventListener('input', function () { $('pbT0n').value = $('pbNama').value; });
+    $('pbT0n').value = $('pbNama').value;
+  }
+  window.pbTes = { units: function () { return units; }, tulisExcel: function () { return muatExcelJS().then(tulisExcel); }, tulisPdf: tulisPdf };
+})();
+</script>
 
     <div id="tabHargaAyda" class="tab-content">
 
@@ -8343,7 +8573,7 @@ function masukAplikasi(u) {
   sembunyikanErrorLogin();
   setTombolMasukSibuk(true);
 
-  const adminSaja = ["btnTab1", "btnTab2", "btnTab6", "btnTabHargaAyda", "btnTabHargaTerbentuk"];
+  const adminSaja = ["btnTab1", "btnTab2", "btnTab6", "btnTabHargaAyda", "btnTabHargaTerbentuk", "btnTabPenawaran"];
   const bolehLihat = currentLoginRole === "HO";
   const modeCmo = currentLoginRole === "CMO" || currentLoginRole === "CMC";   /* CMC: tampilan seperti CMO, PDF lengkap seperti Cabang */
   adminSaja.forEach(id => {
@@ -8664,6 +8894,7 @@ const JUDUL_TAB = {
   tabMobilBaru:      ["Mobil Baru (NC)", ""],
   tabListHarga:      ["List Harga", "Daftar harga memo, tertinggi, terendah, dan peninjauan"],
   tabHargaAyda:      ["Harga AYDA", "Harga tertinggi, terendah, peninjauan, dan surat konfirmasi"],
+  tabPenawaran: ["Penawaran Bidder", "Memo penawaran lelang unit ke bidder, jadi Excel dan PDF"],
   tabHargaTerbentuk: ["Harga Terbentuk", "Harga pasar dikurangi perbaikan dan depresiasi, siap jadi Excel pengajuan"],
   tabBastGudang:     ["Form BAST Gudang", "Serah terima unit ke gudang"],
   tabKelengkapan:    ["Kelengkapan Estimasi", "Estimasi, SP 1, dan SP 2 digabung dengan BAST gudang"],
