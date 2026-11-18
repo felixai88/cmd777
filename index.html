@@ -4349,7 +4349,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
             
           </div>
           <div class="ht-foto" id="htFotoList"></div>
-          <div class="ht-row" style="margin-top:14px;"><button class="ht-btn" id="htBtnAI" type="button">&#10024; Taksir dengan AI</button></div>
+          <div class="ht-row" style="margin-top:14px;"><button class="ht-btn" id="htBtnAI" type="button">&#10024; Taksir dengan AI</button><select id="htKecepatanAI" title="Kecepatan" style="padding:9px 10px;border-radius:10px;border:1px solid var(--ht-line);background:var(--ht-bg2);color:var(--ht-tx);font:inherit;font-size:13px;"><option value="cepat">Cepat (tanpa cari web)</option><option value="teliti">Teliti (lebih lama)</option></select><select id="htMesinAI" title="Mesin AI" style="padding:9px 10px;border-radius:10px;border:1px solid var(--ht-line);background:var(--ht-bg2);color:var(--ht-tx);font:inherit;font-size:13px;"><option value="otomatis">Otomatis (Claude, cadangan Gemini)</option><option value="claude">Claude saja</option><option value="gemini">Gemini saja</option></select></div>
           <div class="ht-status" id="htStatusAI"></div>
         </div>
 
@@ -4807,7 +4807,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     if (!$('htType').value.trim() || !$('htTahun').value.trim()) { status('htStatusAI', 'Isi Type dan Tahun dulu.', 'err'); return; }
     var btn = this; btn.disabled = true; status('htStatusAI', 'AI sedang memeriksa foto, riwayat harga, dan menaksir... (bisa 15-40 detik)');
     var unit = { statusUnit: $('htStatusUnit').value, baterai: $('htBaterai').value, kategori: $('htKat').value, type: $('htType').value, tahun: $('htTahun').value, warna: $('htWarna').value, odometer: $('htOdo').value, otr: angka($('htOtr').value), os: angka($('htOs').value), kondisi: $('htKondisi').value };
-    run('htTaksirAI', { unit: unit, foto: foto, mrpSendiri: angka($('htMrp').value) || null, pakaiRiwayat: true, webSearch: true })
+    run('htTaksirAI', { unit: unit, foto: foto, mrpSendiri: angka($('htMrp').value) || null, pakaiRiwayat: true, webSearch: true, mesin: $('htMesinAI').value, kecepatan: $('htKecepatanAI').value })
       .then(function (r) { hasilAI = r; tampilHasilAI(r); status('htStatusAI', 'Selesai. Periksa dan koreksi angkanya bila perlu.', 'ok'); })
       .catch(function (e) { status('htStatusAI', e.message, 'err'); })
       .then(function () { btn.disabled = false; });
@@ -4826,6 +4826,7 @@ window.addEventListener('load', function () { setTimeout(function () { if (!cmdS
     if (v.status && v.status !== 'tidak_ada') ip += '<div class="ht-info ' + (v.status === 'sesuai' ? 'ok' : 'warn') + '"><b>Uji terhadap MRP Anda:</b> ' + esc(String(v.status).replace('_', ' ')) + (v.selisih_persen != null ? ' (selisih ' + esc(v.selisih_persen) + '%)' : '') + '. ' + esc(v.komentar || '') + '</div>';
     if (ket === 'rendah' || !r.jumlahPembanding) ip += '<div class="ht-info warn">Data pembanding sedikit, jadi taksiran ini kurang kuat. Cocokkan dengan MRP Anda sebelum dipakai.</div>';
     if (r.catatan) ip += '<div class="ht-info biru">' + esc(r.catatan) + '</div>';
+    if (r.mesin) ip += '<div class="ht-status">Dianalisis oleh: ' + esc(r.mesin) + '</div>';
     $('htInfoPasar').innerHTML = ip;
     $('htPembanding').innerHTML = (r.pembandingMentah || []).length ? '<pre>' + esc(r.pembandingMentah.join('\n')) + '</pre>' : '<div class="ht-status">Tidak ada baris riwayat yang cocok.</div>';
     $('htPasar').value = p.tengah ? Math.round(p.tengah) : '';
